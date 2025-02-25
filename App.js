@@ -1,13 +1,12 @@
 import React from 'react';
-import {
-  Text,
-} from 'react-native';
+
+import RootNav from './src/navigation/rootNavigation';
 
 function App() {
   
 
   return (
-    <Text style={{color:"white"}}>hello</Text>
+    <RootNav />
   );
 }
 
