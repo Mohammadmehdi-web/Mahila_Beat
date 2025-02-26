@@ -27,7 +27,7 @@ const HomeScreen = ({navigation}) => {
         image={SaveWomenImg} 
         title="महिला बीट की कार्यवाई" 
         backgroundColor="#82E0AA" 
-        onPress={() => navigation.navigate("AreaDetails")}
+        onPress={() => navigation.navigate("Dashboard")}
       />
     </View>
     </ScrollView>
