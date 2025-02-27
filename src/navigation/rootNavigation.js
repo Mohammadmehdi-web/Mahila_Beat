@@ -13,6 +13,12 @@ import SamvadDetails from '../screens/samvadDetails/samvadDetails';
 import ComplaintScreen from '../screens/complaintScreen/complaintScreen';
 import ComplaintList from '../screens/complaintList/complaintList';
 import CompletedComplaints from '../screens/completedComplains/completedComplains';
+import BhramadDetails from '../screens/bhramadDetails/bhramadDetails';
+import ComplaintDescription from '../screens/ComplainDescription/complaintDescription';
+import AllComplaints from '../screens/allComplaints/allComplaints';
+import AllVisits from '../screens/allVisits/allVisits';
+import VisitInfo from '../screens/visitInfo/visitInfo';
+import MyVisits from '../screens/myVisits/myVisits';
 
 const Stack = createStackNavigator();
 
@@ -31,6 +37,12 @@ const RootNav = () => {
         <Stack.Screen name="ComplaintScreen" component={ComplaintScreen} />
         <Stack.Screen name="ComplaintList" component={ComplaintList} />
         <Stack.Screen name="CompletedComplaints" component={CompletedComplaints} />
+        <Stack.Screen name="BhramadDetails" component={BhramadDetails} />
+        <Stack.Screen name="ComplaintDescription" component={ComplaintDescription} />
+        <Stack.Screen name="AllComplaints" component={AllComplaints} />
+        <Stack.Screen name="AllVisits" component={AllVisits} />
+        <Stack.Screen name="VisitInfo" component={VisitInfo} />
+        <Stack.Screen name="MyVisits" component={MyVisits} />
       </Stack.Navigator>
     </NavigationContainer>
   );

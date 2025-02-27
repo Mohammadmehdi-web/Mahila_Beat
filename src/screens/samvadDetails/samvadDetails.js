@@ -15,6 +15,7 @@ import {Picker} from '@react-native-picker/picker';
 import Logo from '../../assets/policeLogo.png';
 import Header from '../../components/header/header';
 import WomenInfoCard from '../../components/womenInfoCard/womenInfoCard';
+import SideModal from '../../components/sideModal/sideModal';
 
 const SamvadDetails = ({navigation}) => {
   const [selectedLocation, setSelectedLocation] = useState('');
@@ -44,8 +45,8 @@ const SamvadDetails = ({navigation}) => {
     {label: ' मेरी बीट', icon: 'plus-box', screen: 'MeriBeat'},
     {label: ' लंबित शिकायत', icon: 'alert-circle',screen:"CompletedComplaints"},
     {label: ' निस्तारित शिकायत', icon: 'check-circle'},
-    {label: ' सभी शिकायत', icon: 'file-document'},
-    {label: ' सभी भ्रमण', icon: 'car'},
+    {label: ' सभी शिकायत', icon: 'file-document',screen:'AllComplaints'},
+    {label: ' सभी भ्रमण', icon: 'car',screen:"AllVisits"},
     {label: ' आपके भ्रमण', icon: 'walk'},
     {label: ' लॉग आउट', icon: 'logout', screen: 'Login'},
   ];
@@ -57,48 +58,11 @@ const SamvadDetails = ({navigation}) => {
 
   return (
     <>
-      <Modal
+     <SideModal
         isVisible={modalVisible}
-        coverScreen
-        onBackdropPress={() => setModalVisible(false)}
-        animationIn="slideInLeft"
-        animationOut="slideOutLeft"
-        backdropOpacity={0.5}
-        style={{margin: 0}}>
-        <View style={styles.modalContent}>
-          {/* Header Section with Logo */}
-          <View style={styles.header}>
-            <Image source={Logo} style={styles.logo} />
-            <Text style={styles.title}>आगरा जोन पुलिस</Text>
-            <Text style={styles.subtitle}>सुरक्षा आपकी संकल्प हमारा</Text>
-          </View>
-
-          {/* Menu Items */}
-          <ScrollView>
-            {menuItems.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.menuItem}
-                onPress={() => navigation.navigate(item.screen)}>
-                <Icon
-                  name={item.icon}
-                  size={24}
-                  color="#C2185B"
-                  style={styles.icon}
-                />
-                <Text style={styles.menuText}>{item.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-
-          {/* Close Button */}
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setModalVisible(false)}>
-            <Text style={styles.closeText}>बंद करें</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
+        onClose={() => setModalVisible(false)}
+        navigation={navigation}
+      />
       <View style={styles.container}>
         <Header
           title="महिला बीट"
