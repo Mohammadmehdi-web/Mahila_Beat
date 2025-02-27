@@ -10,7 +10,7 @@ import ComplaintCard from '../../components/complainCard/complaintCard'; // Impo
 import SideModal from '../../components/sideModal/sideModal';
 
 // Dummy completed complaints data
-const completedComplaints = [
+const allComplaints = [
   {
     id: '1',
     name: 'yt34',
@@ -18,6 +18,7 @@ const completedComplaints = [
     issue: 'पति पत्नी / घरेलू विवाद',
     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / आगरा',
     date: 'Oct 22, 2021',
+    status:'completed'
   },
   {
     id: '2',
@@ -34,26 +35,44 @@ const completedComplaints = [
     issue: 'महिलाओं से संबंधित अपराध',
     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / कुबेरपुर',
     date: 'Oct 20, 2021',
+    status:'completed'
+  },
+  {
+    id: '4',
+    name: 'प्रतिमा',
+    phone: '78987498789743984',
+    issue: 'महिलाओं से संबंधित अपराध',
+    location: 'उत्तर प्रदेश / आगरा / एतमादपुर / कुबेरपुर',
+    date: 'Oct 20, 2021',
+    status:'completed'
+  },
+  {
+    id: '5',
+    name: 'djjxxhjb',
+    phone: '7368872399',
+    issue: 'पति पत्नी / घरेलू विवाद',
+    location: 'उत्तर प्रदेश / आगरा / एतमादपुर / कुबेरपुर',
+    date: 'Oct 20, 2021',
   },
 ];
 
-const CompletedComplaints = ({navigation}) => {
+const AllComplaints = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
     
   const menuItems = [
-    {label: ' एप होम', icon: 'home', screen:'Home'},
+    {label: ' एप होम', icon: 'home', screen:'Home',},
     {label: ' डैशबोर्ड', icon: 'view-dashboard', screen:"Dashboard"},
     {label: ' मेरी बीट', icon: 'plus-box',screen:"MeriBeat"},
     {label: ' लंबित शिकायत', icon: 'alert-circle',screen:"ComplaintList"},
     {label: ' निस्तारित शिकायत', icon: 'check-circle',screen:"CompletedComplaints"},
     {label: ' सभी शिकायत', icon: 'file-document', screen:"AllComplaints"},
-    {label: ' सभी भ्रमण', icon: 'car',screen:"AllVisits"},
+    {label: ' सभी भ्रमण', icon: 'car', screen:"AllVisits"},
     {label: ' आपके भ्रमण', icon: 'walk'},
     {label: ' लॉग आउट', icon: 'logout', screen:'Login'},
   ];
   return (
     <>
-    <SideModal
+     <SideModal
         isVisible={modalVisible}
         onClose={() => setModalVisible(false)}
         navigation={navigation}
@@ -71,32 +90,38 @@ const CompletedComplaints = ({navigation}) => {
       {/* Summary Section */}
       <View style={styles.summaryContainer}>
         <View style={styles.row}>
-          <Text style={styles.summaryText}>कुल कार्यवाही पूर्ण शिकायत - {completedComplaints.length}</Text>
+          <Text style={styles.summaryText}>कुल कार्यवाही पूर्ण शिकायत - {allComplaints.length}</Text>
           <Icon name="refresh" size={24} color="green" />
-        </View>
-        <View style={styles.row}>
-          <Icon name="arrow-downward" size={24} color="green" />
-          <Icon name="sort-by-alpha" size={24} color="green" />
-          <Icon name="info-outline" size={24} color="black" />
         </View>
       </View>
 
       {/* Complaints List */}
       <FlatList
-        data={completedComplaints}
+        data={allComplaints}
         keyExtractor={item => item.id}
         renderItem={({item}) => (
           <View style={{flex: 1, paddingHorizontal: '3%'}}>
-            <ComplaintCard
+           { item.status === "completed"?
+           ( <ComplaintCard
               name={item.name}
               phone={item.phone}
               category={item.issue}
               address={item.location}
               date={item.date}
-              onPress={() => navigation.navigate('ComplaintDescription')}
+              onPress={() => navigation.navigate('AllComplaints')}
               color="#0D92F4"
               status="completed"
-            />
+            /> ): 
+           ( <ComplaintCard
+            name={item.name}
+            phone={item.phone}
+            category={item.issue}
+            address={item.location}
+            date={item.date}
+            onPress={() => navigation.navigate('AllComplaints')}
+            color='#D44624'
+          />)
+            }
           </View>
         )}
       />
@@ -201,4 +226,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CompletedComplaints;
+export default AllComplaints;

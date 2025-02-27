@@ -6,6 +6,7 @@ import Modal from 'react-native-modal';
 import Logo from '../../assets/policeLogo.png'
 import Header from '../../components/header/header';
 import ComplaintCard from '../../components/complainCard/complaintCard'; 
+import SideModal from '../../components/sideModal/sideModal';
 
 const VisitDetailsScreen = ({ navigation }) => {
       const [modalVisible, setModalVisible] = useState(false);
@@ -16,58 +17,18 @@ const VisitDetailsScreen = ({ navigation }) => {
         {label: ' मेरी बीट', icon: 'plus-box',screen:"MeriBeat"},
         {label: ' लंबित शिकायत', icon: 'alert-circle',screen:"ComplaintList"},
         {label: ' निस्तारित शिकायत', icon: 'check-circle',screen:"CompletedComplaints"},
-        {label: ' सभी शिकायत', icon: 'file-document'},
-        {label: ' सभी भ्रमण', icon: 'car'},
+        {label: ' सभी शिकायत', icon: 'file-document',screen:'AllComplaints'},
+        {label: ' सभी भ्रमण', icon: 'car',screen:"AllVisits"},
         {label: ' आपके भ्रमण', icon: 'walk'},
         {label: ' लॉग आउट', icon: 'logout', screen:'Login'},
       ];
   return (
     <>
-     <Modal
-              isVisible={modalVisible}
-              coverScreen
-              onBackdropPress={() => setModalVisible(false)}
-              animationIn="slideInLeft"
-              animationOut="slideOutLeft"
-              backdropOpacity={0.5}
-              style={{margin:0}}>
-              <View style={styles.modalContent}>
-                {/* Header Section with Logo */}
-                <View style={styles.header}>
-                  <Image
-                    source={Logo}
-                    style={styles.logo}
-                  />
-                  <Text style={styles.title}>आगरा जोन पुलिस</Text>
-                  <Text style={styles.subtitle}>सुरक्षा आपकी संकल्प हमारा</Text>
-                </View>
-    
-                {/* Menu Items */}
-                <ScrollView>
-                  {menuItems.map((item, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={styles.menuItem}
-                      onPress={() => navigation.navigate(item.screen)}>
-                      <Icon
-                        name={item.icon}
-                        size={24}
-                        color="#C2185B"
-                        style={styles.icon}
-                      />
-                      <Text style={styles.menuText}>{item.label}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-    
-                {/* Close Button */}
-                <TouchableOpacity
-                  style={styles.closeButton}
-                  onPress={() => setModalVisible(false)}>
-                  <Text style={styles.closeText}>बंद करें</Text>
-                </TouchableOpacity>
-              </View>
-            </Modal>
+   <SideModal
+        isVisible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        navigation={navigation}
+      />
     <View style={styles.container}>
 
       <Header title="महिला बीट" onMenuPress={() => setModalVisible(true)} />
@@ -108,7 +69,7 @@ const VisitDetailsScreen = ({ navigation }) => {
       </View>
 
       {/* Second row with single centered button */}
-      <TouchableOpacity style={[styles.button, styles.orangeButton]}>
+      <TouchableOpacity style={[styles.button, styles.orangeButton]} onPress={() => navigation.navigate('BhramadDetails')}>
         <Text style={styles.buttonText}>भ्रमण की जानकारी</Text>
       </TouchableOpacity>
     </View>
@@ -126,13 +87,16 @@ const VisitDetailsScreen = ({ navigation }) => {
           </View>
 
           {/* Complaint Card */}
+          <View style={{width:"100%"}}>
           <ComplaintCard
             name="मोहित कुमार"
             phone="798739749375"
             category="पति पत्नी / घरेलू विवाद"
             address="उत्तर प्रदेश / आगरा / एसएनपुर / अमर कालोनी"
             date="Oct 21, 2021"
+            color='#D44624'
           />
+          </View>
         </View>
       </ScrollView>
     </View>

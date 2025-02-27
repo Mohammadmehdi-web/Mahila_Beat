@@ -14,6 +14,7 @@ import Modal from 'react-native-modal';
 
 import Logo from '../../assets/policeLogo.png';
 import Header from '../../components/header/header';
+import SideModal from '../../components/sideModal/sideModal';
 
 const DetailsScreen = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -24,58 +25,25 @@ const DetailsScreen = ({navigation}) => {
     {label: ' एप होम', icon: 'home', screen: 'Home'},
     {label: ' डैशबोर्ड', icon: 'view-dashboard', screen: 'Dashboard'},
     {label: ' मेरी बीट', icon: 'plus-box', screen: 'MeriBeat'},
-    {label: ' लंबित शिकायत', icon: 'alert-circle'},
-    {label: ' निस्तारित शिकायत', icon: 'check-circle',screen:"CompletedComplaints"},
-    {label: ' सभी शिकायत', icon: 'file-document'},
-    {label: ' सभी भ्रमण', icon: 'car'},
+    {label: ' लंबित शिकायत', icon: 'alert-circle', screen: 'ComplaintList'},
+    {
+      label: ' निस्तारित शिकायत',
+      icon: 'check-circle',
+      screen: 'CompletedComplaints',
+    },
+    {label: ' सभी शिकायत', icon: 'file-document', screen: 'AllComplaints'},
+    {label: ' सभी भ्रमण', icon: 'car', screen: 'AllVisits'},
     {label: ' आपके भ्रमण', icon: 'walk'},
     {label: ' लॉग आउट', icon: 'logout', screen: 'Login'},
   ];
 
   return (
     <>
-      <Modal
+      <SideModal
         isVisible={modalVisible}
-        coverScreen
-        onBackdropPress={() => setModalVisible(false)}
-        animationIn="slideInLeft"
-        animationOut="slideOutLeft"
-        backdropOpacity={0.5}
-        style={{margin: 0}}>
-        <View style={styles.modalContent}>
-          {/* Header Section with Logo */}
-          <View style={styles.header}>
-            <Image source={Logo} style={styles.logo} />
-            <Text style={styles.title}>आगरा जोन पुलिस</Text>
-            <Text style={styles.subtitle}>सुरक्षा आपकी संकल्प हमारा</Text>
-          </View>
-
-          {/* Menu Items */}
-          <ScrollView>
-            {menuItems.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.menuItem}
-                onPress={() => navigation.navigate(item.screen)}>
-                <Icon
-                  name={item.icon}
-                  size={24}
-                  color="#C2185B"
-                  style={styles.icon}
-                />
-                <Text style={styles.menuText}>{item.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-
-          {/* Close Button */}
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setModalVisible(false)}>
-            <Text style={styles.closeText}>बंद करें</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
+        onClose={() => setModalVisible(false)}
+        navigation={navigation}
+      />
       <View>
         <Header
           title="महिला बीट"
@@ -85,7 +53,7 @@ const DetailsScreen = ({navigation}) => {
         <View style={styles.container}>
           {/* Title */}
           <View style={styles.headingContainer}>
-            <TouchableOpacity onPress={() => navigation.navigate("MeriBeat")}>
+            <TouchableOpacity onPress={() => navigation.navigate('MeriBeat')}>
               <Icon name="arrow-left" size={20} />
             </TouchableOpacity>
             <Text style={styles.heading}>भ्रमण का विवरण</Text>
@@ -145,7 +113,9 @@ const DetailsScreen = ({navigation}) => {
             </View>
 
             {/* Save Information Button */}
-            <TouchableOpacity style={styles.saveButton} onPress={() => navigation.navigate('VisitDetails')}>
+            <TouchableOpacity
+              style={styles.saveButton}
+              onPress={() => navigation.navigate('VisitDetails')}>
               <Text style={styles.saveButtonText}>जानकारी सुरक्षित करें</Text>
             </TouchableOpacity>
           </View>
@@ -167,7 +137,7 @@ const styles = StyleSheet.create({
   headingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap:85
+    gap: 85,
   },
   heading: {
     fontSize: 18,
