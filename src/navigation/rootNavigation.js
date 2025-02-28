@@ -31,7 +31,7 @@ const RootNav = () => {
           gestureEnabled: true,
         }}>
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
-        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Login" component={Login} screenOptions={{gestureEnabled:false}}/>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Dashboard" component={Dashboard} />
         <Stack.Screen name="MeriBeat" component={MeriBeat} />
