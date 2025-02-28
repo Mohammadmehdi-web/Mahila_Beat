@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Header from '../../components/header/header'; // Your existing header component
-import VisitCard from '../../components/visitCard/visitCard'; // Import the card component
+import Header from '../../components/header/header'; 
+import VisitCard from '../../components/visitCard/visitCard';
 import SideModal from '../../components/sideModal/sideModal';
 import Search from '../../components/search/search';
-// import Search from '../../components/search/search';
+import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 
 const complaints = [
   { location: 'उत्तर प्रदेश / आगरा / एत्मादपुर / अछार', officer: 'उ0नि0 श्री देवेंद्र सिंह - 6393292234', distance: '0.0', date: 'Oct 22, 2021',  },
@@ -16,6 +16,7 @@ const complaints = [
 
 const MyVisits = ({navigation}) => {
           const [modalVisible, setModalVisible] = useState(false);
+          const [infoVisible, setInfoVisible] = useState(false);
     
   return (
     <>
@@ -24,8 +25,13 @@ const MyVisits = ({navigation}) => {
         onClose={() => setModalVisible(false)}
         navigation={navigation}
       />
+      <UserInfoCard
+       isVisible={infoVisible}
+       onClose={() => setInfoVisible(false)}
+       navigation={navigation}
+      />
       <View>
-      <Header title="महिला बीट" onMenuPress={() => setModalVisible(true)} />
+      <Header title="महिला बीट" onMenuPress={() => setModalVisible(true)} onProfilePress={() => setInfoVisible(true)}/>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.section}>
           <Search />
@@ -39,7 +45,7 @@ const MyVisits = ({navigation}) => {
 
         {complaints.map((item, index) => (
           <VisitCard key={index} {...item} 
-          onPress={() => navigation.navigate('VisitInfo')}  />
+          onPress={() => navigation.navigate('VisitInfo', { fromScreen: 'MyVisits' })}  />
         ))}
       </ScrollView>
       </View>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -6,13 +6,23 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import SideModal from '../../components/sideModal/sideModal';
 import Header from '../../components/header/header';
+import UserInfoCard from '../../components/userInfoCard/userInfoCard';
+import {useNavigationState} from '@react-navigation/native';
 
 const VisitInfo = ({navigation}) => {
-    const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [infoVisible, setInfoVisible] = useState(false);
+  const previousScreen = useNavigationState(
+    state => state.routes[state.index - 1]?.name,
+  );
 
+  const handleBackPress = () => {
+    navigation.navigate(previousScreen);
+  };
   return (
     <>
       <SideModal
@@ -20,15 +30,26 @@ const VisitInfo = ({navigation}) => {
         onClose={() => setModalVisible(false)}
         navigation={navigation}
       />
+      <UserInfoCard
+        isVisible={infoVisible}
+        onClose={() => setInfoVisible(false)}
+        navigation={navigation}
+      />
       <View style={styles.container}>
-        {/* Header Component */}
-        <Header title="महिला बीट" onMenuPress={() => setModalVisible(true)} />
+        <Header
+          title="महिला बीट"
+          onMenuPress={() => setModalVisible(true)}
+          onProfilePress={() => setInfoVisible(true)}
+        />
 
-        {/* Main Content */}
         <ScrollView contentContainerStyle={styles.contentContainer}>
-          <Text style={styles.sectionTitle}>भ्रमण की जानकारी</Text>
+          <View style={styles.headingContainer}>
+            <TouchableOpacity onPress={handleBackPress}>
+              <Icon name="arrow-left" size={20} />
+            </TouchableOpacity>
+            <Text style={styles.heading}>भ्रमण की जानकारी</Text>
+          </View>
 
-          {/* Information Card */}
           <View style={styles.card}>
             <Text style={styles.label}>बीट का नाम</Text>
             <Text style={styles.value}>महिला बीट 2</Text>
@@ -51,7 +72,6 @@ const VisitInfo = ({navigation}) => {
             <Text style={[styles.value, styles.highlight]}>196.4 मीटर</Text>
           </View>
 
-          {/* Action Buttons */}
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>संवत का विवरण</Text>
           </TouchableOpacity>
@@ -69,9 +89,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+
   contentContainer: {
     alignItems: 'center',
     padding: 16,
+    gap: 15,
+  },
+  headingContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 85,
+  },
+  heading: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#333',
   },
   sectionTitle: {
     fontSize: 18,

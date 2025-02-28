@@ -8,14 +8,14 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
-import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Picker} from '@react-native-picker/picker';
+import {launchCamera} from 'react-native-image-picker';
 
-import Logo from '../../assets/policeLogo.png';
 import Header from '../../components/header/header';
 import WomenInfoCard from '../../components/womenInfoCard/womenInfoCard';
 import SideModal from '../../components/sideModal/sideModal';
+import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 
 const SamvadDetails = ({navigation}) => {
   const [selectedLocation, setSelectedLocation] = useState('');
@@ -27,50 +27,54 @@ const SamvadDetails = ({navigation}) => {
   const [selectedScheme, setSelectedScheme] = useState('');
   const [imageUri, setImageUri] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [infoVisible, setInfoVisible] = useState(false);
   const [womenData, setWomenData] = useState([
     {name: '', mobileNumber: ''},
     {name: '', mobileNumber: ''},
     {name: '', mobileNumber: ''},
   ]);
 
+  const openCamera = () => {
+    const options = {
+      mediaType: 'photo',
+      quality: 0.8,
+      cameraType: 'back',
+    };
+
+    launchCamera(options, response => {
+      if (!response.didCancel && !response.errorCode) {
+        setImageUri(response.assets[0].uri);
+      }
+    });
+  };
   const updateData = (index, field, value) => {
     const newData = [...womenData];
     newData[index][field] = value;
     setWomenData(newData);
   };
 
-  const menuItems = [
-    {label: ' एप होम', icon: 'home', screen: 'Home'},
-    {label: ' डैशबोर्ड', icon: 'view-dashboard', screen: 'Dashboard'},
-    {label: ' मेरी बीट', icon: 'plus-box', screen: 'MeriBeat'},
-    {label: ' लंबित शिकायत', icon: 'alert-circle',screen:"CompletedComplaints"},
-    {label: ' निस्तारित शिकायत', icon: 'check-circle'},
-    {label: ' सभी शिकायत', icon: 'file-document',screen:'AllComplaints'},
-    {label: ' सभी भ्रमण', icon: 'car',screen:"AllVisits"},
-    {label: ' आपके भ्रमण', icon: 'walk'},
-    {label: ' लॉग आउट', icon: 'logout', screen: 'Login'},
-  ];
-
-  const handleImagePick = () => {
-    // Dummy image selection logic (Replace with ImagePicker)
-    setImageUri('https://via.placeholder.com/150');
-  };
-
   return (
     <>
-     <SideModal
+      <SideModal
         isVisible={modalVisible}
         onClose={() => setModalVisible(false)}
+        navigation={navigation}
+      />
+      <UserInfoCard
+        isVisible={infoVisible}
+        onClose={() => setInfoVisible(false)}
         navigation={navigation}
       />
       <View style={styles.container}>
         <Header
           title="महिला बीट"
           onMenuPress={() => setModalVisible(true)}
+          onProfilePress={() => setInfoVisible(true)}
         />
         <ScrollView style={styles.scrollView}>
           <View style={styles.headingContainer}>
-            <TouchableOpacity onPress={() => navigation.navigate('VisitDetails')}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('VisitDetails')}>
               <Icon name="arrow-left" size={20} />
             </TouchableOpacity>
             <Text style={styles.heading}>संवाद का विवरण</Text>
@@ -98,7 +102,6 @@ const SamvadDetails = ({navigation}) => {
             </View>
           </View>
 
-          {/* Number of Women Participating */}
           <View style={styles.card}>
             <Text style={styles.label}>
               संवाद में सम्मिलित महिलाओं की संख्या *
@@ -109,10 +112,10 @@ const SamvadDetails = ({navigation}) => {
               placeholder="संख्या दर्ज करें"
               value={womenCount}
               onChangeText={setWomenCount}
+              placeholderTextColor="#B3B3B3"
             />
           </View>
 
-          {/* Women Details */}
           <View style={styles.card}>
             <Text style={styles.sectionTitle}>
               संवाद में सम्मिलित कुछ महिलाओं की जानकारी
@@ -127,7 +130,6 @@ const SamvadDetails = ({navigation}) => {
             ))}
           </View>
 
-          {/* Scheme Selection */}
           <View style={styles.card}>
             <Text style={styles.label}>
               सरकारी योजनाओं की जानकारी का चयन करें *
@@ -150,12 +152,9 @@ const SamvadDetails = ({navigation}) => {
             </View>
           </View>
 
-          {/* Image Upload */}
           <View style={styles.card}>
             <Text style={styles.sectionTitle}>संवाद के स्थान की फोटो</Text>
-            <TouchableOpacity
-              style={styles.imagePicker}
-              onPress={handleImagePick}>
+            <TouchableOpacity style={styles.imagePicker} onPress={openCamera}>
               <Icon name="camera" size={30} color="white" />
             </TouchableOpacity>
             {imageUri && (
@@ -163,7 +162,6 @@ const SamvadDetails = ({navigation}) => {
             )}
           </View>
 
-          {/* Submit Button */}
           <TouchableOpacity style={styles.submitButton}>
             <Text style={styles.submitButtonText}>जानकारी सुरक्षित करें</Text>
           </TouchableOpacity>
@@ -179,7 +177,7 @@ const styles = StyleSheet.create({
   headingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap:85
+    gap: 85,
   },
   heading: {
     fontSize: 18,
@@ -237,55 +235,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: '6%',
   },
-  submitButtonText: {color: 'white', fontSize: 16, fontWeight: 'bold'},
-  modalContent: {
-    width: '70%',
-    backgroundColor: '#FFF',
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-    alignItems: 'flex-start',
-    gap: 20,
-  },
-  header: {
-    width: '100%',
-    alignItems: 'center',
-    backgroundColor: '#EFDCAB',
-  },
-  logo: {
-    width: '60%',
-    height: 100,
-    resizeMode: 'contain',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#C2185B',
-  },
-  subtitle: {
-    fontSize: 12,
-    color: '#C2185B',
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    width: '100%',
-    paddingLeft: '6%',
-    gap: 10,
-  },
-  menuText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  closeButton: {
-    marginTop: 20,
-    backgroundColor: '#C2185B',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  closeText: {
-    color: '#fff',
+  submitButtonText: {
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },

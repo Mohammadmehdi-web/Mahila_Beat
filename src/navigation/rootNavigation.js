@@ -1,6 +1,6 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 
 import SplashScreen from '../screens/splashScreen/splashScreen';
 import Login from '../screens/login/login';
@@ -25,7 +25,11 @@ const Stack = createStackNavigator();
 const RootNav = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          gestureEnabled: true,
+        }}>
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Home" component={HomeScreen} />
@@ -36,9 +40,15 @@ const RootNav = () => {
         <Stack.Screen name="SamvadDetails" component={SamvadDetails} />
         <Stack.Screen name="ComplaintScreen" component={ComplaintScreen} />
         <Stack.Screen name="ComplaintList" component={ComplaintList} />
-        <Stack.Screen name="CompletedComplaints" component={CompletedComplaints} />
+        <Stack.Screen
+          name="CompletedComplaints"
+          component={CompletedComplaints}
+        />
         <Stack.Screen name="BhramadDetails" component={BhramadDetails} />
-        <Stack.Screen name="ComplaintDescription" component={ComplaintDescription} />
+        <Stack.Screen
+          name="ComplaintDescription"
+          component={ComplaintDescription}
+        />
         <Stack.Screen name="AllComplaints" component={AllComplaints} />
         <Stack.Screen name="AllVisits" component={AllVisits} />
         <Stack.Screen name="VisitInfo" component={VisitInfo} />

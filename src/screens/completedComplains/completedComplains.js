@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
-import {View, Text, TouchableOpacity, FlatList, StyleSheet, Image, ScrollView} from 'react-native';
+import {View, Text, TouchableOpacity, FlatList, StyleSheet,} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons'
-import Modal from 'react-native-modal'
-
-import Logo from '../../assets/policeLogo.png'
-import Header from '../../components/header/header'; // Your existing header component
-import ComplaintCard from '../../components/complainCard/complaintCard'; // Import ComplaintCard
+import Header from '../../components/header/header'; 
+import ComplaintCard from '../../components/complainCard/complaintCard'; 
 import SideModal from '../../components/sideModal/sideModal';
+import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 
-// Dummy completed complaints data
 const completedComplaints = [
   {
     id: '1',
@@ -39,18 +35,8 @@ const completedComplaints = [
 
 const CompletedComplaints = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [infoVisible, setInfoVisible] = useState(false);
     
-  const menuItems = [
-    {label: ' एप होम', icon: 'home', screen:'Home'},
-    {label: ' डैशबोर्ड', icon: 'view-dashboard', screen:"Dashboard"},
-    {label: ' मेरी बीट', icon: 'plus-box',screen:"MeriBeat"},
-    {label: ' लंबित शिकायत', icon: 'alert-circle',screen:"ComplaintList"},
-    {label: ' निस्तारित शिकायत', icon: 'check-circle',screen:"CompletedComplaints"},
-    {label: ' सभी शिकायत', icon: 'file-document', screen:"AllComplaints"},
-    {label: ' सभी भ्रमण', icon: 'car',screen:"AllVisits"},
-    {label: ' आपके भ्रमण', icon: 'walk'},
-    {label: ' लॉग आउट', icon: 'logout', screen:'Login'},
-  ];
   return (
     <>
     <SideModal
@@ -58,17 +44,19 @@ const CompletedComplaints = ({navigation}) => {
         onClose={() => setModalVisible(false)}
         navigation={navigation}
       />
+      <UserInfoCard
+       isVisible={infoVisible}
+       onClose={() => setInfoVisible(false)}
+       navigation={navigation}
+      />
     <View style={styles.container}>
-      {/* Header Component */}
-      <Header title="महिला बीट" onMenuPress={() => setModalVisible(true)} />
+      <Header title="महिला बीट" onMenuPress={() => setModalVisible(true)} onProfilePress={() => setInfoVisible(true)}/>
 
-      {/* Search Bar Section */}
       <TouchableOpacity style={styles.searchBar}>
         <Text style={styles.searchText}>जानकारी से खोजें</Text>
         <Icon name="keyboard-arrow-down" size={24} color="#fff" />
       </TouchableOpacity>
 
-      {/* Summary Section */}
       <View style={styles.summaryContainer}>
         <View style={styles.row}>
           <Text style={styles.summaryText}>कुल कार्यवाही पूर्ण शिकायत - {completedComplaints.length}</Text>
@@ -93,7 +81,7 @@ const CompletedComplaints = ({navigation}) => {
               category={item.issue}
               address={item.location}
               date={item.date}
-              onPress={() => navigation.navigate('ComplaintDescription')}
+              onPress={() => navigation.navigate('ComplaintDescription', { fromScreen: 'CompletedComplaints' })}
               color="#0D92F4"
               status="completed"
             />

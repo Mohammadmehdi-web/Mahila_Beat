@@ -1,13 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Image, StyleSheet, Animated } from 'react-native';
+import { View, StyleSheet, Animated } from 'react-native';
 
 import Logo from '../../assets/policeLogo.png'
 
 const SplashScreen = ({ navigation }) => {
-  const fadeAnim = useRef(new Animated.Value(0)).current; // Start with opacity 0
+  const fadeAnim = useRef(new Animated.Value(0)).current; 
 
   useEffect(() => {
-    // Fade-in animation
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 1500,
