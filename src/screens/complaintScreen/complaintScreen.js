@@ -11,10 +11,11 @@ import {
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import {launchCamera} from 'react-native-image-picker';
-import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Header from '../../components/header/header'; // Your existing header component
+import SideModal from '../../components/sideModal/sideModal';
+import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 
 const ComplaintScreen = ({navigation}) => {
   const [date, setDate] = useState('23-10-2021');
@@ -22,6 +23,9 @@ const ComplaintScreen = ({navigation}) => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [problemType, setProblemType] = useState('');
   const [imageUri, setImageUri] = useState(null);
+  const [videoUri, setVideoUri] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [infoVisible, setInfoVisible] = useState(false);
 
   // Function to handle camera
   const openCamera = () => {
@@ -42,18 +46,16 @@ const ComplaintScreen = ({navigation}) => {
     const options = {
       mediaType: 'video',
       videoQuality: 'high',
-      durationLimit: 10, // Now limited to 10 seconds
+      durationLimit: 10, 
     };
-  
-    launchCamera(options, (response) => {
+
+    launchCamera(options, response => {
       if (!response.didCancel && !response.errorCode) {
         setVideoUri(response.assets[0].uri);
       }
     });
   };
-  
 
-  // Function to submit complaint
   const handleSubmit = () => {
     if (!complainantName || !mobileNumber || !problemType) {
       Alert.alert('कृपया सभी आवश्यक फ़ील्ड भरें');
@@ -73,99 +75,117 @@ const ComplaintScreen = ({navigation}) => {
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: '#f5f5f5'}}>
-      <Header title="महिला बीट" />
+    <>
+      <SideModal
+        isVisible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        navigation={navigation}
+      />
+      <UserInfoCard
+        isVisible={infoVisible}
+        onClose={() => setInfoVisible(false)}
+        navigation={navigation}
+      />
+      <View style={{flex: 1, backgroundColor: '#f5f5f5'}}>
+        <Header
+          title="महिला बीट"
+          onMenuPress={() => setModalVisible(true)}
+          onProfilePress={() => setInfoVisible(true)}
+        />
 
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.headingContainer}>
-          <TouchableOpacity onPress={() => navigation.navigate('VisitDetails')}>
-            <Icon name="arrow-left" size={20} />
-          </TouchableOpacity>
-          <Text style={styles.heading}>संवाद का विवरण</Text>
-        </View>
-        {/* Complaint Date */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>शिकायत का दिनांक</Text>
-          <Text style={styles.dateBox}>{date}</Text>
-        </View>
-
-        {/* Name Input */}
-        <View style={styles.inputSection}>
-          <Text style={styles.label}>शिकायतकर्ता का नाम</Text>
-          <TextInput
-            style={styles.input}
-            value={complainantName}
-            onChangeText={setComplainantName}
-            placeholder="नाम दर्ज करें"
-          />
-        </View>
-
-        {/* Mobile Number Input */}
-        <View style={styles.inputSection}>
-          <Text style={styles.label}>शिकायतकर्ता का मोबाइल नंबर</Text>
-          <TextInput
-            style={styles.input}
-            value={mobileNumber}
-            onChangeText={setMobileNumber}
-            placeholder="मोबाइल नंबर दर्ज करें"
-            keyboardType="numeric"
-          />
-        </View>
-
-        <View style={styles.inputSection}>
-          <Text style={styles.label}>समस्या का प्रकार</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={problemType}
-              onValueChange={itemValue => setProblemType(itemValue)}
-              style={styles.picker}
-              dropdownIconColor="black">
-              <Picker.Item label="समस्या का प्रकार चुनें" value="" />
-              <Picker.Item
-                label="स्कूल / कॉलेज जाने वाली लड़कियों से छेड़छाड़"
-                value="Eve teasing"
-              />
-              <Picker.Item label="घरेलू हिंसा" value="Domestic Violence" />
-              <Picker.Item label="अन्य समस्या" value="Other" />
-            </Picker>
+        <ScrollView contentContainerStyle={styles.container}>
+          <View style={styles.headingContainer}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('VisitDetails')}>
+              <Icon name="arrow-left" size={20} />
+            </TouchableOpacity>
+            <Text style={styles.heading}>संवाद का विवरण</Text>
           </View>
-        </View>
+          {/* Complaint Date */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>शिकायत का दिनांक</Text>
+            <Text style={styles.dateBox}>{date}</Text>
+          </View>
 
-        {/* Image Upload Section */}
-        <View style={styles.inputSection}>
-          <Text style={styles.label}>समस्या / आवेदन का विवरण</Text>
-          <TouchableOpacity
-            style={styles.imageUploadButton}
-            onPress={openCamera}>
-            <Text style={styles.buttonText}>📷 फोटो लें</Text>
+          <View style={styles.inputSection}>
+            <Text style={styles.label}>शिकायतकर्ता का नाम</Text>
+            <TextInput
+              style={styles.input}
+              value={complainantName}
+              onChangeText={setComplainantName}
+              placeholder="नाम दर्ज करें"
+              placeholderTextColor="#B3B3B3"
+            />
+          </View>
+
+          {/* Mobile Number Input */}
+          <View style={styles.inputSection}>
+            <Text style={styles.label}>शिकायतकर्ता का मोबाइल नंबर</Text>
+            <TextInput
+              style={styles.input}
+              value={mobileNumber}
+              onChangeText={setMobileNumber}
+              placeholder="मोबाइल नंबर दर्ज करें"
+              keyboardType="numeric"
+              placeholderTextColor="#B3B3B3"
+            />
+          </View>
+
+          <View style={styles.inputSection}>
+            <Text style={styles.label}>समस्या का प्रकार</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={problemType}
+                onValueChange={itemValue => setProblemType(itemValue)}
+                style={styles.picker}
+                dropdownIconColor="black">
+                <Picker.Item label="समस्या का प्रकार चुनें" value="" />
+                <Picker.Item
+                  label="स्कूल / कॉलेज जाने वाली लड़कियों से छेड़छाड़"
+                  value="Eve teasing"
+                />
+                <Picker.Item label="घरेलू हिंसा" value="Domestic Violence" />
+                <Picker.Item label="अन्य समस्या" value="Other" />
+              </Picker>
+            </View>
+          </View>
+
+          {/* Image Upload Section */}
+          <View style={styles.inputSection}>
+            <Text style={styles.label}>समस्या / आवेदन का विवरण</Text>
+            <TouchableOpacity
+              style={styles.imageUploadButton}
+              onPress={openCamera}>
+              <Text style={styles.buttonText}>📷 फोटो लें</Text>
+            </TouchableOpacity>
+
+            {imageUri && (
+              <Image source={{uri: imageUri}} style={styles.uploadedImage} />
+            )}
+          </View>
+          <View style={styles.inputSection}>
+            <Text style={styles.label}>
+              शिकायत पर कार्रवाई से सम्बंधित 10 सेक की वीडियो
+            </Text>
+
+            {videoUri ? (
+              <Image source={{uri: videoUri}} style={styles.videoThumbnail} />
+            ) : null}
+
+            <TouchableOpacity
+              style={styles.videoUploadButton}
+              onPress={openCameraForVideo}>
+              <Text style={styles.buttonText}>📹 Video</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Submit Button */}
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+            <Text style={styles.submitButtonText}>जानकारी सुरक्षित करें</Text>
           </TouchableOpacity>
-
-          {imageUri && (
-            <Image source={{uri: imageUri}} style={styles.uploadedImage} />
-          )}
-        </View>
-        <View style={styles.inputSection}>
-          <Text style={styles.label}>
-            शिकायत पर कार्रवाई से सम्बंधित 10 सेक की वीडियो
-          </Text>
-
-          {imageUri ? (
-            <Image source={{uri: imageUri}} style={styles.videoThumbnail} />
-          ) : null}
-
-          <TouchableOpacity
-            style={styles.videoUploadButton}
-            onPress={openCameraForVideo}>
-            <Text style={styles.buttonText}>📹 Video</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Submit Button */}
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>जानकारी सुरक्षित करें</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </View>
+    </>
   );
 };
 
@@ -186,7 +206,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   section: {
-    backgroundColor: '#ff4081',
+    backgroundColor: '#E91E63',
     padding: 10,
     borderRadius: 8,
     marginBottom: 10,
@@ -230,7 +250,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   imageUploadButton: {
-    backgroundColor: '#ff4081',
+    backgroundColor: '#E91E63',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
@@ -251,16 +271,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
   },
-  
+
   videoUploadButton: {
-    backgroundColor: '#ff4081', // Matching pink color as in your UI
+    backgroundColor: '#E91E63',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
   },
-  
+
   submitButton: {
-    backgroundColor: '#ff4081',
+    backgroundColor: '#E91E63',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',

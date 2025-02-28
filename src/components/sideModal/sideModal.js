@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,6 +18,8 @@ const SideModal = ({ isVisible, onClose, navigation }) => {
     { label: ' लॉग आउट', icon: 'logout', screen: 'Login' },
   ];
 
+  
+
   return (
     <Modal
       isVisible={isVisible}
@@ -25,6 +27,7 @@ const SideModal = ({ isVisible, onClose, navigation }) => {
       onBackdropPress={onClose}
       animationIn="slideInLeft"
       animationOut="slideOutLeft"
+      propagateSwipe={true}
       backdropOpacity={0.5}
       style={{ margin: 0 }}>
       <View style={styles.modalContent}>

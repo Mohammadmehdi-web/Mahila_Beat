@@ -5,31 +5,18 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import Modal from 'react-native-modal'
-
-import Logo from '../../assets/policeLogo.png'
 import Header from '../../components/header/header'; 
 import SideModal from '../../components/sideModal/sideModal';
+import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 
 const BhramadDetails = ({navigation}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [infoVisible, setInfoVisible] = useState(false);
     
-      const menuItems = [
-        {label: ' एप होम', icon: 'home', screen:'Home'},
-        {label: ' डैशबोर्ड', icon: 'view-dashboard', screen:"Dashboard"},
-        {label: ' मेरी बीट', icon: 'plus-box',screen:"MeriBeat"},
-        {label: ' लंबित शिकायत', icon: 'alert-circle',screen:"ComplaintList"},
-        {label: ' निस्तारित शिकायत', icon: 'check-circle',screen:"CompletedComplaints"},
-        {label: ' सभी शिकायत', icon: 'file-document',screen: "AllComplaints"},
-        {label: ' सभी भ्रमण', icon: 'car', screen: "AllVisits"},
-        {label: ' आपके भ्रमण', icon: 'walk'},
-        {label: ' लॉग आउट', icon: 'logout', screen:'Login'},
-      ];
   const mahilaDetails = [
     {id: 1, name: 'premvati', phn: 7042582368},
     {id: 2, name: 'premvati', phn: 7042582368},
@@ -42,8 +29,13 @@ const BhramadDetails = ({navigation}) => {
         onClose={() => setModalVisible(false)}
         navigation={navigation}
       />
+      <UserInfoCard
+       isVisible={infoVisible}
+       onClose={() => setInfoVisible(false)}
+       navigation={navigation}
+      />
     <View style={styles.container}>
-    <Header title="महिला बीट" onMenuPress={() => setModalVisible(true)} />
+    <Header title="महिला बीट" onMenuPress={() => setModalVisible(true)} onProfilePress={() => setInfoVisible(true)} />
 
       <ScrollView contentContainerStyle={styles.content}>
  <View style={styles.headingContainer}>

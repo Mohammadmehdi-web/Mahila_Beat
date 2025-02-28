@@ -14,6 +14,7 @@ const WomenInfoCard = ({ index, womanData, updateData }) => {
           value={womanData.name}
           onChangeText={(text) => updateData(index, 'name', text)}
           placeholder="नाम दर्ज करें"
+          placeholderTextColor="#B3B3B3"
         />
       </View>
 
@@ -26,6 +27,7 @@ const WomenInfoCard = ({ index, womanData, updateData }) => {
           onChangeText={(text) => updateData(index, 'mobileNumber', text)}
           placeholder="मोबाइल नंबर दर्ज करें"
           keyboardType="numeric"
+          placeholderTextColor="#B3B3B3"
         />
       </View>
     </View>
@@ -41,7 +43,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   sectionHeader: {
-    backgroundColor: '#ff4081',
+    backgroundColor: '#E91E63',
     color: 'white',
     padding: 10,
     fontSize: 16,

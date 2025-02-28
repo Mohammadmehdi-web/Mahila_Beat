@@ -5,37 +5,18 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Image,
-  ScrollView,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Modal from 'react-native-modal';
-
-import Logo from '../../assets/policeLogo.png';
 import Header from '../../components/header/header';
 import SideModal from '../../components/sideModal/sideModal';
+import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 
 const DetailsScreen = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [infoVisible, setInfoVisible] = useState(false);
   const [selectedVillage, setSelectedVillage] = useState('');
   const [selectedAssistant, setSelectedAssistant] = useState('');
-
-  const menuItems = [
-    {label: ' एप होम', icon: 'home', screen: 'Home'},
-    {label: ' डैशबोर्ड', icon: 'view-dashboard', screen: 'Dashboard'},
-    {label: ' मेरी बीट', icon: 'plus-box', screen: 'MeriBeat'},
-    {label: ' लंबित शिकायत', icon: 'alert-circle', screen: 'ComplaintList'},
-    {
-      label: ' निस्तारित शिकायत',
-      icon: 'check-circle',
-      screen: 'CompletedComplaints',
-    },
-    {label: ' सभी शिकायत', icon: 'file-document', screen: 'AllComplaints'},
-    {label: ' सभी भ्रमण', icon: 'car', screen: 'AllVisits'},
-    {label: ' आपके भ्रमण', icon: 'walk'},
-    {label: ' लॉग आउट', icon: 'logout', screen: 'Login'},
-  ];
 
   return (
     <>
@@ -44,11 +25,16 @@ const DetailsScreen = ({navigation}) => {
         onClose={() => setModalVisible(false)}
         navigation={navigation}
       />
+      <UserInfoCard
+       isVisible={infoVisible}
+       onClose={() => setInfoVisible(false)}
+       navigation={navigation}
+      />
       <View>
         <Header
           title="महिला बीट"
           onMenuPress={() => setModalVisible(true)}
-          onProfilePress={() => console.log('Profile Pressed')}
+          onProfilePress={() => setInfoVisible(true)}
         />
         <View style={styles.container}>
           {/* Title */}
@@ -156,7 +142,7 @@ const styles = StyleSheet.create({
     gap: 28,
   },
   pinkButton: {
-    backgroundColor: '#C2185B',
+    backgroundColor: '#E91E63',
     paddingVertical: '4%',
     borderRadius: 5,
     alignItems: 'center',
@@ -173,7 +159,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: '3%',
     gap: 4,
     borderRadius: 5,
-    backgroundColor: '#C2185B',
+    backgroundColor: '#E91E63',
   },
   label: {
     fontSize: 14,
@@ -188,7 +174,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   infoBox: {
-    backgroundColor: '#C2185B',
+    backgroundColor: '#E91E63',
     padding: '3%',
     borderRadius: 5,
   },
@@ -207,64 +193,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   saveButton: {
-    backgroundColor: '#C2185B',
+    backgroundColor: '#E91E63',
     paddingVertical: '5%',
     borderRadius: 5,
     alignItems: 'center',
   },
   saveButtonText: {
     color: '#FFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  modalContent: {
-    width: '70%',
-    backgroundColor: '#FFF',
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-    alignItems: 'flex-start',
-    gap: 20,
-  },
-  header: {
-    width: '100%',
-    alignItems: 'center',
-    backgroundColor: '#EFDCAB',
-  },
-  logo: {
-    width: '60%',
-    height: 100,
-    resizeMode: 'contain',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#C2185B',
-  },
-  subtitle: {
-    fontSize: 12,
-    color: '#C2185B',
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    width: '100%',
-    paddingLeft: '6%',
-    gap: 10,
-  },
-  menuText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  closeButton: {
-    marginTop: 20,
-    backgroundColor: '#C2185B',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  closeText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },

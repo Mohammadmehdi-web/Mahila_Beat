@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
-import {View, Text, TouchableOpacity, FlatList, StyleSheet, ScrollView,Image} from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons'
-import Modal from 'react-native-modal'
-
-import Logo from '../../assets/policeLogo.png'
 import Header from '../../components/header/header';
 import ComplaintCard from '../../components/complainCard/complaintCard';
 import SideModal from '../../components/sideModal/sideModal';
+import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 
-// Dummy complaints data
 const complaints = [
   {
     id: '1',
@@ -47,18 +49,8 @@ const complaints = [
 
 const ComplaintList = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
-    
-  const menuItems = [
-    {label: ' एप होम', icon: 'home', screen:'Home'},
-    {label: ' डैशबोर्ड', icon: 'view-dashboard', screen:"Dashboard"},
-    {label: ' मेरी बीट', icon: 'plus-box',screen:"MeriBeat"},
-    {label: ' लंबित शिकायत', icon: 'alert-circle',screen:"ComplaintList"},
-    {label: ' निस्तारित शिकायत', icon: 'check-circle',screen:"CompletedComplaints"},
-    {label: ' सभी शिकायत', icon: 'file-document', screen:"AllComplaints"},
-    {label: ' सभी भ्रमण', icon: 'car', screen:"AllVisits"},
-    {label: ' आपके भ्रमण', icon: 'walk'},
-    {label: ' लॉग आउट', icon: 'logout', screen:'Login'},
-  ];
+  const [infoVisible, setInfoVisible] = useState(false);
+
   return (
     <>
       <SideModal
@@ -66,17 +58,19 @@ const ComplaintList = ({navigation}) => {
         onClose={() => setModalVisible(false)}
         navigation={navigation}
       />
+      <UserInfoCard
+       isVisible={infoVisible}
+       onClose={() => setInfoVisible(false)}
+       navigation={navigation}
+      />
       <View style={styles.container}>
-        {/* Header Component */}
-        <Header title="महिला बीट" onMenuPress={() => setModalVisible(true)} />
+        <Header title="महिला बीट" onMenuPress={() => setModalVisible(true)} onProfilePress={() => setInfoVisible(true)} />
 
-        {/* Search Bar Section */}
         <TouchableOpacity style={styles.searchBar}>
           <Text style={styles.searchText}>जानकारी से खोजें</Text>
           <Icon name="keyboard-arrow-down" size={24} color="#fff" />
         </TouchableOpacity>
 
-        {/* Summary Section */}
         <View style={styles.summaryContainer}>
           <View style={styles.row}>
             <Text style={styles.summaryText}>
@@ -91,7 +85,6 @@ const ComplaintList = ({navigation}) => {
           </View>
         </View>
 
-        {/* Complaint List */}
         <FlatList
           style={{gap: 10}}
           data={complaints}
@@ -104,7 +97,8 @@ const ComplaintList = ({navigation}) => {
                 category={item.issue}
                 address={item.location}
                 date={item.date}
-                color='#D44624'
+                onPress={() => navigation.navigate('ComplaintDescription', { fromScreen: 'ComplaintList' })}
+                color="#D44624"
               />
             </View>
           )}
@@ -189,55 +183,55 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   modalContent: {
-    width: "70%",
-    backgroundColor: "#FFF",
-    borderTopRightRadius:10,
-    borderBottomRightRadius:10,
-    alignItems: "flex-start",
-    gap:20
+    width: '70%',
+    backgroundColor: '#FFF',
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+    alignItems: 'flex-start',
+    gap: 20,
   },
   header: {
-    width:"100%",
-    alignItems: "center",
-    backgroundColor:"#EFDCAB"
+    width: '100%',
+    alignItems: 'center',
+    backgroundColor: '#EFDCAB',
   },
   logo: {
-    width: "60%",
+    width: '60%',
     height: 100,
-    resizeMode: "contain",
+    resizeMode: 'contain',
   },
   title: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#C2185B",
+    fontWeight: 'bold',
+    color: '#C2185B',
   },
   subtitle: {
     fontSize: 12,
-    color: "#C2185B",
+    color: '#C2185B',
   },
   menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 10,
-    width: "100%",
-    paddingLeft:"6%",
-    gap: 10
+    width: '100%',
+    paddingLeft: '6%',
+    gap: 10,
   },
   menuText: {
     fontSize: 16,
-    color: "#333",
+    color: '#333',
   },
   closeButton: {
     marginTop: 20,
-    backgroundColor: "#C2185B",
+    backgroundColor: '#C2185B',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
   },
   closeText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });
 

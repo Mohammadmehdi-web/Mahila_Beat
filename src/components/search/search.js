@@ -133,8 +133,8 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   picker: {
-    height: 40,
     width: "100%",
+    color:'black'
   },
   dateContainer: {
     marginBottom: 15,
