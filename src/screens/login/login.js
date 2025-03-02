@@ -7,12 +7,47 @@ import {
   Animated,
   Image,
   Text,
+  Alert,
 } from 'react-native';
+import axios from 'axios';
 
 import Logo from '../../assets/policeLogo.png';
+import {useDispatch} from 'react-redux';
+import {loginSuccess} from '../../redux/slice/authSlice';
+
+const API_URL = 'http://re.auctech.in/MobileAppApi/Login';
+const BEARER_TOKEN =
+  'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla';
 
 const Login = ({navigation}) => {
+  const dispatch = useDispatch();
+
   const logoPosition = useRef(new Animated.Value(0)).current;
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
+  const loginUser = async () => {
+    const response = await axios.post(
+      API_URL,
+      {
+        UserName: username,
+        Password: password,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${BEARER_TOKEN}`,
+        },
+      },
+    );
+    if (response?.data?.success === true) {
+      console.log(response.data.sessionData);
+      const userDetails = response.data.sessionData;
+      dispatch(loginSuccess(userDetails));
+      navigation.navigate('Home');
+    } else {
+      Alert.alert(response.data.message);
+    }
+  };
 
   useEffect(() => {
     Animated.timing(logoPosition, {
@@ -44,24 +79,28 @@ const Login = ({navigation}) => {
           <TextInput
             style={styles.input}
             placeholder="फ़ोन नंबर"
+            value={username}
+            onChangeText={setUsername}
             text
             keyboardType="default"
-            placeholderTextColor={"#ccc"}
+            placeholderTextColor={'#ccc'}
           />
 
           <TextInput
             style={styles.input}
             placeholder="पासवर्ड"
+            value={password}
+            onChangeText={setPassword}
             secureTextEntry
-            placeholderTextColor={"#ccc"}
+            placeholderTextColor={'#ccc'}
           />
         </View>
         <View>
-        <Button
-          style={{borderRadius: 20, fontSize: 14}}
-          title="लॉग इन"
-          onPress={() => navigation.navigate("Home")}
-        />
+          <Button
+            style={{borderRadius: 20, fontSize: 14}}
+            title="लॉग इन"
+            onPress={loginUser}
+          />
         </View>
       </View>
     </View>
@@ -93,7 +132,7 @@ const styles = StyleSheet.create({
     borderColor: '#000000',
     borderRadius: 8,
     paddingHorizontal: 10,
-    color:"black"
+    color: 'black',
   },
   headingContainer: {
     alignItems: 'center',
@@ -105,11 +144,11 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     fontSize: 26,
   },
-  inputContainer:{
-    width:"100%",
-    justifyContent:"center",
-    gap:10
-  }
+  inputContainer: {
+    width: '100%',
+    justifyContent: 'center',
+    gap: 10,
+  },
 });
 
 export default Login;

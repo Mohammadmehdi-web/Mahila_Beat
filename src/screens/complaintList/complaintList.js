@@ -1,56 +1,79 @@
-import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  FlatList,
-  StyleSheet,
-} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, TouchableOpacity, FlatList, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../../components/header/header';
 import ComplaintCard from '../../components/complainCard/complaintCard';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
+import axios from 'axios';
 
-const complaints = [
-  {
-    id: '1',
-    name: 'अनिल कुमार',
-    phone: '9292929292',
-    issue: 'स्कूल / कॉलेज जाने वाली लड़कियों से छेड़छाड़',
-    location: 'उत्तर प्रदेश / आगरा / एतमादपुर / आगरा',
-    date: 'Oct 21, 2021',
-  },
-  {
-    id: '2',
-    name: 'मोहित कुमार',
-    phone: '9292929292',
-    issue: 'पति पत्नी / घरेलू विवाद',
-    location: 'उत्तर प्रदेश / आगरा / एतमादपुर / आगरा',
-    date: 'Oct 22, 2021',
-  },
-  {
-    id: '3',
-    name: 'मोहित कुमार',
-    phone: '9292929292',
-    issue: 'पति पत्नी / घरेलू विवाद',
-    location: 'उत्तर प्रदेश / आगरा / एतमादपुर / आगरा',
-    date: 'Oct 22, 2021',
-  },
-  {
-    id: '4',
-    name: 'मोहित कुमार',
-    phone: '9292929292',
-    issue: 'पति पत्नी / घरेलू विवाद',
-    location: 'उत्तर प्रदेश / आगरा / एतमादपुर / आगरा',
-    date: 'Oct 22, 2021',
-  },
-];
+const API_URL = 'http://re.auctech.in/MobileAppApi/getTotalComplaintMaster';
+const BEARER_TOKEN =
+  'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxtotalComplaint';
+
+// const complaints = [
+//   {
+//     id: '1',
+//     name: 'अनिल कुमार',
+//     phone: '9292929292',
+//     issue: 'स्कूल / कॉलेज जाने वाली लड़कियों से छेड़छाड़',
+//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / आगरा',
+//     date: 'Oct 21, 2021',
+//   },
+//   {
+//     id: '2',
+//     name: 'मोहित कुमार',
+//     phone: '9292929292',
+//     issue: 'पति पत्नी / घरेलू विवाद',
+//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / आगरा',
+//     date: 'Oct 22, 2021',
+//   },
+//   {
+//     id: '3',
+//     name: 'मोहित कुमार',
+//     phone: '9292929292',
+//     issue: 'पति पत्नी / घरेलू विवाद',
+//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / आगरा',
+//     date: 'Oct 22, 2021',
+//   },
+//   {
+//     id: '4',
+//     name: 'मोहित कुमार',
+//     phone: '9292929292',
+//     issue: 'पति पत्नी / घरेलू विवाद',
+//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / आगरा',
+//     date: 'Oct 22, 2021',
+//   },
+// ];
 
 const ComplaintList = ({navigation}) => {
+  const [complaints, setComplaints] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
 
+  const getComplaintList = async () => {
+    const response = await axios.post(
+      API_URL,
+      {
+        ActivityId: 1,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${BEARER_TOKEN}`,
+        },
+      },
+    );
+    if (response?.data?.success === true) {
+      setComplaints(response.data.data);
+    } else {
+      console.log(response.data.message);
+    }
+  };
+
+  useEffect(() => {
+    getComplaintList();
+  }, []);
+  console.log(complaints);
   return (
     <>
       <SideModal
@@ -59,12 +82,16 @@ const ComplaintList = ({navigation}) => {
         navigation={navigation}
       />
       <UserInfoCard
-       isVisible={infoVisible}
-       onClose={() => setInfoVisible(false)}
-       navigation={navigation}
+        isVisible={infoVisible}
+        onClose={() => setInfoVisible(false)}
+        navigation={navigation}
       />
       <View style={styles.container}>
-        <Header title="महिला बीट" onMenuPress={() => setModalVisible(true)} onProfilePress={() => setInfoVisible(true)} />
+        <Header
+          title="महिला बीट"
+          onMenuPress={() => setModalVisible(true)}
+          onProfilePress={() => setInfoVisible(true)}
+        />
 
         <TouchableOpacity style={styles.searchBar}>
           <Text style={styles.searchText}>जानकारी से खोजें</Text>
@@ -88,16 +115,26 @@ const ComplaintList = ({navigation}) => {
         <FlatList
           style={{gap: 10}}
           data={complaints}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.ComplaintId.toString()} // Ensure ComplaintId exists
           renderItem={({item}) => (
             <View style={{flex: 1, paddingHorizontal: '3%'}}>
               <ComplaintCard
-                name={item.name}
-                phone={item.phone}
-                category={item.issue}
-                address={item.location}
-                date={item.date}
-                onPress={() => navigation.navigate('ComplaintDescription', { fromScreen: 'ComplaintList' })}
+                name={item.ComplainantName || 'N/A'}
+                phone={item.ComplainantNumber || 'N/A'}
+                category={item.ProblemName || 'Unknown'}
+                address={item.location || 'Not available'}
+                date={
+                  item.ComplaintDate
+                    ? new Date(
+                        parseInt(item.ComplaintDate.match(/\d+/)[0]),
+                      ).toLocaleDateString()
+                    : 'N/A'
+                }
+                onPress={() =>
+                  navigation.navigate('ComplaintDescription', {
+                    complaint: item,
+                  })
+                }
                 color="#D44624"
               />
             </View>
