@@ -1,14 +1,26 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
-const ComplaintCard = ({name, phone, category, address, date, color, onPress, status}) => {
+const ComplaintCard = ({
+  name,
+  phone,
+  category,
+  address,
+  date,
+  color,
+  onPress,
+  status,
+}) => {
   return (
     <TouchableOpacity onPress={onPress}>
-      <View style={[styles.card,{backgroundColor:color}]}>
-     { status === "completed" ? (
-      <View style={styles.dateBadge}>
-        <Text style={styles.dateText}>{"Oct 23, 2023"}</Text>
-      </View>): <></>}
+      <View style={[styles.card, {backgroundColor: color}]}>
+        {status === 'completed' ? (
+          <View style={styles.dateBadge}>
+            <Text style={styles.dateText}>{date}</Text>
+          </View>
+        ) : (
+          <></>
+        )}
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.phone}>{phone}</Text>
         <Text style={styles.category}>{category}</Text>
@@ -55,9 +67,9 @@ const styles = StyleSheet.create({
   dateBadge: {
     position: 'absolute',
     top: -10,
-    right: -10, 
-    backgroundColor: '#563D7C', 
-    paddingVertical: "2%",
+    right: -10,
+    backgroundColor: '#563D7C',
+    paddingVertical: '2%',
     paddingHorizontal: '3%',
     borderRadius: 10,
     elevation: 3,
