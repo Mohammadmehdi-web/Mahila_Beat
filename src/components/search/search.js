@@ -4,7 +4,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 
-const Search = () => {
+const Search = ({handleChange}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedArea, setSelectedArea] = useState("");
   const [fromDate, setFromDate] = useState(new Date());
@@ -90,7 +90,7 @@ const Search = () => {
           </View>
 
           {/* Search Button */}
-          <TouchableOpacity style={styles.searchButton}>
+          <TouchableOpacity style={styles.searchButton} onPress={() => handleChange(selectedArea, fromDate, toDate)}>
             <Text style={styles.searchButtonText}>सर्च करें</Text>
           </TouchableOpacity>
         </View>

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -8,16 +8,94 @@ import {
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+
 import Header from '../../components/header/header';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 
+const API_URL_BEAT='http://re.auctech.in/MobileAppApi/GetBeatAreaDetails'
+const BEARER_TOKEN_BEAT = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla'
+const API_URL_SAHKARMI='http://re.auctech.in/MobileAppApi/GetSahkarmiMasterDetails'
+const BEARER_TOKEN_SAH='zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla'
+const API_URL = 'http://re.auctech.in/MobileAppApi/AddActivityMaster'
+const BEARER_TOKEN = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla'
 const DetailsScreen = ({navigation}) => {
+  const{MahilaBeatName,BeatId, ThanaId,UserId} = useSelector(state => state.auth.userDetails)
+
+  const [beatArea, setBeatArea] = useState([])
+  const [sahkarmi, setSahkarmi] = useState([])
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
   const [selectedVillage, setSelectedVillage] = useState('');
   const [selectedAssistant, setSelectedAssistant] = useState('');
+  const [activityDetails, setActivityDetails] = useState([])
+  const date =  new Date().toLocaleDateString();
 
+  const getBeatList =async() =>{
+    const response = await axios.post(
+      API_URL_BEAT,
+      {
+        BeatId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${BEARER_TOKEN_BEAT}`,
+        },
+      },
+    )
+    if(response.data.success === true){
+      setBeatArea(response.data.data)
+    }
+  }
+
+  const getSahkarmiList = async() =>{
+    const response = await axios.post(
+      API_URL_SAHKARMI,
+      {
+        ThanaId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${BEARER_TOKEN_SAH}`,
+        },
+      },
+    )
+    if(response.data.success === true){
+      // console.log(response.data.data)
+      setSahkarmi(response.data.data)
+    }
+  }
+
+  const addActivityDetails = async() =>{
+    const response = await axios.post (
+      API_URL,
+        {
+          ActivityDate:date,
+          DistanceActivity:"123.5 km",
+          BeatAreaName:selectedVillage,
+          SahkramiId:selectedAssistant,
+          AreaId: BeatId,
+          AddedBy:UserId
+        
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${BEARER_TOKEN_SAH}`,
+          },
+        },
+    )
+    if(response.data.success === true){
+      // console.log(response.data.data)
+      setActivityDetails(response.data.data)
+      navigation.navigate('VisitDetails', {details: response.data.data})
+    }
+  }
+  useEffect(() =>{
+    getBeatList()
+    getSahkarmiList()
+  }, [])
   return (
     <>
       <SideModal
@@ -48,20 +126,18 @@ const DetailsScreen = ({navigation}) => {
           <View style={styles.formContainer}>
             {/* Women Beat Visit */}
             <TouchableOpacity style={styles.pinkButton}>
-              <Text style={styles.buttonText}>महिला बीट पर भ्रमण</Text>
+              <Text style={styles.buttonText}>{MahilaBeatName} पर भ्रमण</Text>
             </TouchableOpacity>
 
-            {/* Date Input */}
             <View style={styles.inputRow}>
               <Text style={styles.label}>भ्रमण का दिनांक</Text>
               <TextInput
                 style={styles.input}
-                value="23-10-2021"
+                value={ date}
                 editable={false}
               />
             </View>
 
-            {/* Distance Section */}
             <TouchableOpacity style={styles.pinkButton}>
               <Text style={styles.buttonText}>गाँव / मोहल्ला की दूरी</Text>
             </TouchableOpacity>
@@ -81,8 +157,10 @@ const DetailsScreen = ({navigation}) => {
                 selectedValue={selectedVillage}
                 onValueChange={itemValue => setSelectedVillage(itemValue)}>
                 <Picker.Item label="गाँव / मोहल्ला" value="" />
-                <Picker.Item label="गाँव 1" value="village1" />
-                <Picker.Item label="गाँव 2" value="village2" />
+                
+               { beatArea.map(item => 
+                <Picker.Item label={item.BeatAreaName} value={item.BeatAreaName} />
+                )}
               </Picker>
             </View>
 
@@ -93,15 +171,15 @@ const DetailsScreen = ({navigation}) => {
                 selectedValue={selectedAssistant}
                 onValueChange={itemValue => setSelectedAssistant(itemValue)}>
                 <Picker.Item label="सहकर्मी का चयन करें" value="" />
-                <Picker.Item label="सहकर्मी 1" value="assistant1" />
-                <Picker.Item label="सहकर्मी 2" value="assistant2" />
+                { sahkarmi.map(item => 
+                <Picker.Item label={item.SahkarmiName} value={item.SahkarmiId} />
+                )}
               </Picker>
             </View>
 
-            {/* Save Information Button */}
             <TouchableOpacity
               style={styles.saveButton}
-              onPress={() => navigation.navigate('VisitDetails')}>
+              onPress={addActivityDetails}>
               <Text style={styles.saveButtonText}>जानकारी सुरक्षित करें</Text>
             </TouchableOpacity>
           </View>

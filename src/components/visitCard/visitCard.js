@@ -1,9 +1,9 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
-const VisitCard = ({location, officer, distance, date, onPress}) => {
+const VisitCard = ({id,location, officer, distance, date, onPress}) => {
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity key={id} onPress={onPress}>
       <View style={styles.card}>
         <Text style={styles.location}>{location}</Text>
         <Text style={styles.officer}>{officer}</Text>
