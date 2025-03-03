@@ -14,39 +14,14 @@ import Header from '../../components/header/header';
 import ComplaintCard from '../../components/complainCard/complaintCard';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
+import { useSelector } from 'react-redux';
 
 const API_URL = 'http://re.auctech.in/MobileAppApi/GetReleasedComplaintDetails';
 const BEARER_TOKEN =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxReleasedComplaintdssdted';
 
-// const completedComplaints = [
-//   {
-//     id: '1',
-//     name: 'yt34',
-//     phone: '9876543210',
-//     issue: 'पति पत्नी / घरेलू विवाद',
-//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / आगरा',
-//     date: 'Oct 22, 2021',
-//   },
-//   {
-//     id: '2',
-//     name: 'djjxxhjb',
-//     phone: '7368872399',
-//     issue: 'पति पत्नी / घरेलू विवाद',
-//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / कुबेरपुर',
-//     date: 'Oct 20, 2021',
-//   },
-//   {
-//     id: '3',
-//     name: 'प्रतिमा',
-//     phone: '78987498789743984',
-//     issue: 'महिलाओं से संबंधित अपराध',
-//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / कुबेरपुर',
-//     date: 'Oct 20, 2021',
-//   },
-// ];
-
 const CompletedComplaints = ({navigation}) => {
+  const {UserId} = useSelector(state=> state.auth.userDetails)
   const [completedComplaints, setCompletedComplaints] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
@@ -54,10 +29,7 @@ const CompletedComplaints = ({navigation}) => {
     const response = await axios.post(
       API_URL,
       {
-        UserId: 5,
-        BeatAreaId: 2,
-        FromDate: '2025-09-01',
-        ToDate: '2025-09-01',
+        UserId
       },
       {
         headers: {

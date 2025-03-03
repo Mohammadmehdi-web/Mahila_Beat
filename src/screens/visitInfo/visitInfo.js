@@ -11,9 +11,11 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SideModal from '../../components/sideModal/sideModal';
 import Header from '../../components/header/header';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
-import {useNavigationState} from '@react-navigation/native';
+import {useNavigationState, useRoute} from '@react-navigation/native';
 
 const VisitInfo = ({navigation}) => {
+  const route = useRoute();
+  const {visitInfo} = route.params || {};
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
   const previousScreen = useNavigationState(
@@ -52,11 +54,11 @@ const VisitInfo = ({navigation}) => {
 
           <View style={styles.card}>
             <Text style={styles.label}>बीट का नाम</Text>
-            <Text style={styles.value}>महिला बीट 2</Text>
+            <Text style={styles.value}>{visitInfo?.MahilaBeatName}</Text>
 
             <Text style={styles.label}>क्षेत्र का नाम</Text>
             <Text style={[styles.value, styles.highlight]}>
-              उत्तर प्रदेश / आगरा / एत्मादपुर / अमर कालोनी
+            {`${visitInfo?.StateName}/${visitInfo?.DistrictName}/${visitInfo?.ThanaName}`}
             </Text>
 
             <Text style={styles.label}>भ्रमण में सहकर्मी का नाम</Text>
@@ -66,10 +68,10 @@ const VisitInfo = ({navigation}) => {
             </Text>
 
             <Text style={styles.label}>भ्रमण का दिनांक व समय</Text>
-            <Text style={[styles.value, styles.date]}>Oct 23 2021 11:46AM</Text>
+            <Text style={[styles.value, styles.date]}>{visitInfo?.ActivityDate}</Text>
 
             <Text style={styles.label}>गांव / मोहल्ले से दूरी</Text>
-            <Text style={[styles.value, styles.highlight]}>196.4 मीटर</Text>
+            <Text style={[styles.value, styles.highlight]}>{visitInfo?.DistanceActivity}</Text>
           </View>
 
           <TouchableOpacity style={styles.button}>

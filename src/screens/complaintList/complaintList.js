@@ -6,47 +6,14 @@ import ComplaintCard from '../../components/complainCard/complaintCard';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const API_URL = 'http://re.auctech.in/MobileAppApi/getTotalComplaintMaster';
 const BEARER_TOKEN =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxtotalComplaint';
 
-// const complaints = [
-//   {
-//     id: '1',
-//     name: 'अनिल कुमार',
-//     phone: '9292929292',
-//     issue: 'स्कूल / कॉलेज जाने वाली लड़कियों से छेड़छाड़',
-//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / आगरा',
-//     date: 'Oct 21, 2021',
-//   },
-//   {
-//     id: '2',
-//     name: 'मोहित कुमार',
-//     phone: '9292929292',
-//     issue: 'पति पत्नी / घरेलू विवाद',
-//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / आगरा',
-//     date: 'Oct 22, 2021',
-//   },
-//   {
-//     id: '3',
-//     name: 'मोहित कुमार',
-//     phone: '9292929292',
-//     issue: 'पति पत्नी / घरेलू विवाद',
-//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / आगरा',
-//     date: 'Oct 22, 2021',
-//   },
-//   {
-//     id: '4',
-//     name: 'मोहित कुमार',
-//     phone: '9292929292',
-//     issue: 'पति पत्नी / घरेलू विवाद',
-//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / आगरा',
-//     date: 'Oct 22, 2021',
-//   },
-// ];
-
 const ComplaintList = ({navigation}) => {
+  const {UserId} = useSelector(state => state.auth.userDetails)
   const [complaints, setComplaints] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
@@ -55,7 +22,7 @@ const ComplaintList = ({navigation}) => {
     const response = await axios.post(
       API_URL,
       {
-        ActivityId: 1,
+        UserId
       },
       {
         headers: {

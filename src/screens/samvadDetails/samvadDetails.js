@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -16,14 +16,18 @@ import Header from '../../components/header/header';
 import WomenInfoCard from '../../components/womenInfoCard/womenInfoCard';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
+import { useRoute } from '@react-navigation/native';
 
+const API_URL = 'http://re.auctech.in/MobileAppApi/AddConversationMaster'
+const BEARER_TOKEN = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla'
+const GOV_SCH_API='http://re.auctech.in/MobileAppApi/GetGovernmentschemeMasterDetails'
+const GOV_SCH_BEARER = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxlagov'
 const SamvadDetails = ({navigation}) => {
+  const routes = useRoute()
+  const {ActivityId} = routes.params || {}
   const [selectedLocation, setSelectedLocation] = useState('');
   const [womenCount, setWomenCount] = useState('');
-  const [womenDetails, setWomenDetails] = useState([
-    {name: 'premlata', phone: '52369853'},
-    {name: 'xyz', phone: '9652368986'},
-  ]);
+  const [schemeList, setSchemeList]=useState([])
   const [selectedScheme, setSelectedScheme] = useState('');
   const [imageUri, setImageUri] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -52,6 +56,35 @@ const SamvadDetails = ({navigation}) => {
     newData[index][field] = value;
     setWomenData(newData);
   };
+  
+   const getGovScheme = async() =>{
+    const response = await axios.get(
+      GOV_SCH_API,{
+          headers: {
+            Authorization: `Bearer ${GOV_SCH_BEARER}`,
+          },
+        }
+    )
+    if(response.data.success === true){
+        console.log(response.data.data);
+        setSchemeList(response.data.data)
+    }
+   }
+  const postSamvadData = async() =>{
+    const response = await axios.post(
+      API_URL,{
+          ActivityId:ActivityId
+      },{
+          headers: {
+            Authorization: `Bearer ${BEARER_TOKEN}`,
+          },
+        }
+    )
+  }
+
+  useEffect( () =>{
+    getGovScheme()
+  },[])
 
   return (
     <>

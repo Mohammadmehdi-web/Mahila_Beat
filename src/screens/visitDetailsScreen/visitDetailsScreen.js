@@ -11,10 +11,17 @@ import Header from '../../components/header/header';
 import ComplaintCard from '../../components/complainCard/complaintCard';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
+import { useRoute } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 const VisitDetailsScreen = ({navigation}) => {
+  const {MahilaBeatName} = useSelector(state => state.auth.userDetails)
+  const route = useRoute()
+  const details = route.params?.details?.[0] || {}
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
+
+  console.log(details)
 
   return (
     <>
@@ -44,21 +51,21 @@ const VisitDetailsScreen = ({navigation}) => {
 
             <View style={styles.infoBox}>
               <Text style={styles.label}>बीट का नाम</Text>
-              <Text style={styles.dateText}>महिला बीट 2</Text>
+              <Text style={styles.dateText}>{MahilaBeatName}</Text>
 
               <Text style={styles.label}>गांव / मोहल्ला का नाम</Text>
-              <Text style={styles.dateText}>अमर कालोनी</Text>
+              <Text style={styles.dateText}>{details?.BeatAreaName}</Text>
 
               <Text style={styles.label}>भ्रमण में सहकर्मी का नाम</Text>
               <Text style={styles.redText}>
-                कां0 4961 अभिषेक शर्मा, कां0 3010 श्री देवेंद्र सिंह
+                {`कां0 ${details.SahkramiId} ${details.SahkramiName}`}
               </Text>
 
               <Text style={styles.label}>भ्रमण का दिनांक व समय</Text>
-              <Text style={styles.dateText}>Oct 23, 2021 12:52PM</Text>
+              <Text style={styles.dateText}>{details.ActivityDate}</Text>
 
               <Text style={styles.label}>गांव / मोहल्ला की लोकेशन से दूरी</Text>
-              <Text style={styles.dateText}>599.4 मीटर</Text>
+              <Text style={styles.dateText}>{details?.DistanceActivity} मीटर</Text>
             </View>
 
             <View style={styles.actionContainer}>
@@ -67,7 +74,7 @@ const VisitDetailsScreen = ({navigation}) => {
               <View style={styles.row}>
                 <TouchableOpacity
                   style={[styles.button, styles.purpleButton]}
-                  onPress={() => navigation.navigate('SamvadDetails')}>
+                  onPress={() => navigation.navigate('SamvadDetails',{ActivityId: details.ActivityId})}>
                   <Text style={styles.buttonText}>संवाद / जागरूकता</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
