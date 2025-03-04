@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Header from '../../components/header/header';
@@ -13,6 +14,10 @@ import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import { useRoute } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
+
+const API_URL = 'http://re.auctech.in/MobileAppApi/getTotalComplaintMaster'
+const BEARER_TOKEN = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxtotalComplaint'
 
 const VisitDetailsScreen = ({navigation}) => {
   const {MahilaBeatName} = useSelector(state => state.auth.userDetails)
@@ -20,8 +25,32 @@ const VisitDetailsScreen = ({navigation}) => {
   const details = route.params?.details?.[0] || {}
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
+  const [kulLambitComplaints, setKulLambitComplaints] = useState([])
 
   console.log(details)
+
+  const getKulLambitComplaints = async() =>{
+    const response = await axios.post(API_URL,
+      {
+        ActivityId:details.ActivityId
+      },{
+        headers:{
+          Authorization:`Bearer ${BEARER_TOKEN}`
+        }
+      }
+    )
+    if(response.data.success === true){
+      console.log(response.data.data);
+      setKulLambitComplaints(response.data.data)
+    }
+    else {
+      Alert.alert("आपके पास शून्य लंबित शिकायतें हैं")
+    }
+  }
+
+ useEffect(() =>{
+  getKulLambitComplaints()
+ }, [])
 
   return (
     <>
@@ -74,19 +103,19 @@ const VisitDetailsScreen = ({navigation}) => {
               <View style={styles.row}>
                 <TouchableOpacity
                   style={[styles.button, styles.purpleButton]}
-                  onPress={() => navigation.navigate('SamvadDetails',{ActivityId: details.ActivityId})}>
+                  onPress={() => navigation.navigate('SamvadDetails', { ActivityId: details.ActivityId, ActivityDate: details.ActivityDate })}>
                   <Text style={styles.buttonText}>संवाद / जागरूकता</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.button, styles.purpleButton]}
-                  onPress={() => navigation.navigate('ComplaintScreen')}>
+                  onPress={() => navigation.navigate('ComplaintScreen', { ActivityId: details.ActivityId, ActivityDate: details.ActivityDate })}>
                   <Text style={styles.buttonText}>शिकायत निराकरण</Text>
                 </TouchableOpacity>
               </View>
 
               <TouchableOpacity
                 style={[styles.button, styles.orangeButton]}
-                onPress={() => navigation.navigate('BhramadDetails')}>
+                onPress={() => navigation.navigate('BhramadDetails',{ details: details})}>
                 <Text style={styles.buttonText}>भ्रमण की जानकारी</Text>
               </TouchableOpacity>
             </View>
@@ -106,14 +135,28 @@ const VisitDetailsScreen = ({navigation}) => {
             </View>
 
             <View style={{width: '100%'}}>
-              <ComplaintCard
-                name="मोहित कुमार"
-                phone="798739749375"
-                category="पति पत्नी / घरेलू विवाद"
-                address="उत्तर प्रदेश / आगरा / एसएनपुर / अमर कालोनी"
-                date="Oct 21, 2021"
+              
+              { kulLambitComplaints.length?(
+                kulLambitComplaints.map((item,index) =>(
+                <ComplaintCard
+                name={item.ComplainantName || 'N/A'}
+                phone={item.ComplainantNumber || 'N/A'}
+                category={item.ProblemName || 'Unknown'}
+                address={item.location || 'Not available'}
+                date={
+                  item.ComplaintDate
+                    ? new Date(
+                        parseInt(item.ComplaintDate.match(/\d+/)[0]),
+                      ).toLocaleDateString()
+                    : 'N/A'
+                }
+                onPress={() =>
+                  navigation.navigate('ComplaintDescription', {
+                    complaint: item,
+                  })
+                }
                 color="#D44624"
-              />
+              />))): <></>}
             </View>
           </View>
         </ScrollView>

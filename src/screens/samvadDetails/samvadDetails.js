@@ -7,16 +7,19 @@ import {
   StyleSheet,
   ScrollView,
   Image,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Picker} from '@react-native-picker/picker';
 import {launchCamera} from 'react-native-image-picker';
+import { useRoute } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
 
 import Header from '../../components/header/header';
 import WomenInfoCard from '../../components/womenInfoCard/womenInfoCard';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
-import { useRoute } from '@react-navigation/native';
 
 const API_URL = 'http://re.auctech.in/MobileAppApi/AddConversationMaster'
 const BEARER_TOKEN = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla'
@@ -24,11 +27,12 @@ const GOV_SCH_API='http://re.auctech.in/MobileAppApi/GetGovernmentschemeMasterDe
 const GOV_SCH_BEARER = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxlagov'
 const SamvadDetails = ({navigation}) => {
   const routes = useRoute()
-  const {ActivityId} = routes.params || {}
+  const {ActivityId,ActivityDate} = routes.params || {}
+  const {UserId} = useSelector(state => state.auth.userDetails)
   const [selectedLocation, setSelectedLocation] = useState('');
   const [womenCount, setWomenCount] = useState('');
   const [schemeList, setSchemeList]=useState([])
-  const [selectedScheme, setSelectedScheme] = useState('');
+  const [selectedScheme, setSelectedScheme] = useState();
   const [imageUri, setImageUri] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
@@ -56,7 +60,15 @@ const SamvadDetails = ({navigation}) => {
     newData[index][field] = value;
     setWomenData(newData);
   };
-  
+   
+    const handleValidation =() =>{
+      if(!selectedLocation || !selectedScheme || !womenCount || !womenData){
+        Alert.alert("सभी फ़ील्ड भरें")
+      }
+      else(
+        postSamvadData()
+      )
+    }
    const getGovScheme = async() =>{
     const response = await axios.get(
       GOV_SCH_API,{
@@ -73,13 +85,31 @@ const SamvadDetails = ({navigation}) => {
   const postSamvadData = async() =>{
     const response = await axios.post(
       API_URL,{
-          ActivityId:ActivityId
+          ActivityId:ActivityId,
+          ConversationDate:ActivityDate,
+          ConversationNumer: womenCount,
+          OneWomanName:womenData[0].name,
+          OneWomanNumber:womenData[0].mobileNumber,
+          TwoWomanName:womenData[1].name,
+          TwoWomanNumber:womenData[1].mobileNumber,
+          ThreeWomanName:womenData[2].name,
+          ThreeWomanNumber:womenData[2].mobileNumber,
+          GovernmentschemesId:selectedScheme,
+          AddedBy:UserId,
+          Image: imageUri
       },{
           headers: {
             Authorization: `Bearer ${BEARER_TOKEN}`,
           },
         }
     )
+    if(response.data.success === true){
+      Alert.alert("आपका संवाद विवरण सहेज लिया गया है")
+      navigation.navigate('VisitDetails')
+    }
+    else {
+      Alert.alert("फ़ील्ड को फिर से भरने का प्रयास करें")
+    }
   }
 
   useEffect( () =>{
@@ -116,7 +146,7 @@ const SamvadDetails = ({navigation}) => {
           <View style={styles.card}>
             <TouchableOpacity style={styles.dateButton}>
               <Text style={styles.dateText}>संवाद का दिनांक</Text>
-              <Text style={styles.dateValue}>23-10-2021</Text>
+              <Text style={styles.dateValue}>{ActivityDate}</Text>
             </TouchableOpacity>
           </View>
 
@@ -177,10 +207,12 @@ const SamvadDetails = ({navigation}) => {
                   label="सरकारी योजनाओं की जानकारी"
                   value="default"
                 />
+                {schemeList.map((item,index) => (
                 <Picker.Item
-                  label="निर्बल महिला पेंशन योजना"
-                  value="निर्बल महिला पेंशन योजना"
-                />
+                  key={index}
+                  label={item.GovernmentschemesName}
+                  value={item.GovernmentschemesId}
+                />))}
               </Picker>
             </View>
           </View>
@@ -195,7 +227,7 @@ const SamvadDetails = ({navigation}) => {
             )}
           </View>
 
-          <TouchableOpacity style={styles.submitButton}>
+          <TouchableOpacity style={styles.submitButton} onPress={handleValidation} >
             <Text style={styles.submitButtonText}>जानकारी सुरक्षित करें</Text>
           </TouchableOpacity>
         </ScrollView>

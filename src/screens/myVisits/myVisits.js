@@ -73,23 +73,32 @@ const MyVisits = ({navigation}) => {
   }, []);
 
   const handleSearch = (selectedArea, fromDate, toDate) => {
+    console.log("Search Params:", { selectedArea, fromDate, toDate });
+  
     if (!selectedArea && !fromDate && !toDate) {
-      setFilteredData(myVisits); // If no filters, show all data
+      setFilteredData(myVisits);
       return;
     }
   
     const filtered = myVisits.filter(item => {
-      const matchesArea = selectedArea ? item.MahilaBeatName === selectedArea : true;
+      console.log("Raw ActivityDate:", item.ActivityDate);
   
-      const visitDate = new Date(item.ActivityDate); // Convert API date to Date object
+      // Convert "DD/MM/YYYY" → "YYYY-MM-DD"
+      const [day, month, year] = item.ActivityDate.split("/");
+      const visitDate = new Date(`${year}-${month}-${day}`); // Correct format for JavaScript
   
-      const matchesDateRange =
-        (!fromDate || visitDate >= new Date(fromDate)) && 
-        (!toDate || visitDate <= new Date(toDate));
+      console.log("Parsed VisitDate:", visitDate);
   
-      return matchesArea && matchesDateRange;
+      // Convert `fromDate` and `toDate` to Date objects
+      const from = fromDate ? new Date(fromDate) : null;
+      const to = toDate ? new Date(toDate) : null;
+  
+      console.log("From Date:", from, "To Date:", to);
+  
+      return (!from || visitDate >= from) && (!to || visitDate <= to);
     });
-    console.log("FIltered",filtered)
+  
+    console.log("Filtered Results:", filtered.length);
     setFilteredData(filtered);
   };
 
@@ -115,8 +124,8 @@ const MyVisits = ({navigation}) => {
           <View style={styles.section}>
             <Search handleChange={handleSearch}/>
             <View style={styles.statusBar}>
-              <Text style={styles.totalCount}>🔵 कुल भ्रमण - {myVisits.length}</Text>
-              <Icon name="reload" size={20} color="green" />
+              <Text style={styles.totalCount}>🔵 कुल भ्रमण - {filteredData.length}</Text>
+              <Icon name="reload" size={20} color="green" onPress={() => getMyVisitsList()} />
               <Icon name="arrow-down" size={20} color="green" />
               <Icon
                 name="sort-alphabetical-ascending"
@@ -150,8 +159,9 @@ const MyVisits = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    padding: '5%',
     backgroundColor: '#f8f8f8',
+    bottom:'6%'
   },
   section: {
     backgroundColor: '#fff',
