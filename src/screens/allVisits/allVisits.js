@@ -53,27 +53,35 @@ const AllVisits = ({navigation}) => {
   }, []);
 
   const handleSearch = (selectedArea, fromDate, toDate) => {
+    console.log("Search Params:", { selectedArea, fromDate, toDate });
+  
     if (!selectedArea && !fromDate && !toDate) {
-      setFilteredData(visits); 
+      setFilteredData(visits);
       return;
     }
-
+  
     const filtered = visits.filter(item => {
-      const matchesArea = selectedArea
-        ? item.MahilaBeatName === selectedArea
-        : true;
-
-      const visitDate = new Date(item.ActivityDate); 
-
-      const matchesDateRange =
-        (!fromDate || visitDate >= new Date(fromDate)) &&
-        (!toDate || visitDate <= new Date(toDate));
-
-      return matchesArea && matchesDateRange;
+      console.log("Raw ActivityDate:", item.ActivityDate);
+  
+      // Convert "DD/MM/YYYY" → "YYYY-MM-DD"
+      const [day, month, year] = item.ActivityDate.split("/");
+      const visitDate = new Date(`${year}-${month}-${day}`); // Correct format for JavaScript
+  
+      console.log("Parsed VisitDate:", visitDate);
+  
+      // Convert `fromDate` and `toDate` to Date objects
+      const from = fromDate ? new Date(fromDate) : null;
+      const to = toDate ? new Date(toDate) : null;
+  
+      console.log("From Date:", from, "To Date:", to);
+  
+      return (!from || visitDate >= from) && (!to || visitDate <= to);
     });
-    console.log("filtered",filtered)
+  
+    console.log("Filtered Results:", filtered.length);
     setFilteredData(filtered);
   };
+  
   return (
     <>
       <SideModal
@@ -97,9 +105,9 @@ const AllVisits = ({navigation}) => {
             <Search handleChange={handleSearch}/>
             <View style={styles.statusBar}>
               <Text style={styles.totalCount}>
-                🔵 कुल भ्रमण - {visits.length}
+                🔵 कुल भ्रमण - {filteredData.length}
               </Text>
-              <Icon name="reload" size={20} color="green" />
+              <Icon name="reload" size={20} color="green" onPress={() => getVisitsList()}/>
               <Icon name="arrow-down" size={20} color="green" />
               <Icon
                 name="sort-alphabetical-ascending"

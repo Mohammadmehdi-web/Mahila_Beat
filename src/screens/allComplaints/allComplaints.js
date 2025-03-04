@@ -7,59 +7,15 @@ import Header from '../../components/header/header';
 import ComplaintCard from '../../components/complainCard/complaintCard';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
+import Search from '../../components/search/search';
 
 const API_URL = 'http://re.auctech.in/MobileAppApi/GetTotalComplaintDetails';
 const BEARER_TOKEN =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxTotalComplaintdssdtedss';
 
-// const allComplaints = [
-//   {
-//     id: '1',
-//     name: 'yt34',
-//     phone: '9876543210',
-//     issue: 'पति पत्नी / घरेलू विवाद',
-//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / आगरा',
-//     date: 'Oct 22, 2021',
-//     status: 'completed',
-//   },
-//   {
-//     id: '2',
-//     name: 'djjxxhjb',
-//     phone: '7368872399',
-//     issue: 'पति पत्नी / घरेलू विवाद',
-//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / कुबेरपुर',
-//     date: 'Oct 20, 2021',
-//   },
-//   {
-//     id: '3',
-//     name: 'प्रतिमा',
-//     phone: '78987498789743984',
-//     issue: 'महिलाओं से संबंधित अपराध',
-//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / कुबेरपुर',
-//     date: 'Oct 20, 2021',
-//     status: 'completed',
-//   },
-//   {
-//     id: '4',
-//     name: 'प्रतिमा',
-//     phone: '78987498789743984',
-//     issue: 'महिलाओं से संबंधित अपराध',
-//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / कुबेरपुर',
-//     date: 'Oct 20, 2021',
-//     status: 'completed',
-//   },
-//   {
-//     id: '5',
-//     name: 'djjxxhjb',
-//     phone: '7368872399',
-//     issue: 'पति पत्नी / घरेलू विवाद',
-//     location: 'उत्तर प्रदेश / आगरा / एतमादपुर / कुबेरपुर',
-//     date: 'Oct 20, 2021',
-//   },
-// ];
-
 const AllComplaints = ({navigation}) => {
   const [allComplaints, setAllComplaints] = useState([]);
+  const [filteredComplaints, setFilteredComplaints] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
 
@@ -81,6 +37,8 @@ const AllComplaints = ({navigation}) => {
     if (response?.data?.success === true) {
       console.log(response.data.data);
       setAllComplaints(response.data.data);
+      setFilteredComplaints(response.data.data);
+      set;
     } else {
       Alert.alert(response.data.message);
     }
@@ -89,6 +47,36 @@ const AllComplaints = ({navigation}) => {
   useEffect(() => {
     getAllComplaints();
   }, []);
+
+  const handleSearch = (selectedArea, fromDate, toDate) => {
+    console.log('Search Params:', {selectedArea, fromDate, toDate});
+
+    if (!selectedArea && !fromDate && !toDate) {
+      setFilteredComplaints(allComplaints);
+      return;
+    }
+
+    const filtered = allComplaints.filter(item => {
+      console.log('Raw ActivityDate:', item.ComplaintDate);
+
+      // Convert "DD/MM/YYYY" → "YYYY-MM-DD"
+      // const [day, month, year] = item.ComplaintDate.split('/');
+      // const complaintDate = new Date(`${year}-${month}-${day}`); // Correct format for JavaScript
+      const complaintDate = item.ComplaintDate
+      console.log('Parsed VisitDate:', complaintDate);
+
+      // Convert `fromDate` and `toDate` to Date objects
+      const from = fromDate ? new Date(fromDate) : null;
+      const to = toDate ? new Date(toDate) : null;
+
+      console.log('From Date:', from, 'To Date:', to);
+
+      return (!from || complaintDate >= from) && (!to || complaintDate <= to);
+    });
+
+    console.log('Filtered Results:', filtered.length);
+    setFilteredComplaints(filtered);
+  };
 
   return (
     <>
@@ -109,29 +97,29 @@ const AllComplaints = ({navigation}) => {
           onProfilePress={() => setInfoVisible(true)}
         />
 
-        <TouchableOpacity style={styles.searchBar}>
-          <Text style={styles.searchText}>जानकारी से खोजें</Text>
-          <Icon name="keyboard-arrow-down" size={24} color="#fff" />
-        </TouchableOpacity>
-
-        {/* Summary Section */}
         <View style={styles.summaryContainer}>
+          <Search handleChange={handleSearch} />
           <View style={styles.row}>
             <Text style={styles.summaryText}>
-              कुल कार्यवाही पूर्ण शिकायत - {allComplaints.length}
+              कुल कार्यवाही पूर्ण शिकायत - {filteredComplaints.length}
             </Text>
-            <Icon name="refresh" size={24} color="green" />
+            <Icon
+              name="refresh"
+              size={24}
+              color="green"
+              onPress={() => getAllComplaints()}
+            />
           </View>
         </View>
 
-        {/* Complaints List */}
         <FlatList
-          data={allComplaints}
+          data={filteredComplaints}
           keyExtractor={item => item.ComplaintId.toString()}
           renderItem={({item}) => (
             <View style={{flex: 1, paddingHorizontal: '3%'}}>
               {item.status === 'completed' ? (
                 <ComplaintCard
+                  key={item.ComplaintId.toString()}
                   name={item.ComplainantName || 'N/A'}
                   phone={item.ComplainantNumber || 'N/A'}
                   category={item.ProblemName || 'Unknown'}
@@ -153,6 +141,7 @@ const AllComplaints = ({navigation}) => {
                 />
               ) : (
                 <ComplaintCard
+                  key={item.ComplaintId.toString()}
                   name={item.ComplainantName || 'N/A'}
                   phone={item.ComplainantNumber || 'N/A'}
                   category={item.ProblemName || 'Unknown'}

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -12,16 +12,31 @@ import {
 import {Picker} from '@react-native-picker/picker';
 import {launchCamera} from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import axios from 'axios';
+import {useRoute} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
 
-import Header from '../../components/header/header'; // Your existing header component
+import Header from '../../components/header/header';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 
+const PROBLEM_API = 'http://re.auctech.in/MobileAppApi/GetProblemMasterDetails';
+const PROBLEM_BEARER =
+  'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxProblem';
+const API_URL = 'http://re.auctech.in/MobileAppApi/AddComplaintMaster';
+const BEARER_TOKEN =
+  'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxComplaint';
+
 const ComplaintScreen = ({navigation}) => {
-  const [date, setDate] = useState('23-10-2021');
+  const route = useRoute();
+  const {UserId} = useSelector(state => state.auth.userDetails);
+  const {ActivityId, ActivityDate} = route.params || {};
   const [complainantName, setComplainantName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [problemType, setProblemType] = useState('');
+  const [problemList, setProblemList] = useState([]);
+  const [complaintStatusList, setComplaintStatusList] = useState([]);
+  const [selectedComplain, setSelectedComplain] = useState();
   const [imageUri, setImageUri] = useState(null);
   const [videoUri, setVideoUri] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -46,7 +61,7 @@ const ComplaintScreen = ({navigation}) => {
     const options = {
       mediaType: 'video',
       videoQuality: 'high',
-      durationLimit: 10, 
+      durationLimit: 10,
     };
 
     launchCamera(options, response => {
@@ -59,20 +74,75 @@ const ComplaintScreen = ({navigation}) => {
   const handleSubmit = () => {
     if (!complainantName || !mobileNumber || !problemType) {
       Alert.alert('कृपया सभी आवश्यक फ़ील्ड भरें');
-      return;
+    } else {
+      postComplaintData();
     }
-
-    const complaintData = {
-      date,
-      complainantName,
-      mobileNumber,
-      problemType,
-      imageUri,
-    };
-
-    console.log('Complaint Data:', complaintData);
-    Alert.alert('शिकायत दर्ज', 'आपकी शिकायत सफलतापूर्वक दर्ज कर ली गई।');
   };
+
+  const getProblemList = async () => {
+    const response = await axios(PROBLEM_API, {
+      headers: {
+        Authorization: `Bearer ${PROBLEM_BEARER}`,
+      },
+    });
+    if (response.data.success === true) {
+      setProblemList(response.data.data);
+    } else {
+      Alert.alert('समस्या सूची नहीं मिली');
+    }
+  };
+
+  const getComplainStatusList = async () => {
+    const response = await axios.post(
+      'http://re.auctech.in/MobileAppApi/GetComplaintStatusDetails',
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxProblemtdssdted'} `,
+        },
+      },
+    );
+    console.log(response);
+    
+    if (response.data.success === true) {
+      setComplaintStatusList(response.data.data);
+    } else {
+      Alert.alert('शिकायत सूची नहीं मिली');
+    }
+  };
+
+  const postComplaintData = async () => {
+    const response = await axios.post(
+      API_URL,
+      {
+        ActivityId: ActivityId,
+        ComplaintDate: ActivityDate,
+        ProblemId: problemType,
+        ComplainantName: complainantName,
+        ComplaintStatusId:selectedComplain,
+        ComplainantNumber: mobileNumber,
+        ComplainantImage: imageUri,
+        ComplainantVideo: videoUri,
+        AddedBy: UserId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${BEARER_TOKEN}`,
+        },
+      },
+    );
+
+    if (response.data.success === true) {
+      Alert.alert('शिकायत दर्ज', 'आपकी शिकायत सफलतापूर्वक दर्ज कर ली गई।');
+      navigation.navigate('VisitDetails');
+    } else {
+      Alert.alert('फ़ील्ड को फिर से भरने का प्रयास करें');
+    }
+  };
+  useEffect(() => {
+    getProblemList();
+    getComplainStatusList()
+  }, []);
 
   return (
     <>
@@ -99,12 +169,12 @@ const ComplaintScreen = ({navigation}) => {
               onPress={() => navigation.navigate('VisitDetails')}>
               <Icon name="arrow-left" size={20} />
             </TouchableOpacity>
-            <Text style={styles.heading}>संवाद का विवरण</Text>
+            <Text style={styles.heading}>शिकायत निराकरण</Text>
           </View>
           {/* Complaint Date */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>शिकायत का दिनांक</Text>
-            <Text style={styles.dateBox}>{date}</Text>
+            <Text style={styles.dateBox}>{ActivityDate}</Text>
           </View>
 
           <View style={styles.inputSection}>
@@ -140,12 +210,33 @@ const ComplaintScreen = ({navigation}) => {
                 style={styles.picker}
                 dropdownIconColor="black">
                 <Picker.Item label="समस्या का प्रकार चुनें" value="" />
-                <Picker.Item
-                  label="स्कूल / कॉलेज जाने वाली लड़कियों से छेड़छाड़"
-                  value="Eve teasing"
-                />
-                <Picker.Item label="घरेलू हिंसा" value="Domestic Violence" />
-                <Picker.Item label="अन्य समस्या" value="Other" />
+                {problemList.map((item, index) => (
+                  <Picker.Item
+                    key={index}
+                    label={item.ProblemName}
+                    value={item.ProblemId}
+                  />
+                ))}
+              </Picker>
+            </View>
+          </View>
+
+          <View style={styles.inputSection}>
+            <Text style={styles.label}>शिकायत की स्थिति</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={problemType}
+                onValueChange={itemValue => setSelectedComplain(itemValue)}
+                style={styles.picker}
+                dropdownIconColor="black">
+                <Picker.Item label="शिकायत की स्थिति चुनें" value="" />
+                {complaintStatusList.map((item, index) => (
+                  <Picker.Item
+                    key={index}
+                    label={item.ComplaintStatusName} 
+                    value={item.ComplaintStatusId}
+                  />
+                ))}
               </Picker>
             </View>
           </View>
