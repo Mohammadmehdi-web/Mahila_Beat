@@ -9,27 +9,29 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
+import {useSelector} from 'react-redux';
 
 import Header from '../../components/header/header';
 import ComplaintCard from '../../components/complainCard/complaintCard';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
-import { useSelector } from 'react-redux';
+import Search from '../../components/search/search';
 
 const API_URL = 'http://re.auctech.in/MobileAppApi/GetReleasedComplaintDetails';
 const BEARER_TOKEN =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxReleasedComplaintdssdted';
 
 const CompletedComplaints = ({navigation}) => {
-  const {UserId} = useSelector(state=> state.auth.userDetails)
+  const {UserId} = useSelector(state => state.auth.userDetails);
   const [completedComplaints, setCompletedComplaints] = useState([]);
+  const [filteredComplaints, setFilteredComplaints] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
   const getComplaintList = async () => {
     const response = await axios.post(
       API_URL,
       {
-        UserId
+        UserId,
       },
       {
         headers: {
@@ -40,6 +42,7 @@ const CompletedComplaints = ({navigation}) => {
     if (response?.data?.success === true) {
       console.log(response.data.data);
       setCompletedComplaints(response.data.data);
+      setFilteredComplaints(response.data.data);
     } else {
       Alert.alert(response.data.message);
     }
@@ -48,6 +51,60 @@ const CompletedComplaints = ({navigation}) => {
   useEffect(() => {
     getComplaintList();
   }, []);
+
+  const handleSearch = (selectedArea, fromDate, toDate) => {
+    console.log(' Search Params:', {selectedArea, fromDate, toDate});
+
+    if (!selectedArea && !fromDate && !toDate) {
+      setFilteredComplaints(completedComplaints);
+      return;
+    }
+
+    const filtered = completedComplaints.filter(item => {
+      console.log(' Raw ComplaintDate:', item.ComplaintDate);
+
+      if (
+        !item.ComplaintDate ||
+        item.ComplaintDate === 'null' ||
+        item.ComplaintDate.trim() === ''
+      ) {
+        console.log(' Skipping complaint with invalid date:', item);
+        return false;
+      }
+
+      // Convert "DD/MM/YYYY" → "YYYY-MM-DD"
+      const [day, month, year] = item.ComplaintDate.split('/');
+      const complaintDate = new Date(`${year}-${month}-${day}T00:00:00`);
+
+      if (isNaN(complaintDate.getTime())) {
+        console.log(' Invalid Converted ComplaintDate:', complaintDate);
+        return false;
+      }
+
+      console.log('✅ Parsed ComplaintDate:', complaintDate.toISOString());
+
+      // Convert `fromDate` and `toDate` to Date objects
+      const from = fromDate ? new Date(fromDate + 'T00:00:00') : null;
+      const to = toDate ? new Date(toDate + 'T23:59:59') : null;
+
+      if (from) console.log(' From Date:', from.toISOString());
+      if (to) console.log(' To Date:', to.toISOString());
+
+      // Apply date filtering
+      const isWithinRange =
+        (!from || complaintDate >= from) && (!to || complaintDate <= to);
+      console.log(
+        `🔎 ${complaintDate.toISOString()} is ${
+          isWithinRange ? ' MATCHED' : ' NOT MATCHED'
+        }`,
+      );
+
+      return isWithinRange;
+    });
+
+    console.log(' Final Filtered Results:', filtered.length);
+    setFilteredComplaints(filtered);
+  };
 
   return (
     <>
@@ -68,15 +125,11 @@ const CompletedComplaints = ({navigation}) => {
           onProfilePress={() => setInfoVisible(true)}
         />
 
-        <TouchableOpacity style={styles.searchBar}>
-          <Text style={styles.searchText}>जानकारी से खोजें</Text>
-          <Icon name="keyboard-arrow-down" size={24} color="#fff" />
-        </TouchableOpacity>
-
         <View style={styles.summaryContainer}>
+          <Search handleChange={handleSearch} />
           <View style={styles.row}>
             <Text style={styles.summaryText}>
-              कुल कार्यवाही पूर्ण शिकायत - {completedComplaints.length}
+              कुल कार्यवाही पूर्ण शिकायत - {filteredComplaints.length}
             </Text>
             <Icon name="refresh" size={24} color="green" />
           </View>
@@ -89,7 +142,7 @@ const CompletedComplaints = ({navigation}) => {
 
         {/* Complaints List */}
         <FlatList
-          data={completedComplaints}
+          data={filteredComplaints}
           keyExtractor={item => item.ComplaintId.toString()}
           renderItem={({item}) => (
             <View style={{flex: 1, paddingHorizontal: '3%'}}>
@@ -98,13 +151,7 @@ const CompletedComplaints = ({navigation}) => {
                 phone={item.ComplainantNumber || 'N/A'}
                 category={item.ProblemName || 'Unknown'}
                 address={item.location || 'Not available'}
-                date={
-                  item.ComplaintDate
-                    ? new Date(
-                        parseInt(item.ComplaintDate.match(/\d+/)[0]),
-                      ).toLocaleDateString()
-                    : 'N/A'
-                }
+                date={item.ComplaintDate}
                 onPress={() =>
                   navigation.navigate('ComplaintDescription', {
                     complaint: item,

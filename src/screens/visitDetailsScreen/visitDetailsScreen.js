@@ -139,6 +139,7 @@ const VisitDetailsScreen = ({navigation}) => {
               { kulLambitComplaints.length?(
                 kulLambitComplaints.map((item,index) =>(
                 <ComplaintCard
+                id={index}
                 name={item.ComplainantName || 'N/A'}
                 phone={item.ComplainantNumber || 'N/A'}
                 category={item.ProblemName || 'Unknown'}

@@ -120,7 +120,7 @@ const MyVisits = ({navigation}) => {
           onMenuPress={() => setModalVisible(true)}
           onProfilePress={() => setInfoVisible(true)}
         />
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
           <View style={styles.section}>
             <Search handleChange={handleSearch}/>
             <View style={styles.statusBar}>
@@ -159,9 +159,9 @@ const MyVisits = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: '5%',
+    padding: '3%',
     backgroundColor: '#f8f8f8',
-    bottom:'6%'
+    paddingBottom:"15%"
   },
   section: {
     backgroundColor: '#fff',
