@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity, FlatList, StyleSheet} from 'react-native';
+import {View, Text, FlatList, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
+import {useSelector} from 'react-redux';
 
 import Header from '../../components/header/header';
 import ComplaintCard from '../../components/complainCard/complaintCard';
@@ -14,6 +15,7 @@ const BEARER_TOKEN =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxTotalComplaintdssdtedss';
 
 const AllComplaints = ({navigation}) => {
+  const {UserId} = useSelector(state => state.auth.userDetails);
   const [allComplaints, setAllComplaints] = useState([]);
   const [filteredComplaints, setFilteredComplaints] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -23,10 +25,7 @@ const AllComplaints = ({navigation}) => {
     const response = await axios.post(
       API_URL,
       {
-        UserId: 5,
-        BeatAreaId: 2,
-        FromDate: '2025-09-01',
-        ToDate: '2025-09-01',
+        UserId,
       },
       {
         headers: {
@@ -59,13 +58,19 @@ const AllComplaints = ({navigation}) => {
     const filtered = allComplaints.filter(item => {
       console.log('Raw ActivityDate:', item.ComplaintDate);
 
-      // Convert "DD/MM/YYYY" → "YYYY-MM-DD"
-      // const [day, month, year] = item.ComplaintDate.split('/');
-      // const complaintDate = new Date(`${year}-${month}-${day}`); // Correct format for JavaScript
-      const complaintDate = item.ComplaintDate
-      console.log('Parsed VisitDate:', complaintDate);
+      if (
+        !item.ComplaintDate ||
+        item.ComplaintDate === 'null' ||
+        item.ComplaintDate.trim() === ''
+      ) {
+        console.log('Skipping complaint with invalid date:', item);
+        return false;
+      }
+      const [day, month, year] = item.ComplaintDate.split('/');
+      const complaintDate = new Date(`${year}-${month}-${day}`);
 
-      // Convert `fromDate` and `toDate` to Date objects
+      console.log('Parsed Date:', complaintDate);
+
       const from = fromDate ? new Date(fromDate) : null;
       const to = toDate ? new Date(toDate) : null;
 
@@ -117,20 +122,14 @@ const AllComplaints = ({navigation}) => {
           keyExtractor={item => item.ComplaintId.toString()}
           renderItem={({item}) => (
             <View style={{flex: 1, paddingHorizontal: '3%'}}>
-              {item.status === 'completed' ? (
+              {item.ComplaintStatusName != null ? (
                 <ComplaintCard
-                  key={item.ComplaintId.toString()}
+                  id={item.ComplaintId.toString()}
                   name={item.ComplainantName || 'N/A'}
                   phone={item.ComplainantNumber || 'N/A'}
                   category={item.ProblemName || 'Unknown'}
                   address={item.location || 'Not available'}
-                  date={
-                    item.ComplaintDate
-                      ? new Date(
-                          parseInt(item.ComplaintDate.match(/\d+/)[0]),
-                        ).toLocaleDateString()
-                      : 'N/A'
-                  }
+                  date={item.ComplaintDate}
                   onPress={() =>
                     navigation.navigate('ComplaintDescription', {
                       fromScreen: 'AllComplaints',
@@ -148,10 +147,6 @@ const AllComplaints = ({navigation}) => {
                   address={item.location || 'Not available'}
                   date={
                     item.ComplaintDate
-                      ? new Date(
-                          parseInt(item.ComplaintDate.match(/\d+/)[0]),
-                        ).toLocaleDateString()
-                      : 'N/A'
                   }
                   onPress={() =>
                     navigation.navigate('ComplaintDescription', {

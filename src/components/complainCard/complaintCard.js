@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
 const ComplaintCard = ({
+  id,
   name,
   phone,
   category,
@@ -12,7 +13,7 @@ const ComplaintCard = ({
   status,
 }) => {
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity key={id} onPress={onPress}>
       <View style={[styles.card, {backgroundColor: color}]}>
         {status === 'completed' ? (
           <View style={styles.dateBadge}>

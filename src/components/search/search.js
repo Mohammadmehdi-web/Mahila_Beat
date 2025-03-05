@@ -90,7 +90,7 @@ const Search = ({handleChange}) => {
           </View>
 
           {/* Search Button */}
-          <TouchableOpacity style={styles.searchButton} onPress={() => handleChange(selectedArea, fromDate, toDate)}>
+          <TouchableOpacity style={styles.searchButton} onPress={() => handleChange(selectedArea, fromDate.toISOString().split("T")[0], toDate.toISOString().split("T")[0])}>
             <Text style={styles.searchButtonText}>सर्च करें</Text>
           </TouchableOpacity>
         </View>

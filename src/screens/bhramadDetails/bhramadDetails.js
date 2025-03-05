@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Linking,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -16,6 +17,11 @@ import Header from '../../components/header/header';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import DummyImg from '../../assets/dummyimg.jpg';
+import Divider from '../../components/divider/divider';
+import axios from 'axios';
+
+const SAMVAD_API = 'http://re.auctech.in/MobileAppApi/getTotalConversationMaster'
+const SAMVAD_BEARER = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxtotalConversation'
 
 const BhramadDetails = ({navigation}) => {
   const routes = useRoute();
@@ -27,12 +33,50 @@ const BhramadDetails = ({navigation}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
+  const [samvadDetails, setSamvadDetails] = useState([])
 
-  const mahilaDetails = [
-    {id: 1, name: 'premvati', phn: 7042582368},
-    {id: 2, name: 'premvati', phn: 7042582368},
-    {id: 3, name: 'premvati', phn: 7042582368},
-  ];
+  const getSamvadDetails = async() => {
+    const response = await axios.post(SAMVAD_API, {
+      ActivityId: 1
+    },{
+      headers:{
+        Authorization:`Bearer ${SAMVAD_BEARER}`
+      }
+    }
+  )
+  if(response.data.success === true){
+    setSamvadDetails(response.data.data)
+  }
+  }
+
+
+
+useEffect(() => {
+  if (samvadDetails.length > 0) {
+    // Find current samvad
+    const currentSamvad = samvadDetails.find(
+      item => String(item.ConversationNumer) === String(details.ActivityId)
+    );
+
+    console.log("Current Samvad:", currentSamvad);
+
+    // Avoid errors by checking if `currentSamvad` exists
+    if (currentSamvad) {
+      const mahilaDetails = [
+        { id: 1, name: currentSamvad.OneWomanName, phn: currentSamvad.OneWomanNumber },
+        { id: 2, name: currentSamvad.TwoWomanName, phn: currentSamvad.TwoWomanNumber },
+        { id: 3, name: currentSamvad.ThreeWomanName, phn: currentSamvad.ThreeWomanNumber },
+      ];
+
+      console.log("Mahila Details:", mahilaDetails);
+    }
+  }
+}, [samvadDetails, details.ActivityId]);
+
+  useEffect(() =>{
+    getSamvadDetails()
+  }, [])
+
   return (
     <>
       <SideModal
@@ -51,7 +95,6 @@ const BhramadDetails = ({navigation}) => {
           onMenuPress={() => setModalVisible(true)}
           onProfilePress={() => setInfoVisible(true)}
         />
-
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.headingContainer}>
             <TouchableOpacity
@@ -83,7 +126,7 @@ const BhramadDetails = ({navigation}) => {
           </View>
 
           {/* Image Section */}
-          <Image source={DummyImg} style={styles.image} />
+          {/* <Image source={DummyImg} style={styles.image} /> */}
 
           {/* Pink Button */}
           <View style={styles.pinkButton}>
@@ -106,18 +149,19 @@ const BhramadDetails = ({navigation}) => {
           {isDropdownOpen && (
             <View style={styles.dropdownContent}>
               <View style={{gap: 10}}>
-                <View style={[styles.pinkButton, {fontSize: 10}]}>
+                <View style={styles.pinkButton}>
                   <Text style={styles.buttonText}>
                     संदर्भ में सम्मिलित किन्ही तीन महिलाओं की जानकारी
                   </Text>
                 </View>
+
                 <View
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                   }}>
                   <Text style={styles.label}>संवाद का स्थान</Text>
-                  <Text style={styles.value}>मिशन शक्तिक कक्ष</Text>
+                  <Text style={styles.value}>{samvadDetails[0].PlaceName}</Text>
                 </View>
                 <View
                   style={{
@@ -126,15 +170,18 @@ const BhramadDetails = ({navigation}) => {
                     marginVertical: 10,
                   }}
                 />
-                <View
-                  style={styles.bottomTextContainer}>
+                <View style={styles.bottomTextContainer}>
                   <Text style={[styles.label, {fontSize: 16}]}>
                     सम्वाद म समिलित महिलाओं की संख्या
                   </Text>
-                  <Text style={styles.value}>12</Text>
+                  <Text style={styles.value}>{samvadDetails[0].ConversationNumer}</Text>
                 </View>
 
-                {mahilaDetails.map(item => (
+                {[
+        { id: 1, name: samvadDetails[0].OneWomanName, phn: samvadDetails[0].OneWomanNumber },
+        { id: 2, name: samvadDetails[0].TwoWomanName, phn: samvadDetails[0].TwoWomanNumber },
+        { id: 3, name: samvadDetails[0].ThreeWomanName, phn: samvadDetails[0].ThreeWomanNumber },
+      ].map(item => (
                   <View key={item.id} style={{gap: 5}}>
                     <View key={item.id} style={styles.pinkButtonSmall}>
                       <Text style={styles.buttonText}>
@@ -161,8 +208,7 @@ const BhramadDetails = ({navigation}) => {
                   </View>
                 ))}
                 <View style={styles.bottomHeadSection} />
-                <View
-                  style={styles.bottomTextContainer}>
+                <View style={[styles.bottomTextContainer,{flexDirection:'column'}]}>
                   <Text style={styles.label}>सरकारी योजनाओं की जानकारी</Text>
                   <Text style={styles.value}>प्रधानमंत्री उज्ज्वला योजना</Text>
                 </View>
@@ -174,22 +220,32 @@ const BhramadDetails = ({navigation}) => {
             <Text style={styles.buttonText}>शिकायत का विवरण</Text>
           </View>
           <View>
-            <View
-              style={styles.nameContainer}>
-              <Text style={styles.label}>अनुरूप नाम</Text>
+            <View style={styles.nameContainer}>
+              <Text style={styles.label}>शिकायतकर्ता का नाम:</Text>
               <Text style={styles.value}>{'name'}</Text>
             </View>
-            <View
-              style={{
-                height: 1,
-                backgroundColor: '#ccc',
-                marginVertical: 10,
-              }}
-            />
-            <View
-              style={styles.nameContainer}>
-              <Text style={styles.label}>अनुरूप मोबाइल नंबर</Text>
+            <Divider />
+            <View style={styles.nameContainer}>
+              <Text style={styles.label}>मोबाइल नंबर</Text>
               <Text style={styles.value}>{'phn'}</Text>
+            </View>
+            <Divider />
+            <View style={styles.nameContainer}>
+              <Text style={styles.label}>स्थिति:</Text>
+              <Text style={styles.value}>{'phn'}</Text>
+            </View>
+            <Divider />
+            <View style={styles.nameContainer}>
+              <Text style={styles.label}>वीडियो:</Text>
+              <TouchableOpacity
+                onPress={() => Linking.openURL('http/googlevideo.com')}>
+                <Text style={{color: 'blue'}}>वीडियो देखें</Text>
+              </TouchableOpacity>
+            </View>
+            <Divider />
+            <View style={styles.nameContainer}>
+              <Text style={styles.label}>छवि:</Text>
+              <Image source={DummyImg} style={styles.image} />
             </View>
           </View>
 
@@ -278,7 +334,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
     marginVertical: 10,
   },
-  bottomTextContainer:{
+  bottomTextContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -300,7 +356,6 @@ const styles = StyleSheet.create({
   dropdownContent: {
     padding: '4%',
     borderRadius: 8,
-    alignItems: 'center',
     backgroundColor: '#fff',
     elevation: 3,
     gap: 10,
