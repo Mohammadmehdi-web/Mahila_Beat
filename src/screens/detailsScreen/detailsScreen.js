@@ -10,20 +10,26 @@ import {Picker} from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
 
 import Header from '../../components/header/header';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
-
+import { createActivity } from '../../redux/slice/activitySlice';
+import { formatDate } from '../../utils/commonMethods';
+const ADD_BEAT_API = 'http://re.auctech.in/MobileAppApi/AddBeatAreaMaster'
+const ADD_BEAT_BEARER ='zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxComplainthnfh'
 const API_URL_BEAT='http://re.auctech.in/MobileAppApi/GetBeatAreaDetails'
 const BEARER_TOKEN_BEAT = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla'
 const API_URL_SAHKARMI='http://re.auctech.in/MobileAppApi/GetSahkarmiMasterDetails'
 const BEARER_TOKEN_SAH='zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla'
 const API_URL = 'http://re.auctech.in/MobileAppApi/AddActivityMaster'
 const BEARER_TOKEN = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla'
-const DetailsScreen = ({navigation}) => {
-  const{MahilaBeatName,BeatId, ThanaId,UserId} = useSelector(state => state.auth.userDetails)
 
+
+const DetailsScreen = ({navigation}) => {
+  const{MahilaBeatName,BeatId, ThanaId,UserId,DistrictId,StateId,ZoneId} = useSelector(state => state.auth.userDetails)
+  const dispatch = useDispatch()
   const [beatArea, setBeatArea] = useState([])
   const [sahkarmi, setSahkarmi] = useState([])
   const [modalVisible, setModalVisible] = useState(false);
@@ -32,6 +38,18 @@ const DetailsScreen = ({navigation}) => {
   const [selectedAssistant, setSelectedAssistant] = useState('');
   const [activityDetails, setActivityDetails] = useState([])
   const date =  new Date().toLocaleDateString();
+
+  const addBeatArea = async ()=>{
+    const response = await axios.post(ADD_BEAT_API,{
+      StateId:StateId,
+        ZoneId:ZoneId,
+        DistrictId:DistrictId,
+        ThanaId:ThanaId,
+        MahilaBeatId:BeatId,
+        BeatAreaName:"text",
+        AddedBy:UserId
+    })
+  }
 
   const getBeatList =async() =>{
     const response = await axios.post(
@@ -82,13 +100,15 @@ const DetailsScreen = ({navigation}) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${BEARER_TOKEN_SAH}`,
+            Authorization: `Bearer ${BEARER_TOKEN}`,
           },
         },
     )
     if(response.data.success === true){
-      // console.log(response.data.data)
+      console.log(response.data.data)
       setActivityDetails(response.data.data)
+      const activityId = response.data.data.ActivityId
+      dispatch(createActivity({ activityId, bhramadDetails: response.data.data }));
       navigation.navigate('VisitDetails', {details: response.data.data})
     }
   }
@@ -133,7 +153,7 @@ const DetailsScreen = ({navigation}) => {
               <Text style={styles.label}>भ्रमण का दिनांक</Text>
               <TextInput
                 style={styles.input}
-                value={ date}
+                value={formatDate(date)}
                 editable={false}
               />
             </View>
@@ -150,8 +170,12 @@ const DetailsScreen = ({navigation}) => {
               </Text>
             </View>
 
+
             {/* Village Selection */}
+            <View style={{flexDirection:"row", justifyContent:'space-between'}}>
             <Text style={styles.fieldLabel}>गाँव / मोहल्ले का चयन करें *</Text>
+            <Icon name="plus-circle-outline" size={20} onPress={addBeatArea}/>
+            </View>
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={selectedVillage}

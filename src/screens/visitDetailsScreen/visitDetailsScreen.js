@@ -8,49 +8,55 @@ import {
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useSelector} from 'react-redux';
+import axios from 'axios';
+
 import Header from '../../components/header/header';
 import ComplaintCard from '../../components/complainCard/complaintCard';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
-import { useRoute } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
-import axios from 'axios';
+import { formatDate } from '../../utils/commonMethods';
 
-const API_URL = 'http://re.auctech.in/MobileAppApi/getTotalComplaintMaster'
-const BEARER_TOKEN = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxtotalComplaint'
+const API_URL = 'http://re.auctech.in/MobileAppApi/getTotalComplaintMaster';
+const BEARER_TOKEN =
+  'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxtotalComplaint';
 
 const VisitDetailsScreen = ({navigation}) => {
-  const {MahilaBeatName} = useSelector(state => state.auth.userDetails)
-  const route = useRoute()
-  const details = route.params?.details?.[0] || {}
+  const {MahilaBeatName} = useSelector(state => state.auth.userDetails);
+  const activityId = useSelector(state => state.activity.currentActivityId);
+  const activityData = useSelector(
+    state => state.activity.activities[activityId],
+  );
+  const details = activityData.bhramadDetails[0]
+  console.log(details);
+  
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
-  const [kulLambitComplaints, setKulLambitComplaints] = useState([])
+  const [kulLambitComplaints, setKulLambitComplaints] = useState([]);
 
-  console.log(details)
-
-  const getKulLambitComplaints = async() =>{
-    const response = await axios.post(API_URL,
+  const getKulLambitComplaints = async () => {
+    const response = await axios.post(
+      API_URL,
       {
-        ActivityId:details.ActivityId
-      },{
-        headers:{
-          Authorization:`Bearer ${BEARER_TOKEN}`
-        }
-      }
-    )
-    if(response.data.success === true){
+        ActivityId: details.ActivityId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${BEARER_TOKEN}`,
+        },
+      },
+    );
+    if (response.data.success === true) {
       console.log(response.data.data);
-      setKulLambitComplaints(response.data.data)
+      setKulLambitComplaints(response.data.data);
+    } else {
+      Alert.alert('आपके पास शून्य लंबित शिकायतें हैं');
     }
-    else {
-      Alert.alert("आपके पास शून्य लंबित शिकायतें हैं")
-    }
-  }
+  };
 
- useEffect(() =>{
-  getKulLambitComplaints()
- }, [])
+  useEffect(() => {
+    getKulLambitComplaints();
+  }, []);
 
   return (
     <>
@@ -87,14 +93,16 @@ const VisitDetailsScreen = ({navigation}) => {
 
               <Text style={styles.label}>भ्रमण में सहकर्मी का नाम</Text>
               <Text style={styles.redText}>
-                {`कां0 ${details.SahkramiId} ${details.SahkramiName}`}
+                {`कां0 ${details?.SahkramiId} ${details?.SahkramiName}`}
               </Text>
 
               <Text style={styles.label}>भ्रमण का दिनांक व समय</Text>
-              <Text style={styles.dateText}>{details.ActivityDate}</Text>
+              <Text style={styles.dateText}>{formatDate(details.ActivityDate)}</Text>
 
               <Text style={styles.label}>गांव / मोहल्ला की लोकेशन से दूरी</Text>
-              <Text style={styles.dateText}>{details?.DistanceActivity} मीटर</Text>
+              <Text style={styles.dateText}>
+                {details?.DistanceActivity} मीटर
+              </Text>
             </View>
 
             <View style={styles.actionContainer}>
@@ -103,19 +111,29 @@ const VisitDetailsScreen = ({navigation}) => {
               <View style={styles.row}>
                 <TouchableOpacity
                   style={[styles.button, styles.purpleButton]}
-                  onPress={() => navigation.navigate('SamvadDetails', { ActivityId: details.ActivityId, ActivityDate: details.ActivityDate })}>
+                  onPress={() =>
+                    navigation.navigate('SamvadDetails', {
+                      ActivityDate: formatDate(details.ActivityDate),
+                    })
+                  }>
                   <Text style={styles.buttonText}>संवाद / जागरूकता</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.button, styles.purpleButton]}
-                  onPress={() => navigation.navigate('ComplaintScreen', { ActivityId: details.ActivityId, ActivityDate: details.ActivityDate })}>
+                  onPress={() =>
+                    navigation.navigate('ComplaintScreen', {
+                      ActivityDate: formatDate(details.ActivityDate),
+                    })
+                  }>
                   <Text style={styles.buttonText}>शिकायत निराकरण</Text>
                 </TouchableOpacity>
               </View>
 
               <TouchableOpacity
                 style={[styles.button, styles.orangeButton]}
-                onPress={() => navigation.navigate('BhramadDetails',{ details: details})}>
+                onPress={() =>
+                  navigation.navigate('BhramadDetails')
+                }>
                 <Text style={styles.buttonText}>भ्रमण की जानकारी</Text>
               </TouchableOpacity>
             </View>
@@ -135,29 +153,32 @@ const VisitDetailsScreen = ({navigation}) => {
             </View>
 
             <View style={{width: '100%'}}>
-              
-              { kulLambitComplaints.length?(
-                kulLambitComplaints.map((item,index) =>(
-                <ComplaintCard
-                id={index}
-                name={item.ComplainantName || 'N/A'}
-                phone={item.ComplainantNumber || 'N/A'}
-                category={item.ProblemName || 'Unknown'}
-                address={item.location || 'Not available'}
-                date={
-                  item.ComplaintDate
-                    ? new Date(
-                        parseInt(item.ComplaintDate.match(/\d+/)[0]),
-                      ).toLocaleDateString()
-                    : 'N/A'
-                }
-                onPress={() =>
-                  navigation.navigate('ComplaintDescription', {
-                    complaint: item,
-                  })
-                }
-                color="#D44624"
-              />))): <></>}
+              {kulLambitComplaints.length ? (
+                kulLambitComplaints.map((item, index) => (
+                  <ComplaintCard
+                    id={index}
+                    name={item.ComplainantName || 'N/A'}
+                    phone={item.ComplainantNumber || 'N/A'}
+                    category={item.ProblemName || 'Unknown'}
+                    address={item.location || 'Not available'}
+                    date={
+                      item.ComplaintDate
+                        ? new Date(
+                            parseInt(item.ComplaintDate.match(/\d+/)[0]),
+                          ).toLocaleDateString()
+                        : 'N/A'
+                    }
+                    onPress={() =>
+                      navigation.navigate('ComplaintDescription', {
+                        complaint: item,
+                      })
+                    }
+                    color="#D44624"
+                  />
+                ))
+              ) : (
+                <></>
+              )}
             </View>
           </View>
         </ScrollView>

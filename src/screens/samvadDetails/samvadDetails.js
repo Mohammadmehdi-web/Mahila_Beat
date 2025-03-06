@@ -13,22 +13,28 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Picker} from '@react-native-picker/picker';
 import {launchCamera} from 'react-native-image-picker';
 import { useRoute } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Header from '../../components/header/header';
 import WomenInfoCard from '../../components/womenInfoCard/womenInfoCard';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
+import { addSamvadDetails } from '../../redux/slice/activitySlice';
+import DetailsScreen from '../detailsScreen/detailsScreen';
 
 const API_URL = 'http://re.auctech.in/MobileAppApi/AddConversationMaster'
 const BEARER_TOKEN = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla'
 const GOV_SCH_API='http://re.auctech.in/MobileAppApi/GetGovernmentschemeMasterDetails'
 const GOV_SCH_BEARER = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxlagov'
+const UPLOAD_API='http://re.auctech.in/Uploade/CommunicationImage'
 const SamvadDetails = ({navigation}) => {
   const routes = useRoute()
   const {ActivityId,ActivityDate} = routes.params || {}
   const {UserId} = useSelector(state => state.auth.userDetails)
+  const activityId = useSelector(state => state.activity.currentActivityId);
+  const dispatch = useDispatch();
+
   const [selectedLocation, setSelectedLocation] = useState('');
   const [womenCount, setWomenCount] = useState('');
   const [schemeList, setSchemeList]=useState([])
@@ -60,6 +66,34 @@ const SamvadDetails = ({navigation}) => {
     newData[index][field] = value;
     setWomenData(newData);
   };
+
+  const uploadFile = async (fileUri, fileType) => {
+    if (!fileUri) return null;
+
+    const formData = new FormData();
+    formData.append('file', {
+      uri: fileUri,
+      name: fileUri.split('/').pop(),
+      type: fileType,
+    });
+
+    try {
+      const response = await axios.post(UPLOAD_API, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      if (response.data.success) {
+        return response.data.fileUrl; // Assume the API returns the file URL
+      } else {
+        Alert.alert('फ़ाइल अपलोड विफल');
+        return null;
+      }
+    } catch (error) {
+      console.error('Upload Error:', error);
+      Alert.alert('फ़ाइल अपलोड विफल');
+      return null;
+    }
+  };
+
    
     const handleValidation =() =>{
       if(!selectedLocation || !selectedScheme || !womenCount || !womenData){
@@ -83,9 +117,11 @@ const SamvadDetails = ({navigation}) => {
     }
    }
   const postSamvadData = async() =>{
+    const uploadedImageUrl = await uploadFile(imageUri, 'image/jpeg');
+
     const response = await axios.post(
       API_URL,{
-          ActivityId:ActivityId,
+          ActivityId:activityId,
           ConversationDate:ActivityDate,
           ConversationNumer: womenCount,
           OneWomanName:womenData[0].name,
@@ -105,6 +141,21 @@ const SamvadDetails = ({navigation}) => {
     )
     if(response.data.success === true){
       Alert.alert("आपका संवाद विवरण सहेज लिया गया है")
+      dispatch(addSamvadDetails({ activityId, 
+       samvadData: {ActivityId:ActivityId,
+        PlaceName:selectedLocation,
+        ConversationDate:ActivityDate,
+        ConversationNumer: womenCount,
+        OneWomanName:womenData[0].name,
+        OneWomanNumber:womenData[0].mobileNumber,
+        TwoWomanName:womenData[1].name,
+        TwoWomanNumber:womenData[1].mobileNumber,
+        ThreeWomanName:womenData[2].name,
+        ThreeWomanNumber:womenData[2].mobileNumber,
+        GovernmentschemesId:selectedScheme,
+        AddedBy:UserId,
+        Image: imageUri}
+     }));
       navigation.navigate('VisitDetails')
     }
     else {

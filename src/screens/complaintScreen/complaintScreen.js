@@ -14,11 +14,12 @@ import {launchCamera} from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
 import {useRoute} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Header from '../../components/header/header';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
+import { addComplaintDetails } from '../../redux/slice/activitySlice';
 
 const PROBLEM_API = 'http://re.auctech.in/MobileAppApi/GetProblemMasterDetails';
 const PROBLEM_BEARER =
@@ -29,7 +30,9 @@ const BEARER_TOKEN =
 
 const ComplaintScreen = ({navigation}) => {
   const route = useRoute();
+  const dispatch = useDispatch()
   const {UserId} = useSelector(state => state.auth.userDetails);
+  const activityId = useSelector(state => state.activity.currentActivityId);
   const {ActivityId, ActivityDate} = route.params || {};
   const [complainantName, setComplainantName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
@@ -134,6 +137,17 @@ const ComplaintScreen = ({navigation}) => {
 
     if (response.data.success === true) {
       Alert.alert('शिकायत दर्ज', 'आपकी शिकायत सफलतापूर्वक दर्ज कर ली गई।');
+      dispatch(addComplaintDetails({ activityId,  
+        complaintData:{ActivityId:ActivityId,
+        ComplaintDate:ActivityDate,
+        ProblemId:problemType,
+        ComplainantName:complainantName,
+        ComplaintStatusId:selectedComplain,
+        ComplainantNumber:mobileNumber,
+        ComplainantImage:imageUri,
+        ComplainantVideo:videoUri,
+        AddedBy:UserId}}
+    ));
       navigation.navigate('VisitDetails');
     } else {
       Alert.alert('फ़ील्ड को फिर से भरने का प्रयास करें');
