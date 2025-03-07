@@ -29,7 +29,6 @@ const SIKAYAT_API =
 const SIKAYAT_BEARER =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxProblemtsd';
 const BhramadDetails = ({navigation}) => {
-  const routes = useRoute();
   const activityId = useSelector(state => state.activity.currentActivityId);
   const activityData = useSelector(
     state => state.activity.activities[activityId],
@@ -38,7 +37,7 @@ const BhramadDetails = ({navigation}) => {
   const {MahilaBeatName, StateName, DistrictName, ThanaName} = useSelector(
     state => state.auth.userDetails,
   );
-  const details = activityData.bhramadDetails[0];
+  const details = activityData.bhramadDetails;
   const samvadData = activityData.samvadDetails[0];
   const complaintData = activityData.complaints[0];
   console.log(samvadData);
@@ -47,9 +46,7 @@ const BhramadDetails = ({navigation}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
-  // const [samvadDetails, setSamvadDetails] = useState([]);
   const [mahilaDetails, setMahilaDetails] = useState([]);
-  // const [complinantDetails, setComplainantDetails] = useState([]);
     useEffect(() => {
       if (samvadData) {
         setMahilaDetails([
@@ -59,6 +56,8 @@ const BhramadDetails = ({navigation}) => {
         ]);
       }
     }, [samvadData]);
+
+
   // const getSamvadDetails = async () => {
   //   const response = await axios.post(
   //     SAMVAD_API,
@@ -156,23 +155,30 @@ const BhramadDetails = ({navigation}) => {
 
             <Text style={styles.label}>क्षेत्र का नाम</Text>
             <Text style={styles.value}>
-              {`${StateName}/${DistrictName}/${ThanaName.trim()}`}
+             {`${StateName}/${DistrictName}/${ThanaName.trim()}`}
             </Text>
 
             <Text style={styles.label}>भरण में सहयोगी का नाम</Text>
             <Text style={styles.value}>
-              {`कां0 ${details.SahkramiId} ${details.SahkramiName}`}
+             {`कां0 ${details.SahkramiId} ${details.SahkarmiName}`}
             </Text>
 
             <Text style={styles.label}>भरण का दिनांक व समय</Text>
             <Text style={styles.value}>{details.ActivityDate}</Text>
 
             <Text style={styles.label}>गाँव / मोहल्ले से दूरी</Text>
-            <Text style={styles.value}>{details.DistanceActivity} मीटर</Text>
+            <Text style={styles.value}>{details.DistanceActivity} मीटर </Text>
           </View>
 
-          {/* Image Section */}
-          {/* <Image source={DummyImg} style={styles.image} /> */}
+          {complaintData.Image ? (
+        <Image
+          source={{ uri: complaintData.Image }}
+          style={{ width: 200, height: 200, borderRadius: 10 }}
+          resizeMode="contain"
+        />
+      ) : (
+        <Text>कोई छवि उपलब्ध नहीं है</Text>
+      )}
 
           {/* Pink Button */}
           <View style={styles.pinkButton}>
@@ -300,7 +306,7 @@ const BhramadDetails = ({navigation}) => {
               <Image
                 source={
                   complaintData.ComplainantImage
-                    ? complinantDetails.ComplainantImage
+                    ? complaintData.ComplainantImage
                     : DummyImg
                 }
                 style={styles.image}
@@ -312,7 +318,6 @@ const BhramadDetails = ({navigation}) => {
             <Text style={styles.accordionText}>
               {complaintData.ProblemId}
             </Text>
-            {/* <Icon name="keyboard-arrow-down" size={24} color="#fff" /> */}
           </TouchableOpacity>
         </ScrollView>
       </View>

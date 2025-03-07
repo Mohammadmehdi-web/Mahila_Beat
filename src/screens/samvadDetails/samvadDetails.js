@@ -12,41 +12,64 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Picker} from '@react-native-picker/picker';
 import {launchCamera} from 'react-native-image-picker';
-import { useRoute } from '@react-navigation/native';
+import {useRoute} from '@react-navigation/native';
 import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
 import Header from '../../components/header/header';
 import WomenInfoCard from '../../components/womenInfoCard/womenInfoCard';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
-import { addSamvadDetails } from '../../redux/slice/activitySlice';
-import DetailsScreen from '../detailsScreen/detailsScreen';
+import {addSamvadDetails} from '../../redux/slice/activitySlice';
+import InputModal from '../../components/inputModal/inputModal';
 
-const API_URL = 'http://re.auctech.in/MobileAppApi/AddConversationMaster'
-const BEARER_TOKEN = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla'
-const GOV_SCH_API='http://re.auctech.in/MobileAppApi/GetGovernmentschemeMasterDetails'
-const GOV_SCH_BEARER = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxlagov'
-const UPLOAD_API='http://re.auctech.in/Uploade/CommunicationImage'
+const API_URL = 'http://re.auctech.in/MobileAppApi/AddConversationMaster';
+const BEARER_TOKEN =
+  'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla';
+const GOV_SCH_API =
+  'http://re.auctech.in/MobileAppApi/GetGovernmentschemeMasterDetails';
+const GOV_SCH_BEARER =
+  'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxlagov';
+const UPLOAD_API = 'http://re.auctech.in/Uploade/CommunicationImage';
+const ADD_SCH_API =
+  'http://re.auctech.in/MobileAppApi/AddGovernmentschemeMaster';
+const ADD_SCH_BEARER =
+  'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxComplainthnfhdd';
+
 const SamvadDetails = ({navigation}) => {
-  const routes = useRoute()
-  const {ActivityId,ActivityDate} = routes.params || {}
-  const {UserId} = useSelector(state => state.auth.userDetails)
+  const routes = useRoute();
+  const {ActivityId, ActivityDate} = routes.params || {};
+  const {UserId} = useSelector(state => state.auth.userDetails);
   const activityId = useSelector(state => state.activity.currentActivityId);
   const dispatch = useDispatch();
 
   const [selectedLocation, setSelectedLocation] = useState('');
   const [womenCount, setWomenCount] = useState('');
-  const [schemeList, setSchemeList]=useState([])
+  const [schemeList, setSchemeList] = useState([]);
   const [selectedScheme, setSelectedScheme] = useState();
   const [imageUri, setImageUri] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [infoVisible, setInfoVisible] = useState(false);
   const [womenData, setWomenData] = useState([
     {name: '', mobileNumber: ''},
     {name: '', mobileNumber: ''},
     {name: '', mobileNumber: ''},
   ]);
+  const [govSchemeName, setGovSchemeName] = useState('');
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [infoVisible, setInfoVisible] = useState(false);
+  const [inputVisible, setInputVisible] = useState(false);
+
+  const handleChange = text => {
+    setGovSchemeName(text);
+  };
+
+  const handleSubmit = async () => {
+    if (govSchemeName.trim()) {
+      await addGovScheme();
+      setGovSchemeName('');
+      setInputVisible(false);
+    }
+  };
 
   const openCamera = () => {
     const options = {
@@ -67,105 +90,123 @@ const SamvadDetails = ({navigation}) => {
     setWomenData(newData);
   };
 
-  const uploadFile = async (fileUri, fileType) => {
-    if (!fileUri) return null;
+  // const uploadFile = async (fileUri, fileType) => {
+  //   if (!fileUri) return null;
 
-    const formData = new FormData();
-    formData.append('file', {
-      uri: fileUri,
-      name: fileUri.split('/').pop(),
-      type: fileType,
+  //   const formData = new FormData();
+  //   formData.append('file', {
+  //     uri: fileUri,
+  //     name: fileUri.split('/').pop(),
+  //     type: fileType,
+  //   });
+
+  //   try {
+  //     const response = await axios.post(UPLOAD_API, formData, {
+  //       headers: {'Content-Type': 'multipart/form-data'},
+  //     });
+  //     if (response.data.success) {
+  //       return response.data.fileUrl; // Assume the API returns the file URL
+  //     } else {
+  //       Alert.alert('फ़ाइल अपलोड विफल');
+  //       return null;
+  //     }
+  //   } catch (error) {
+  //     console.error('Upload Error:', error);
+  //     Alert.alert('फ़ाइल अपलोड विफल');
+  //     return null;
+  //   }
+  // };
+
+  const handleValidation = () => {
+    if (!selectedLocation || !selectedScheme || !womenCount || !womenData) {
+      Alert.alert('सभी फ़ील्ड भरें');
+    } else postSamvadData();
+  };
+
+  const addGovScheme = async () => {
+    const response = await axios.post(
+      ADD_SCH_API,
+      {
+        GovernmentschemesId: 1,
+        GovernmentschemesName: govSchemeName,
+        AddedBy: UserId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${ADD_SCH_BEARER}`,
+        },
+      },
+    );
+    if (response.data.success === true) {
+      getGovScheme();
+    }
+  };
+  const getGovScheme = async () => {
+    const response = await axios.get(GOV_SCH_API, {
+      headers: {
+        Authorization: `Bearer ${GOV_SCH_BEARER}`,
+      },
     });
-
-    try {
-      const response = await axios.post(UPLOAD_API, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      if (response.data.success) {
-        return response.data.fileUrl; // Assume the API returns the file URL
-      } else {
-        Alert.alert('फ़ाइल अपलोड विफल');
-        return null;
-      }
-    } catch (error) {
-      console.error('Upload Error:', error);
-      Alert.alert('फ़ाइल अपलोड विफल');
-      return null;
+    if (response.data.success === true) {
+      console.log(response.data.data);
+      setSchemeList(response.data.data);
     }
   };
 
-   
-    const handleValidation =() =>{
-      if(!selectedLocation || !selectedScheme || !womenCount || !womenData){
-        Alert.alert("सभी फ़ील्ड भरें")
+  const postSamvadData = async () => {
+    try {
+      const formData = new FormData();
+  
+      formData.append('ActivityId', activityId);
+      formData.append('ConversationNumer', womenCount);
+      formData.append('OneWomanName', womenData[0].name);
+      formData.append('OneWomanNumber', womenData[0].mobileNumber);
+      formData.append('TwoWomanName', womenData[1].name);
+      formData.append('TwoWomanNumber', womenData[1].mobileNumber);
+      formData.append('ThreeWomanName', womenData[2].name);
+      formData.append('ThreeWomanNumber', womenData[2].mobileNumber);
+      formData.append('GovernmentschemesId', selectedScheme);
+      formData.append('AddedBy', UserId);
+  
+      // Check if the image exists before appending
+      if (imageUri) {
+        formData.append('Image', {
+          uri: imageUri,
+          type: 'image/jpeg', // Modify type accordingly
+          name: 'photo.jpg',  // File name
+        });
       }
-      else(
-        postSamvadData()
-      )
+  
+      const response = await axios.post(API_URL, formData, {
+        headers: {
+          Authorization: `Bearer ${BEARER_TOKEN}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      if (response.data.success === true) {
+        Alert.alert('आपका संवाद विवरण सहेज लिया गया है');
+        console.log(response.data.data[0]);
+        
+        dispatch(
+          addSamvadDetails({
+            activityId,
+            samvadData: {...response.data.data[0]} ,
+          }),
+        );
+        navigation.navigate('VisitDetails');
+      } else {
+        Alert.alert('फ़ील्ड को फिर से भरने का प्रयास करें');
+      }
+    } catch (error) {
+      console.error('Error posting Samvad data:', error);
+      Alert.alert('कुछ गलत हो गया, कृपया पुनः प्रयास करें');
     }
-   const getGovScheme = async() =>{
-    const response = await axios.get(
-      GOV_SCH_API,{
-          headers: {
-            Authorization: `Bearer ${GOV_SCH_BEARER}`,
-          },
-        }
-    )
-    if(response.data.success === true){
-        console.log(response.data.data);
-        setSchemeList(response.data.data)
-    }
-   }
-  const postSamvadData = async() =>{
-    const uploadedImageUrl = await uploadFile(imageUri, 'image/jpeg');
-
-    const response = await axios.post(
-      API_URL,{
-          ActivityId:activityId,
-          ConversationDate:ActivityDate,
-          ConversationNumer: womenCount,
-          OneWomanName:womenData[0].name,
-          OneWomanNumber:womenData[0].mobileNumber,
-          TwoWomanName:womenData[1].name,
-          TwoWomanNumber:womenData[1].mobileNumber,
-          ThreeWomanName:womenData[2].name,
-          ThreeWomanNumber:womenData[2].mobileNumber,
-          GovernmentschemesId:selectedScheme,
-          AddedBy:UserId,
-          Image: imageUri
-      },{
-          headers: {
-            Authorization: `Bearer ${BEARER_TOKEN}`,
-          },
-        }
-    )
-    if(response.data.success === true){
-      Alert.alert("आपका संवाद विवरण सहेज लिया गया है")
-      dispatch(addSamvadDetails({ activityId, 
-       samvadData: {ActivityId:ActivityId,
-        PlaceName:selectedLocation,
-        ConversationDate:ActivityDate,
-        ConversationNumer: womenCount,
-        OneWomanName:womenData[0].name,
-        OneWomanNumber:womenData[0].mobileNumber,
-        TwoWomanName:womenData[1].name,
-        TwoWomanNumber:womenData[1].mobileNumber,
-        ThreeWomanName:womenData[2].name,
-        ThreeWomanNumber:womenData[2].mobileNumber,
-        GovernmentschemesId:selectedScheme,
-        AddedBy:UserId,
-        Image: imageUri}
-     }));
-      navigation.navigate('VisitDetails')
-    }
-    else {
-      Alert.alert("फ़ील्ड को फिर से भरने का प्रयास करें")
-    }
-  }
-
-  useEffect( () =>{
-    getGovScheme()
-  },[])
+  };
+  
+  useEffect(() => {
+    getGovScheme();
+  }, []);
 
   return (
     <>
@@ -177,6 +218,15 @@ const SamvadDetails = ({navigation}) => {
       <UserInfoCard
         isVisible={infoVisible}
         onClose={() => setInfoVisible(false)}
+        navigation={navigation}
+      />
+      <InputModal
+        isVisible={inputVisible}
+        label="Add Gov Scheme"
+        placeholderText="Add Gov Scheme"
+        handleChange={handleChange}
+        handleSubmit={handleSubmit}
+        onClose={() => setInputVisible(false)}
         navigation={navigation}
       />
       <View style={styles.container}>
@@ -245,9 +295,17 @@ const SamvadDetails = ({navigation}) => {
           </View>
 
           <View style={styles.card}>
-            <Text style={styles.label}>
-              सरकारी योजनाओं की जानकारी का चयन करें *
-            </Text>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text style={styles.label}>
+                सरकारी योजनाओं की जानकारी का चयन करें *
+              </Text>
+              <Icon
+                name="plus-circle-outline"
+                size={20}
+                onPress={() => setInputVisible(true)}
+              />
+            </View>
             <View style={{borderBottomWidth: 1}}>
               <Picker
                 selectedValue={selectedScheme}
@@ -258,12 +316,13 @@ const SamvadDetails = ({navigation}) => {
                   label="सरकारी योजनाओं की जानकारी"
                   value="default"
                 />
-                {schemeList.map((item,index) => (
-                <Picker.Item
-                  key={index}
-                  label={item.GovernmentschemesName}
-                  value={item.GovernmentschemesId}
-                />))}
+                {schemeList.map((item, index) => (
+                  <Picker.Item
+                    key={index}
+                    label={item.GovernmentschemesName}
+                    value={item.GovernmentschemesId}
+                  />
+                ))}
               </Picker>
             </View>
           </View>
@@ -278,7 +337,9 @@ const SamvadDetails = ({navigation}) => {
             )}
           </View>
 
-          <TouchableOpacity style={styles.submitButton} onPress={handleValidation} >
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleValidation}>
             <Text style={styles.submitButtonText}>जानकारी सुरक्षित करें</Text>
           </TouchableOpacity>
         </ScrollView>

@@ -115,44 +115,70 @@ const ComplaintScreen = ({navigation}) => {
   };
 
   const postComplaintData = async () => {
-    const response = await axios.post(
-      API_URL,
-      {
-        ActivityId: ActivityId,
-        ComplaintDate: ActivityDate,
-        ProblemId: problemType,
-        ComplainantName: complainantName,
-        ComplaintStatusId:selectedComplain,
-        ComplainantNumber: mobileNumber,
-        ComplainantImage: imageUri,
-        ComplainantVideo: videoUri,
-        AddedBy: UserId,
-      },
-      {
+    try {
+      const formData = new FormData();
+  
+      formData.append('ActivityId', ActivityId);
+      formData.append('ComplaintDate', ActivityDate);
+      formData.append('ProblemId', problemType);
+      formData.append('ComplainantName', complainantName);
+      formData.append('ComplaintStatusId', selectedComplain);
+      formData.append('ComplainantNumber', mobileNumber);
+      formData.append('AddedBy', UserId);
+  
+      // Append image if available
+      if (imageUri) {
+        formData.append('ComplainantImage', {
+          uri: imageUri,
+          type: 'image/jpeg', // Adjust if the format is different
+          name: 'complainant_image.jpg',
+        });
+      }
+  
+      // Append video if available
+      if (videoUri) {
+        formData.append('ComplainantVideo', {
+          uri: videoUri,
+          type: 'video/mp4', // Adjust according to actual format
+          name: 'complainant_video.mp4',
+        });
+      }
+  
+      const response = await axios.post(API_URL, formData, {
         headers: {
           Authorization: `Bearer ${BEARER_TOKEN}`,
+          'Content-Type': 'multipart/form-data',
         },
-      },
-    );
-
-    if (response.data.success === true) {
-      Alert.alert('शिकायत दर्ज', 'आपकी शिकायत सफलतापूर्वक दर्ज कर ली गई।');
-      dispatch(addComplaintDetails({ activityId,  
-        complaintData:{ActivityId:ActivityId,
-        ComplaintDate:ActivityDate,
-        ProblemId:problemType,
-        ComplainantName:complainantName,
-        ComplaintStatusId:selectedComplain,
-        ComplainantNumber:mobileNumber,
-        ComplainantImage:imageUri,
-        ComplainantVideo:videoUri,
-        AddedBy:UserId}}
-    ));
-      navigation.navigate('VisitDetails');
-    } else {
-      Alert.alert('फ़ील्ड को फिर से भरने का प्रयास करें');
+      });
+  
+      if (response.data.success === true) {
+        Alert.alert('शिकायत दर्ज', 'आपकी शिकायत सफलतापूर्वक दर्ज कर ली गई।');
+        dispatch(
+          addComplaintDetails({
+            activityId,
+            complaintData: {
+              ActivityId: ActivityId,
+              ComplaintDate: ActivityDate,
+              ProblemId: problemType,
+              ComplainantName: complainantName,
+              ComplaintStatusId: selectedComplain,
+              ComplainantNumber: mobileNumber,
+              ComplainantImage: imageUri,
+              ComplainantVideo: videoUri,
+              AddedBy: UserId,
+            },
+          }),
+        );
+        navigation.navigate('VisitDetails');
+      } else {
+        Alert.alert('फ़ील्ड को फिर से भरने का प्रयास करें');
+      }
+    } catch (error) {
+      console.error('Error posting complaint data:', error);
+      Alert.alert('कुछ गलत हो गया, कृपया पुनः प्रयास करें');
     }
   };
+  
   useEffect(() => {
     getProblemList();
     getComplainStatusList()

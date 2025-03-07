@@ -17,6 +17,8 @@ import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import { createActivity } from '../../redux/slice/activitySlice';
 import { formatDate } from '../../utils/commonMethods';
+import InputModal from '../../components/inputModal/inputModal';
+
 const ADD_BEAT_API = 'http://re.auctech.in/MobileAppApi/AddBeatAreaMaster'
 const ADD_BEAT_BEARER ='zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxComplainthnfh'
 const API_URL_BEAT='http://re.auctech.in/MobileAppApi/GetBeatAreaDetails'
@@ -29,26 +31,59 @@ const BEARER_TOKEN = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMV
 
 const DetailsScreen = ({navigation}) => {
   const{MahilaBeatName,BeatId, ThanaId,UserId,DistrictId,StateId,ZoneId} = useSelector(state => state.auth.userDetails)
+
   const dispatch = useDispatch()
+
   const [beatArea, setBeatArea] = useState([])
   const [sahkarmi, setSahkarmi] = useState([])
+  const [beatName, setBeatName] = useState('')
+  const [selectedVillage, setSelectedVillage] = useState('');
+  const [selectedAssistant, setSelectedAssistant] = useState({id: '', value:''});
+  const [activityDetails, setActivityDetails] = useState([])
+
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
-  const [selectedVillage, setSelectedVillage] = useState('');
-  const [selectedAssistant, setSelectedAssistant] = useState('');
-  const [activityDetails, setActivityDetails] = useState([])
+  const [inputVisible, setInputVisible] = useState(false);
+
   const date =  new Date().toLocaleDateString();
+
+  const handleChange = (text) => {
+    setBeatName(text);
+  };
+
+  const handleSubmit = async() => {
+    if (beatName.trim()) {
+
+      await addBeatArea()
+      setBeatName("");  
+      setInputVisible(false);  
+    }
+  };
+  
 
   const addBeatArea = async ()=>{
     const response = await axios.post(ADD_BEAT_API,{
-      StateId:StateId,
+       StateId:StateId,
         ZoneId:ZoneId,
         DistrictId:DistrictId,
         ThanaId:ThanaId,
         MahilaBeatId:BeatId,
-        BeatAreaName:"text",
+        BeatAreaName:beatName,
         AddedBy:UserId
-    })
+    },
+    {
+      headers: {
+        Authorization:`Bearer ${ADD_BEAT_BEARER}`
+      }
+    }
+  )
+  if (response.data.success) {
+    alert("Beat area added successfully!");
+    setBeatName(""); // Clear input
+    getBeatList(); // Refresh the beat list
+  } else {
+    alert("Failed to add beat area. Please try again.");
+  }
   }
 
   const getBeatList =async() =>{
@@ -107,15 +142,25 @@ const DetailsScreen = ({navigation}) => {
     if(response.data.success === true){
       console.log(response.data.data)
       setActivityDetails(response.data.data)
-      const activityId = response.data.data.ActivityId
-      dispatch(createActivity({ activityId, bhramadDetails: response.data.data }));
-      navigation.navigate('VisitDetails', {details: response.data.data})
+      dispatch(createActivity({ activityId:response.data.data[0].ActivityId, bhramadDetails:{
+        ActivityId: response.data.data[0].ActivityId,
+        ActivityDate:date,
+        DistanceActivity:"123.5 km",
+        BeatAreaName:selectedVillage,
+        SahkramiId:selectedAssistant?.id,
+        SahkarmiName: selectedAssistant?.name,
+        AreaId: BeatId,
+        AddedBy:UserId      
+      }}));
+      navigation.navigate('VisitDetails')
     }
   }
   useEffect(() =>{
     getBeatList()
     getSahkarmiList()
   }, [])
+
+  
   return (
     <>
       <SideModal
@@ -126,6 +171,15 @@ const DetailsScreen = ({navigation}) => {
       <UserInfoCard
        isVisible={infoVisible}
        onClose={() => setInfoVisible(false)}
+       navigation={navigation}
+      />
+      <InputModal 
+       isVisible={inputVisible}
+       label = "Add Beat Name" 
+       placeholderText= "Add beat Area"
+       handleChange={handleChange}
+       handleSubmit={handleSubmit}
+       onClose={() => setInputVisible(false)}
        navigation={navigation}
       />
       <View>
@@ -174,7 +228,7 @@ const DetailsScreen = ({navigation}) => {
             {/* Village Selection */}
             <View style={{flexDirection:"row", justifyContent:'space-between'}}>
             <Text style={styles.fieldLabel}>गाँव / मोहल्ले का चयन करें *</Text>
-            <Icon name="plus-circle-outline" size={20} onPress={addBeatArea}/>
+            <Icon name="plus-circle-outline" size={20} onPress={() => setInputVisible(true)}/>
             </View>
             <View style={styles.pickerContainer}>
               <Picker
@@ -193,10 +247,10 @@ const DetailsScreen = ({navigation}) => {
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={selectedAssistant}
-                onValueChange={itemValue => setSelectedAssistant(itemValue)}>
+                onValueChange={itemValue => setSelectedAssistant(JSON.parse(itemValue))}>
                 <Picker.Item label="सहकर्मी का चयन करें" value="" />
                 { sahkarmi.map(item => 
-                <Picker.Item label={item.SahkarmiName} value={item.SahkarmiId} />
+                <Picker.Item label={item.SahkarmiName} value={JSON.stringify({ id: item.SahkarmiId, name: item.SahkarmiName })} />
                 )}
               </Picker>
             </View>

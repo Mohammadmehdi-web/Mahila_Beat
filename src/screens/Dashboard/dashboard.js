@@ -12,7 +12,6 @@ const Dashboard = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
   const state = navigation.getState();
-  console.log(state.routes); 
 
   return (
     <>

@@ -27,8 +27,8 @@ const VisitDetailsScreen = ({navigation}) => {
   const activityData = useSelector(
     state => state.activity.activities[activityId],
   );
-  const details = activityData.bhramadDetails[0]
-  console.log(details);
+  const details = activityData.bhramadDetails
+  console.log( activityData.bhramadDetails);
   
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
@@ -57,6 +57,7 @@ const VisitDetailsScreen = ({navigation}) => {
   useEffect(() => {
     getKulLambitComplaints();
   }, []);
+
 
   return (
     <>
@@ -93,7 +94,7 @@ const VisitDetailsScreen = ({navigation}) => {
 
               <Text style={styles.label}>भ्रमण में सहकर्मी का नाम</Text>
               <Text style={styles.redText}>
-                {`कां0 ${details?.SahkramiId} ${details?.SahkramiName}`}
+                {`कां0 ${details?.SahkramiId} ${details?.SahkarmiName}`}
               </Text>
 
               <Text style={styles.label}>भ्रमण का दिनांक व समय</Text>

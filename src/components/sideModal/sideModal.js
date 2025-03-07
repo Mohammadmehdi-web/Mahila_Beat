@@ -1,67 +1,86 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
-import Modal from 'react-native-modal';
+import React, {useEffect} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  Modal,
+  TouchableWithoutFeedback,
+} from 'react-native';
+// import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Logo from '../../assets/policeLogo.png';
 
-const SideModal = ({ isVisible, onClose, navigation }) => {
+const SideModal = ({isVisible, onClose, navigation}) => {
   const menuItems = [
-    { label: ' एप होम', icon: 'home', screen: 'Home' },
-    { label: ' डैशबोर्ड', icon: 'view-dashboard', screen: 'Dashboard' },
-    { label: ' मेरी बीट', icon: 'plus-box', screen: 'MeriBeat' },
-    { label: ' लंबित शिकायत', icon: 'alert-circle', screen: 'ComplaintList' },
-    { label: ' निस्तारित शिकायत', icon: 'check-circle', screen: 'CompletedComplaints' },
-    { label: ' सभी शिकायत', icon: 'file-document', screen: 'AllComplaints' },
-    { label: ' सभी भ्रमण', icon: 'car', screen: 'AllVisits' },
-    { label: ' आपके भ्रमण', icon: 'walk', screen:'MyVisits' },
-    { label: ' लॉग आउट', icon: 'logout', screen: 'Login' },
+    {label: ' एप होम', icon: 'home', screen: 'Home'},
+    {label: ' डैशबोर्ड', icon: 'view-dashboard', screen: 'Dashboard'},
+    {label: ' मेरी बीट', icon: 'plus-box', screen: 'MeriBeat'},
+    {label: ' लंबित शिकायत', icon: 'alert-circle', screen: 'ComplaintList'},
+    {
+      label: ' निस्तारित शिकायत',
+      icon: 'check-circle',
+      screen: 'CompletedComplaints',
+    },
+    {label: ' सभी शिकायत', icon: 'file-document', screen: 'AllComplaints'},
+    {label: ' सभी भ्रमण', icon: 'car', screen: 'AllVisits'},
+    {label: ' आपके भ्रमण', icon: 'walk', screen: 'MyVisits'},
+    {label: ' लॉग आउट', icon: 'logout', screen: 'Login'},
   ];
-
-  
 
   return (
     <Modal
-      isVisible={isVisible}
+      visible={isVisible}
       coverScreen
-      onBackdropPress={onClose}
+      backdropColor="rgba(0,0,0,0.3)"
       animationIn="slideInLeft"
       animationOut="slideOutLeft"
       propagateSwipe={true}
-      backdropOpacity={0.5}
-      style={{ margin: 0 }}>
-      <View style={styles.modalContent}>
-        {/* Header Section with Logo */}
-        <View style={styles.header}>
-          <Image source={Logo} style={styles.logo} />
-          <Text style={styles.title}>आगरा जोन पुलिस</Text>
-          <Text style={styles.subtitle}>सुरक्षा आपकी संकल्प हमारा</Text>
+      onRequestClose={onClose}
+      style={{margin: 0}}>
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.modalContent}>
+          {/* Header Section with Logo */}
+          <View style={styles.header}>
+            <Image source={Logo} style={styles.logo} />
+            <Text style={styles.title}>आगरा जोन पुलिस</Text>
+            <Text style={styles.subtitle}>सुरक्षा आपकी संकल्प हमारा</Text>
+          </View>
+
+          {/* Menu Items */}
+          <ScrollView>
+            {menuItems.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.menuItem}
+                onPress={() => {
+                  if (item.screen === 'Login') {
+                    navigation.navigate('Login');
+                  } else {
+                    navigation.navigate(item.screen);
+                    onClose();
+                  }
+                }}>
+                <Icon
+                  name={item.icon}
+                  size={24}
+                  color="#C2185B"
+                  style={styles.icon}
+                />
+                <Text style={styles.menuText}>{item.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+
+          {/* Close Button */}
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <Text style={styles.closeText}>बंद करें</Text>
+          </TouchableOpacity>
         </View>
-
-        {/* Menu Items */}
-        <ScrollView>
-          {menuItems.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.menuItem}
-              onPress={() => {
-                if (item.screen === "Login") {
-                  navigation.navigate('Login')
-                } else {
-                  navigation.navigate(item.screen);
-                }
-              }}>
-              <Icon name={item.icon} size={24} color="#C2185B" style={styles.icon} />
-              <Text style={styles.menuText}>{item.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-
-        {/* Close Button */}
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <Text style={styles.closeText}>बंद करें</Text>
-        </TouchableOpacity>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
@@ -69,7 +88,7 @@ const SideModal = ({ isVisible, onClose, navigation }) => {
 const styles = StyleSheet.create({
   modalContent: {
     width: '70%',
-    height:"100%",
+    height: '100%',
     backgroundColor: '#FFF',
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
