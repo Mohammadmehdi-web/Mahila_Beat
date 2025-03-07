@@ -4,20 +4,18 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  BackHandler,
   Modal,
   TouchableWithoutFeedback,
+  TextInput,
 } from "react-native";
-// import Modal from 'react-native-modal'
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useSelector } from "react-redux";
 
-const UserInfoCard = ({isVisible, onClose, navigation}) => {
+const InputModal = ({label, placeholderText, isVisible, onClose,beatName,handleChange, handleSubmit, navigation}) => {
 
   const userDetails = useSelector(state => state.auth.userDetails)
   
   return (
-    
       <Modal
       visible={isVisible}
         transparent
@@ -27,7 +25,7 @@ const UserInfoCard = ({isVisible, onClose, navigation}) => {
       >
         <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.modalBackground}>
-          <TouchableWithoutFeedback>
+            <TouchableWithoutFeedback>
           <View style={styles.modalContainer}>
             <TouchableOpacity
               style={styles.closeButton}
@@ -35,39 +33,23 @@ const UserInfoCard = ({isVisible, onClose, navigation}) => {
             >
               <Icon name="close" size={24} color="black" />
             </TouchableOpacity>
-
-            <Text style={styles.loginId}>LoginId: {userDetails.LoginId}</Text>
-
-            <View style={styles.infoContainer}>
-              <Text style={styles.label}>नाम</Text>
-              <Text style={styles.value}>30नि0 {userDetails.Name}</Text>
-            </View>
-            <View style={styles.infoContainer}>
-              <Text style={styles.label}>जनपद</Text>
-              <Text style={styles.value}>{userDetails.DistrictName}</Text>
-            </View>
-            <View style={styles.infoContainer}>
-              <Text style={styles.label}>थाना</Text>
-              <Text style={styles.value}>{userDetails.ThanaName.trim()}</Text>
-            </View>
-            <View style={styles.infoContainer}>
-              <Text style={styles.label}>मोबाइल नं0</Text>
-              <Text style={styles.value}>{userDetails.MobileNumber}</Text>
-            </View>
-            <View style={styles.infoContainer}>
-              <Text style={styles.label}>पी.एन.ओ.</Text>
-              <Text style={styles.value}>{userDetails.PNONumber}</Text>
-            </View>
-
-            <TouchableOpacity style={styles.updateButton}>
+            <TextInput 
+            style={styles.input}
+            value={beatName}
+            onChangeText={handleChange}
+            placeholder={placeholderText}
+            placeholderTextColor="grey"
+            />
+            <TouchableOpacity style={styles.updateButton} onPress={handleSubmit}>
               <Icon name="pencil" size={20} color="white" />
-              <Text style={styles.updateText}>Update Info</Text>
+              <Text style={styles.updateText}>{label}</Text>
             </TouchableOpacity>
           </View>
           </TouchableWithoutFeedback>
         </View>
         </TouchableWithoutFeedback>
       </Modal>
+    // </View>
   );
 };
 
@@ -76,6 +58,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#",
+  },
+  input:{
+    width:'100%',
+    borderWidth: 1,
+     borderRadius:10,
+    padding: '3%',
+    color:'black'
   },
   modalBackground: {
     flex: 1,
@@ -87,10 +76,10 @@ const styles = StyleSheet.create({
     width: "80%",
     backgroundColor: "#fff",
     borderRadius: 10,
-    padding: '4%',
+    padding: '10%',
     alignItems: "center",
     elevation: 5,
-    gap:8
+    gap:20
   },
   closeButton: {
     position: "absolute",
@@ -135,4 +124,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UserInfoCard;
+export default InputModal;

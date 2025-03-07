@@ -11,6 +11,10 @@ const activitySlice = createSlice({
   reducers: {
     createActivity: (state, action) => {
       const { activityId, bhramadDetails } = action.payload;
+      console.log('bhramadDetails',bhramadDetails);
+      console.log(activityId);
+      
+      
       state.currentActivityId = activityId;
       state.activities[activityId] = { bhramadDetails, samvadDetails: [], complaints: [] };
     },
