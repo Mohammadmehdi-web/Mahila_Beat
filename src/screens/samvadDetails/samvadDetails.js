@@ -38,7 +38,7 @@ const ADD_SCH_BEARER =
 
 const SamvadDetails = ({navigation}) => {
   const routes = useRoute();
-  const {ActivityId, ActivityDate} = routes.params || {};
+  const { ActivityDate} = routes.params || {};
   const {UserId} = useSelector(state => state.auth.userDetails);
   const activityId = useSelector(state => state.activity.currentActivityId);
   const dispatch = useDispatch();

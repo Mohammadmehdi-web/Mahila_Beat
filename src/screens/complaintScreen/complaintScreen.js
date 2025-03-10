@@ -33,15 +33,16 @@ const ComplaintScreen = ({navigation}) => {
   const dispatch = useDispatch()
   const {UserId} = useSelector(state => state.auth.userDetails);
   const activityId = useSelector(state => state.activity.currentActivityId);
-  const {ActivityId, ActivityDate} = route.params || {};
+  const { ActivityDate} = route.params || {};
   const [complainantName, setComplainantName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
-  const [problemType, setProblemType] = useState('');
+  const [problemType, setProblemType] = useState(null);
   const [problemList, setProblemList] = useState([]);
   const [complaintStatusList, setComplaintStatusList] = useState([]);
-  const [selectedComplain, setSelectedComplain] = useState();
+  const [selectedComplain, setSelectedComplain] = useState({id:null,name:''});
   const [imageUri, setImageUri] = useState(null);
   const [videoUri, setVideoUri] = useState(null);
+  
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
 
@@ -118,12 +119,13 @@ const ComplaintScreen = ({navigation}) => {
     try {
       const formData = new FormData();
   
-      formData.append('ActivityId', ActivityId);
+      formData.append('ActivityId', activityId);
       formData.append('ComplaintDate', ActivityDate);
       formData.append('ProblemId', problemType);
       formData.append('ComplainantName', complainantName);
-      formData.append('ComplaintStatusId', selectedComplain);
+      formData.append('ComplaintStatusId', selectedComplain?.id);
       formData.append('ComplainantNumber', mobileNumber);
+      formData.append('Status', selectedComplain?.name);
       formData.append('AddedBy', UserId);
   
       // Append image if available
@@ -153,20 +155,11 @@ const ComplaintScreen = ({navigation}) => {
   
       if (response.data.success === true) {
         Alert.alert('शिकायत दर्ज', 'आपकी शिकायत सफलतापूर्वक दर्ज कर ली गई।');
+        console.log(response.data.data)
         dispatch(
           addComplaintDetails({
             activityId,
-            complaintData: {
-              ActivityId: ActivityId,
-              ComplaintDate: ActivityDate,
-              ProblemId: problemType,
-              ComplainantName: complainantName,
-              ComplaintStatusId: selectedComplain,
-              ComplainantNumber: mobileNumber,
-              ComplainantImage: imageUri,
-              ComplainantVideo: videoUri,
-              AddedBy: UserId,
-            },
+            complaintData: {...response.data.data[0]},
           }),
         );
         navigation.navigate('VisitDetails');
@@ -274,7 +267,7 @@ const ComplaintScreen = ({navigation}) => {
                   <Picker.Item
                     key={index}
                     label={item.ComplaintStatusName} 
-                    value={item.ComplaintStatusId}
+                    value={JSON.stringify({ id: item.ComplaintStatusId, name: item.ComplaintStatusName })}
                   />
                 ))}
               </Picker>
