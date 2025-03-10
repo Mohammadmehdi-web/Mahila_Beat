@@ -28,6 +28,8 @@ const activitySlice = createSlice({
     },
     addComplaintDetails: (state, action) => {
       const { activityId, complaintData } = action.payload;
+      console.log(complaintData);
+      
       if (state.activities[activityId]) {
         state.activities[activityId].complaints.push(complaintData);
       }

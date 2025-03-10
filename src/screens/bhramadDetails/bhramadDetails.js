@@ -19,6 +19,7 @@ import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import DummyImg from '../../assets/dummyimg.jpg';
 import Divider from '../../components/divider/divider';
 import axios from 'axios';
+import ComplaintVideo from '../../components/complaintVideo/complaintVideo';
 
 const SAMVAD_API =
   'http://re.auctech.in/MobileAppApi/getTotalConversationMaster';
@@ -47,16 +48,27 @@ const BhramadDetails = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
   const [mahilaDetails, setMahilaDetails] = useState([]);
-    useEffect(() => {
-      if (samvadData) {
-        setMahilaDetails([
-          { id: 1, name: samvadData.OneWomanName || 'N/A', phn: samvadData.OneWomanNumber || 'N/A' },
-          { id: 2, name: samvadData.TwoWomanName || 'N/A', phn: samvadData.TwoWomanNumber || 'N/A' },
-          { id: 3, name: samvadData.ThreeWomanName || 'N/A', phn: samvadData.ThreeWomanNumber || 'N/A' },
-        ]);
-      }
-    }, [samvadData]);
-
+  useEffect(() => {
+    if (samvadData) {
+      setMahilaDetails([
+        {
+          id: 1,
+          name: samvadData.OneWomanName || 'N/A',
+          phn: samvadData.OneWomanNumber || 'N/A',
+        },
+        {
+          id: 2,
+          name: samvadData.TwoWomanName || 'N/A',
+          phn: samvadData.TwoWomanNumber || 'N/A',
+        },
+        {
+          id: 3,
+          name: samvadData.ThreeWomanName || 'N/A',
+          phn: samvadData.ThreeWomanNumber || 'N/A',
+        },
+      ]);
+    }
+  }, [samvadData]);
 
   // const getSamvadDetails = async () => {
   //   const response = await axios.post(
@@ -155,12 +167,12 @@ const BhramadDetails = ({navigation}) => {
 
             <Text style={styles.label}>क्षेत्र का नाम</Text>
             <Text style={styles.value}>
-             {`${StateName}/${DistrictName}/${ThanaName.trim()}`}
+              {`${StateName}/${DistrictName}/${ThanaName.trim()}`}
             </Text>
 
             <Text style={styles.label}>भरण में सहयोगी का नाम</Text>
             <Text style={styles.value}>
-             {`कां0 ${details.SahkramiId} ${details.SahkarmiName}`}
+              {`कां0 ${details.SahkramiId} ${details.SahkarmiName}`}
             </Text>
 
             <Text style={styles.label}>भरण का दिनांक व समय</Text>
@@ -170,15 +182,16 @@ const BhramadDetails = ({navigation}) => {
             <Text style={styles.value}>{details.DistanceActivity} मीटर </Text>
           </View>
 
-          {complaintData.Image ? (
-        <Image
-          source={{ uri: complaintData.Image }}
-          style={{ width: 200, height: 200, borderRadius: 10 }}
-          resizeMode="contain"
-        />
-      ) : (
-        <Text>कोई छवि उपलब्ध नहीं है</Text>
-      )}
+            <Image
+              source={
+                samvadData.Image ?
+                {uri: samvadData.Image}:
+                DummyImg
+              }
+
+              style={styles.image}
+              resizeMode="contain"
+            />
 
           {/* Pink Button */}
           <View style={styles.pinkButton}>
@@ -289,16 +302,28 @@ const BhramadDetails = ({navigation}) => {
             <View style={styles.nameContainer}>
               <Text style={styles.label}>स्थिति:</Text>
               <Text style={styles.value}>
-                {complaintData.ComplaintStatusId}
+                {complaintData.ComplaintStatusName}
               </Text>
             </View>
             <Divider />
             <View style={styles.nameContainer}>
-              <Text style={styles.label}>वीडियो:</Text>
+              {/* <Text style={styles.label}>वीडियो:</Text>
               <TouchableOpacity
-                onPress={() => Linking.openURL(complaintData.ComplainantVideo)}>
+                onPress={() => { if (complaintData.ComplainantVideo?.startsWith("http")) {
+                  Linking.canOpenURL(complaintData.ComplainantVideo).then((supported) => {
+                    if (supported) {
+                      Linking.openURL(complaintData.ComplainantVideo);
+                    } else {
+                      Alert.alert("त्रुटि", "वीडियो नहीं खोला जा सका।");
+                    }
+                  });
+                } else {
+                  Alert.alert("त्रुटि", "वीडियो का लिंक उपलब्ध नहीं है।");
+                }
+                }}>
                 <Text style={{color: 'blue'}}>वीडियो देखें</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
+              <ComplaintVideo videoUrl={"https://www.w3schools.com/html/mov_bbb.mp4"} />
             </View>
             <Divider />
             <View style={styles.nameContainer}>
@@ -306,8 +331,9 @@ const BhramadDetails = ({navigation}) => {
               <Image
                 source={
                   complaintData.ComplainantImage
-                    ? complaintData.ComplainantImage
-                    : DummyImg
+                    ? {uri: complaintData.ComplainantImage}
+                    : 
+                  DummyImg
                 }
                 style={styles.image}
               />
@@ -315,9 +341,7 @@ const BhramadDetails = ({navigation}) => {
           </View>
 
           <TouchableOpacity style={styles.accordion}>
-            <Text style={styles.accordionText}>
-              {complaintData.ProblemId}
-            </Text>
+            <Text style={styles.accordionText}>{complaintData.ProblemId}</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -367,7 +391,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 150,
     borderRadius: 8,
-    marginBottom: 16,
+    paddingHorizontal:'2%'
   },
   pinkButton: {
     backgroundColor: '#E91E63',
