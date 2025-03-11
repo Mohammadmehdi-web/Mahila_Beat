@@ -14,12 +14,12 @@ import {launchCamera} from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
 import {useRoute} from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
 import Header from '../../components/header/header';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
-import { addComplaintDetails } from '../../redux/slice/activitySlice';
+import {addComplaintDetails} from '../../redux/slice/activitySlice';
 
 const PROBLEM_API = 'http://re.auctech.in/MobileAppApi/GetProblemMasterDetails';
 const PROBLEM_BEARER =
@@ -30,19 +30,22 @@ const BEARER_TOKEN =
 
 const ComplaintScreen = ({navigation}) => {
   const route = useRoute();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const {UserId} = useSelector(state => state.auth.userDetails);
   const activityId = useSelector(state => state.activity.currentActivityId);
-  const { ActivityDate} = route.params || {};
+  const {ActivityDate} = route.params || {};
   const [complainantName, setComplainantName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [problemType, setProblemType] = useState(null);
   const [problemList, setProblemList] = useState([]);
   const [complaintStatusList, setComplaintStatusList] = useState([]);
-  const [selectedComplain, setSelectedComplain] = useState({id:null,name:''});
+  const [selectedComplain, setSelectedComplain] = useState({
+    id: 0,
+    name: '',
+  });
   const [imageUri, setImageUri] = useState(null);
   const [videoUri, setVideoUri] = useState(null);
-  
+
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
 
@@ -84,7 +87,7 @@ const ComplaintScreen = ({navigation}) => {
   };
 
   const getProblemList = async () => {
-    const response = await axios(PROBLEM_API, {
+    const response = await axios.get(PROBLEM_API, {
       headers: {
         Authorization: `Bearer ${PROBLEM_BEARER}`,
       },
@@ -102,12 +105,11 @@ const ComplaintScreen = ({navigation}) => {
       {},
       {
         headers: {
-          Authorization: `Bearer ${'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxProblemtdssdted'} `,
+          Authorization: `Bearer ${'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxProblemtdssdted'}`,
         },
       },
     );
-    console.log(response);
-    
+
     if (response.data.success === true) {
       setComplaintStatusList(response.data.data);
     } else {
@@ -118,44 +120,48 @@ const ComplaintScreen = ({navigation}) => {
   const postComplaintData = async () => {
     try {
       const formData = new FormData();
-  
-      formData.append('ActivityId', activityId);
+
+      formData.append('ActivityId', Number(activityId));
       formData.append('ComplaintDate', ActivityDate);
-      formData.append('ProblemId', problemType);
+      formData.append('ProblemId', Number(problemType));
       formData.append('ComplainantName', complainantName);
-      formData.append('ComplaintStatusId', selectedComplain?.id);
+      formData.append('ComplaintStatusId', Number(selectedComplain?.id || 0));
       formData.append('ComplainantNumber', mobileNumber);
       formData.append('Status', selectedComplain?.name);
-      formData.append('AddedBy', UserId);
-  
+      formData.append('AddedBy', Number(UserId));
+
       // Append image if available
       if (imageUri) {
         formData.append('ComplainantImage', {
           uri: imageUri,
-          type: 'image/jpeg', // Adjust if the format is different
+          type: 'image/jpeg',
           name: 'complainant_image.jpg',
         });
       }
-  
+
       // Append video if available
       if (videoUri) {
         formData.append('ComplainantVideo', {
           uri: videoUri,
-          type: 'video/mp4', // Adjust according to actual format
+          type: 'video/mp4',
           name: 'complainant_video.mp4',
         });
       }
-  
+
+
       const response = await axios.post(API_URL, formData, {
         headers: {
           Authorization: `Bearer ${BEARER_TOKEN}`,
           'Content-Type': 'multipart/form-data',
         },
       });
-  
+
       if (response.data.success === true) {
+        Object.entries(response.data.data[0]).forEach(([key, value]) => {
+          console.log(`🔹 ${key}:`, value, `(${typeof value})`);
+        });
         Alert.alert('शिकायत दर्ज', 'आपकी शिकायत सफलतापूर्वक दर्ज कर ली गई।');
-        console.log(response.data.data)
+        console.log(response.data.data);
         dispatch(
           addComplaintDetails({
             activityId,
@@ -171,10 +177,10 @@ const ComplaintScreen = ({navigation}) => {
       Alert.alert('कुछ गलत हो गया, कृपया पुनः प्रयास करें');
     }
   };
-  
+
   useEffect(() => {
     getProblemList();
-    getComplainStatusList()
+    getComplainStatusList();
   }, []);
 
   return (
@@ -259,15 +265,18 @@ const ComplaintScreen = ({navigation}) => {
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={problemType}
-                onValueChange={itemValue => setSelectedComplain(itemValue)}
+                onValueChange={itemValue => setSelectedComplain(JSON.parse(itemValue))}
                 style={styles.picker}
                 dropdownIconColor="black">
                 <Picker.Item label="शिकायत की स्थिति चुनें" value="" />
                 {complaintStatusList.map((item, index) => (
                   <Picker.Item
                     key={index}
-                    label={item.ComplaintStatusName} 
-                    value={JSON.stringify({ id: item.ComplaintStatusId, name: item.ComplaintStatusName })}
+                    label={item.ComplaintStatusName}
+                    value={JSON.stringify({
+                      id: item.ComplaintStatusId,
+                      name: item.ComplaintStatusName,
+                    })}
                   />
                 ))}
               </Picker>

@@ -123,7 +123,7 @@ const AllVisits = ({navigation}) => {
                 key={index}
                 location={`${item.StateName}/ ${
                   item.DistrictName
-                }/ ${item.ThanaName.trim()}`}
+                }/ ${item.ThanaName}`}
                 officer={`${item.PoliceName} - ${item.MobileNumber}`}
                 distance={item.DistanceActivity}
                 date={item.ActivityDate}
@@ -143,14 +143,14 @@ const AllVisits = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    padding: '5%',
     backgroundColor: '#f8f8f8',
+    marginBottom:"20%",
   },
   section: {
     backgroundColor: '#fff',
     borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
+    padding: '3%',
   },
   dropdown: {
     backgroundColor: '#d32f2f',
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   statusBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
+    paddingVertical:'3%',
     justifyContent: 'space-around',
   },
   totalCount: {

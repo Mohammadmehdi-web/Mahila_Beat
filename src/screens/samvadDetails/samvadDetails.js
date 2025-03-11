@@ -191,7 +191,7 @@ const SamvadDetails = ({navigation}) => {
         dispatch(
           addSamvadDetails({
             activityId,
-            samvadData: {...response.data.data[0]} ,
+            samvadData: {...response.data.data[0], PlaceName: selectedLocation} ,
           }),
         );
         navigation.navigate('VisitDetails');

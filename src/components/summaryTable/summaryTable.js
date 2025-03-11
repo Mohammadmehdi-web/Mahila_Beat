@@ -1,26 +1,33 @@
 import React from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 
-const DATA = [
-  { id: "1", area: "अमर कालोनी", visits: 4 },
-  { id: "2", area: "कच्चा एतमादपुर", visits: 3 },
-  { id: "3", area: "आगवार", visits: 2 },
-  { id: "4", area: "गली गज्जू", visits: 0 },
-  { id: "5", area: "ओंकारपुर", visits: 0 },
-  { id: "6", area: "गली जस्सा", visits: 0 },
-  { id: "7", area: "अमर बिहार कालोनी", visits: 0 },
-  // Add more rows to test scroll behavior
-];
+const SummaryTable = ({totalCount,totalArea}) => {
+  const totalActivities = totalCount?.TotalActivities?.[0]?.TotalActivityCount || 0;
+  const allComplaints = totalCount?.TotalComplaints?.[0]?.TotalComplaintCount || 0;
+  const completedComplaints = totalCount?.TotalCompletedComplaints?.[0]?.TotalCompletedComplaints || 0;
+  const samvadCounts = totalCount?.TotalConversations?.[0]?.TotalConversationCount || 0;
+  const pendingComplaints = totalCount?.TotalPandingComplaints?.[0]?.TotalPandingComplaints || 0;
+  
 
-const SUMMARY = [
-  { title: "कुल भ्रमण", value: 9 },
-  { title: "कुल संवाद", value: 3 },
-  { title: "कुल शिकायत", value: 3 },
-  { title: "कुल निस्तारित शिकायत", value: 3 },
-  { title: "कुल लंबित शिकायत", value: 2 },
-];
+ console.log(totalActivities, "+", allComplaints,"+",completedComplaints,"+",samvadCounts,"+",pendingComplaints);
+ console.log(totalArea);
+ 
+  
+  const SUMMARY = [
+    { title: "कुल भ्रमण", value:totalActivities},
+    { title: "कुल संवाद", value: samvadCounts },
+    { title: "कुल शिकायत", value: allComplaints},
+    { title: "कुल निस्तारित शिकायत", value: completedComplaints },
+    { title: "कुल लंबित शिकायत", value: pendingComplaints },
+  ];
 
-const SummaryTable = () => {
+  const formattedTotalArea = Array.isArray(totalArea)
+  ? totalArea.map((item, index) => ({
+      id: index + 1,
+      area: item?.BeatAreaName || "अज्ञात क्षेत्र",
+      visits: item?.CountActivity || 0,
+    }))
+  : [];
   return (
     <View style={styles.container}>
       {/* Sticky Header */}
@@ -33,9 +40,10 @@ const SummaryTable = () => {
       {/* Scrollable Content */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* Table Rows */}
-        {DATA.map((item, index) => (
-          <View key={item.id} style={[styles.row, index % 2 === 0 ? styles.rowEven : styles.rowOdd]}>
-            <Text style={styles.cell}>{index + 1}.</Text>
+        {formattedTotalArea.length > 0 &&
+        formattedTotalArea.map((item, index) => (
+          <View key={index} style={[styles.row, index % 2 === 0 ? styles.rowEven : styles.rowOdd]}>
+            <Text style={styles.cell}>{item.id}.</Text>
             <Text style={styles.cell}>{item.area}</Text>
             <Text style={styles.cell}>{item.visits}</Text>
           </View>

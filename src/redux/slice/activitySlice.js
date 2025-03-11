@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
 
 const initialState = {
   currentActivityId: null,
@@ -10,32 +10,37 @@ const activitySlice = createSlice({
   initialState,
   reducers: {
     createActivity: (state, action) => {
-      const { activityId, bhramadDetails } = action.payload;
-      console.log('bhramadDetails',bhramadDetails);
+      const {activityId, bhramadDetails} = action.payload;
+      console.log('bhramadDetails', bhramadDetails);
       console.log(activityId);
-      
-      
+
       state.currentActivityId = activityId;
-      state.activities[activityId] = { bhramadDetails, samvadDetails: [], complaints: [] };
+      state.activities[activityId] = {
+        bhramadDetails,
+        samvadDetails: [],
+        complaints: [],
+      };
     },
     addSamvadDetails: (state, action) => {
-      const { activityId, samvadData } = action.payload;
+      const {activityId, samvadData} = action.payload;
       if (state.activities[activityId]) {
         state.activities[activityId].samvadDetails.push(samvadData);
-        console.log(state.activities[activityId].samvadDetails);
-        
       }
     },
     addComplaintDetails: (state, action) => {
-      const { activityId, complaintData } = action.payload;
-      console.log(complaintData);
-      
+      const {activityId, complaintData} = action.payload;
+      console.log('🚀 complaintData:', complaintData);
+      console.log('📌 Data Types:');
+      Object.entries(complaintData).forEach(([key, value]) => {
+        console.log(`🔹 ${key}:`, value, `(${typeof value})`);
+      });
       if (state.activities[activityId]) {
         state.activities[activityId].complaints.push(complaintData);
       }
-    }
-  }
+    },
+  },
 });
 
-export const { createActivity, addSamvadDetails, addComplaintDetails } = activitySlice.actions;
+export const {createActivity, addSamvadDetails, addComplaintDetails} =
+  activitySlice.actions;
 export default activitySlice.reducer;

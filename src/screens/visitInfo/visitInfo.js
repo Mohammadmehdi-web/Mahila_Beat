@@ -15,12 +15,21 @@ import {useNavigationState, useRoute} from '@react-navigation/native';
 
 const VisitInfo = ({navigation}) => {
   const route = useRoute();
-  const {visitInfo} = route.params || {};
+  const {visitInfo} = route.params || {}
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
   const previousScreen = useNavigationState(
     state => state.routes[state.index - 1]?.name,
   );
+
+  console.log(visitInfo);
+  const mahilaDetails=[
+    {id:1, name: visitInfo.OneWomanName, phn:visitInfo.OneWomanNumber},
+    {id:2, name: visitInfo.TwoWomanName, phn:visitInfo.TwoWomanNumber},
+    {id:3, name: visitInfo.ThreeWomanName, phn:visitInfo.ThreeWomanNumber},
+ ]
 
   const handleBackPress = () => {
     navigation.navigate(previousScreen);
@@ -54,29 +63,99 @@ const VisitInfo = ({navigation}) => {
 
           <View style={styles.card}>
             <Text style={styles.label}>बीट का नाम</Text>
-            <Text style={styles.value}>{visitInfo?.MahilaBeatName}</Text>
+            <Text style={[styles.value, styles.highlight]}>
+              {visitInfo?.MahilaBeatName}/{visitInfo?.BeatAreaName}
+            </Text>
 
             <Text style={styles.label}>क्षेत्र का नाम</Text>
             <Text style={[styles.value, styles.highlight]}>
-            {`${visitInfo?.StateName}/${visitInfo?.DistrictName}/${visitInfo?.ThanaName}`}
+              {`${visitInfo?.StateName}/${visitInfo?.DistrictName}/${visitInfo?.ThanaName}`}
             </Text>
 
             <Text style={styles.label}>भ्रमण में सहकर्मी का नाम</Text>
             <Text style={[styles.value, styles.highlight]}>
-              कांस्टेबल 4961 अमितेश कुमार - 8874815184,{'\n'}
-              उपनिरीक्षक श्री देवेंद्र सिंह - 6393292234
+              {` कांस्टेबल ${visitInfo.PoliceId} ${visitInfo.PoliceName} - ${visitInfo.MobileNumber}`}
             </Text>
 
             <Text style={styles.label}>भ्रमण का दिनांक व समय</Text>
-            <Text style={[styles.value, styles.date]}>{visitInfo?.ActivityDate}</Text>
+            <Text style={[styles.value, styles.date]}>
+              {visitInfo?.ActivityDate}
+            </Text>
 
             <Text style={styles.label}>गांव / मोहल्ले से दूरी</Text>
-            <Text style={[styles.value, styles.highlight]}>{visitInfo?.DistanceActivity}</Text>
+            <Text style={[styles.value, styles.highlight]}>
+              {visitInfo?.DistanceActivity}
+            </Text>
           </View>
 
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setIsDropdownOpen(!isDropdownOpen)}>
             <Text style={styles.buttonText}>संवत का विवरण</Text>
           </TouchableOpacity>
+
+          {isDropdownOpen && (
+            <View style={styles.dropdownContent}>
+              <View style={{gap: 10}}>
+                <View style={styles.pinkButton}>
+                  <Text style={styles.buttonText}>
+                    संदर्भ में सम्मिलित किन्ही तीन महिलाओं की जानकारी
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    height: 1,
+                    backgroundColor: '#ccc',
+                    marginVertical: 10,
+                  }}
+                />
+                <View style={styles.bottomTextContainer}>
+                  <Text style={[styles.label, {fontSize: 16}]}>
+                    सम्वाद म समिलित महिलाओं की संख्या
+                  </Text>
+                  <Text style={[styles.value, styles.highlight]}>
+                    {visitInfo.ConversationNumer}
+                  </Text>
+                </View>
+
+                {mahilaDetails.map(item => (
+                  <View key={item.id} style={{gap: 5}}>
+                    <View key={item.id} style={styles.pinkButtonSmall}>
+                      <Text style={styles.buttonText}>
+                        {item.id}. महिला की जानकारी
+                      </Text>
+                    </View>
+                    <View>
+                      <View style={styles.nameContainer}>
+                        <Text style={styles.label}>नाम</Text>
+                        <Text style={[styles.value, styles.highlight]}>{item.name}</Text>
+                      </View>
+                      <View
+                        style={{
+                          height: 1,
+                          backgroundColor: '#ccc',
+                          marginVertical: 10,
+                        }}
+                      />
+                      <View style={styles.nameContainer}>
+                        <Text style={styles.label}>मोबाइल नं</Text>
+                        <Text style={[styles.value, styles.highlight]}>{item.phn}</Text>
+                      </View>
+                    </View>
+                  </View>
+                ))}
+                <View style={styles.bottomHeadSection} />
+                <View
+                  style={[
+                    styles.bottomTextContainer,
+                    {flexDirection: 'column'},
+                  ]}>
+                  <Text style={styles.label}>सरकारी योजनाओं की जानकारी</Text>
+                  <Text style={[styles.value, styles.highlight]}>प्रधानमंत्री उज्ज्वला योजना</Text>
+                </View>
+              </View>
+            </View>
+          )}
 
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>शिकायत का विवरण</Text>
@@ -160,6 +239,41 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#fff',
     fontWeight: 'bold',
+  },
+  dropdownContent: {
+    padding: '4%',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    elevation: 3,
+    gap: 10,
+  },
+  nameContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  bottomHeadSection: {
+    height: 1,
+    backgroundColor: '#ccc',
+    marginVertical: 10,
+  },
+  bottomTextContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  pinkButton: {
+    backgroundColor: '#E91E63',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  pinkButtonSmall: {
+    backgroundColor: '#E91E63',
+    padding: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginVertical: 4,
   },
 });
 
