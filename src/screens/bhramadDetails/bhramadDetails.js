@@ -42,7 +42,12 @@ const BhramadDetails = ({navigation}) => {
   const samvadData = activityData.samvadDetails[0];
   const complaintData = activityData.complaints[0];
   console.log(samvadData);
-  console.log(complaintData);
+  console.log(complaintData.ComplainantImage);
+  console.log(complaintData.ComplainantName);
+  console.log(complaintData.ComplainantNumber);
+  console.log(complaintData.ComplaintStatusId);
+  console.log(complaintData.ComplainantVideo);
+  console.log(complaintData.ComplaintDate);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -200,7 +205,8 @@ const BhramadDetails = ({navigation}) => {
 
           <TouchableOpacity
             style={styles.accordion}
-            onPress={() => setIsDropdownOpen(!isDropdownOpen)}>
+            onPress={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
             <Text style={styles.accordionText}>मिशन शक्तिक कक्ष</Text>
             <MaterialIcon
               name={
@@ -302,28 +308,12 @@ const BhramadDetails = ({navigation}) => {
             <View style={styles.nameContainer}>
               <Text style={styles.label}>स्थिति:</Text>
               <Text style={styles.value}>
-                {complaintData.ComplaintStatusName}
+                {complaintData.ComplaintStatusId}
               </Text>
             </View>
             <Divider />
             <View style={styles.nameContainer}>
-              {/* <Text style={styles.label}>वीडियो:</Text>
-              <TouchableOpacity
-                onPress={() => { if (complaintData.ComplainantVideo?.startsWith("http")) {
-                  Linking.canOpenURL(complaintData.ComplainantVideo).then((supported) => {
-                    if (supported) {
-                      Linking.openURL(complaintData.ComplainantVideo);
-                    } else {
-                      Alert.alert("त्रुटि", "वीडियो नहीं खोला जा सका।");
-                    }
-                  });
-                } else {
-                  Alert.alert("त्रुटि", "वीडियो का लिंक उपलब्ध नहीं है।");
-                }
-                }}>
-                <Text style={{color: 'blue'}}>वीडियो देखें</Text>
-              </TouchableOpacity> */}
-              <ComplaintVideo videoUrl={"https://www.w3schools.com/html/mov_bbb.mp4"} />
+              <ComplaintVideo videoUrl={complaintData.ComplainantVideo} />
             </View>
             <Divider />
             <View style={styles.nameContainer}>

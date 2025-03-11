@@ -1,17 +1,74 @@
-import React, {useState} from 'react';
-import {
-  StyleSheet,
-  View,
-} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Alert, StyleSheet, View} from 'react-native';
 import Header from '../../components/header/header';
 import SummaryTable from '../../components/summaryTable/summaryTable';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
+import axios from 'axios';
+import {useSelector} from 'react-redux';
+
+const SUM_API = 'http://re.auctech.in/MobileAppApi/getTotalDashboardMaster';
+const SUM_BEARER =
+  'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxtotalDashboard';
+const AREA_API =
+  'http://re.auctech.in/MobileAppApi/GetAreaWiseActivityCountDetails';
+const AREA_BEARER =
+  'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxGetAreaWiseActivityCountDetailsddd';
 
 const Dashboard = ({navigation}) => {
+  const {UserId} = useSelector(state => state.auth.userDetails);
+
+  const [areaTotal, setAreaTotal] = useState([]);
+  const [totalCount, setTotalCount] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
-  const state = navigation.getState();
+
+  const getAreaList = async () => {
+    const response = await axios.post(
+      AREA_API,
+      {
+        UserId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${AREA_BEARER}`,
+        },
+      },
+    );
+    if (response.data.success === true) {
+      console.log(response.data.data);
+      setAreaTotal(response.data.data);
+    } else {
+      Alert.alert('आपकी सारांश जानकारी मौजूद नहीं है');
+      setAreaTotal([])
+    }
+  };
+
+  const getTotalSummaryDetails = async () => {
+    const response = await axios.post(
+      SUM_API,
+      {UserId},
+      {
+        headers: {
+          Authorization: `Bearer ${SUM_BEARER}`,
+        },
+      },
+    );
+
+    if (response.data.success === true) {
+      console.log(response.data.data);
+
+      setTotalCount(response?.data?.data);
+    } else {
+      Alert.alert('आपकी सारांश जानकारी मौजूद नहीं है');
+      setTotalCount({});
+    }
+  };
+
+  useEffect(() => {
+    getTotalSummaryDetails();
+    getAreaList();
+  }, []);
 
   return (
     <>
@@ -31,7 +88,15 @@ const Dashboard = ({navigation}) => {
           onMenuPress={() => setModalVisible(true)}
           onProfilePress={() => setInfoVisible(true)}
         />
-        <SummaryTable />
+        {totalCount && areaTotal ? (
+          <SummaryTable totalCount={totalCount} totalArea={areaTotal} />
+        ) : (
+          <View style={{alignItems: 'center', marginTop: 20}}>
+            <Text style={{fontSize: 16, color: 'gray'}}>
+              डेटा लोड हो रहा है...
+            </Text>
+          </View>
+        )}
       </View>
     </>
   );
