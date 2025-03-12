@@ -48,6 +48,7 @@ const DetailsScreen = ({navigation}) => {
     value: '',
   });
   const [activityDetails, setActivityDetails] = useState([]);
+  const[distance,setDistance] = useState('')
 
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
@@ -132,11 +133,18 @@ const DetailsScreen = ({navigation}) => {
   };
 
   const addActivityDetails = async () => {
+
+    const formattedDistance = parseFloat(distance); // Convert to number
+    if (isNaN(formattedDistance)) {
+      alert('कृपया मान्य दूरी दर्ज करें!');
+      return;
+    }
+
     const response = await axios.post(
       API_URL,
       {
         ActivityDate: date,
-        DistanceActivity: '123.5 km',
+        DistanceActivity: `${formattedDistance} मीटर`,
         BeatAreaName: selectedVillage?.name,
         SahkramiId: selectedAssistant?.id,
         SahkarmiName:selectedAssistant?.name,
@@ -158,7 +166,7 @@ const DetailsScreen = ({navigation}) => {
           bhramadDetails: {
             ActivityId: response.data.data[0].ActivityId,
             ActivityDate: date,
-            DistanceActivity: '123.5 km',
+            DistanceActivity: `${formattedDistance}`,
             BeatAreaName: selectedVillage?.name,
             BeatAreaId:selectedVillage?.id,
             SahkramiId: selectedAssistant?.id,
@@ -228,8 +236,15 @@ console.log(selectedVillage);
               />
             </View>
 
-            <TouchableOpacity style={styles.pinkButton}>
+            <TouchableOpacity style={[styles.pinkButton, {flexDirection:'row'}]}>
               <Text style={styles.buttonText}>गाँव / मोहल्ला की दूरी</Text>
+              <TextInput
+                style={styles.input}
+                value={distance}
+                onChangeText={(text) =>setDistance(text)}
+                editable={true}
+              />
+              <Text style={styles.buttonText}>मीटर</Text>
             </TouchableOpacity>
 
             {/* Information Section */}

@@ -122,7 +122,7 @@ const AllComplaints = ({navigation}) => {
           keyExtractor={item => item.ComplaintId.toString()}
           renderItem={({item}) => (
             <View style={{flex: 1, paddingHorizontal: '3%'}}>
-              {item.ComplaintStatusName != null ? (
+              {item.ComplaintStatusName === "Complete" ? (
                 <ComplaintCard
                   id={item.ComplaintId.toString()}
                   name={item.ComplainantName || 'N/A'}
@@ -133,6 +133,7 @@ const AllComplaints = ({navigation}) => {
                   onPress={() =>
                     navigation.navigate('ComplaintDescription', {
                       fromScreen: 'AllComplaints',
+                      complaint: item,
                     })
                   }
                   color="#0D92F4"

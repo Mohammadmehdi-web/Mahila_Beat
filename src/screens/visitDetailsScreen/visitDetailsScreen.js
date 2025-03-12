@@ -112,19 +112,19 @@ const VisitDetailsScreen = ({navigation}) => {
               <View style={styles.row}>
                 <TouchableOpacity
                   style={[styles.button, styles.purpleButton]}
-                  onPress={() =>
+                  onPress={() =>{
                     navigation.navigate('SamvadDetails', {
                       ActivityDate: formatDate(details.ActivityDate),
-                    })
+                    })}
                   }>
                   <Text style={styles.buttonText}>संवाद / जागरूकता</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.button, styles.purpleButton]}
-                  onPress={() =>
+                  onPress={() =>{
                     navigation.navigate('ComplaintScreen', {
                       ActivityDate: formatDate(details.ActivityDate),
-                    })
+                    })}
                   }>
                   <Text style={styles.buttonText}>शिकायत निराकरण</Text>
                 </TouchableOpacity>
@@ -132,8 +132,9 @@ const VisitDetailsScreen = ({navigation}) => {
 
               <TouchableOpacity
                 style={[styles.button, styles.orangeButton]}
-                onPress={() =>
+                onPress={() =>{
                   navigation.navigate('BhramadDetails')
+                }
                 }>
                 <Text style={styles.buttonText}>भ्रमण की जानकारी</Text>
               </TouchableOpacity>
