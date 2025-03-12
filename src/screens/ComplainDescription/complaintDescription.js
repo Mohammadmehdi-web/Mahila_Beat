@@ -5,17 +5,25 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useNavigationState, useRoute} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
 
 import Header from '../../components/header/header';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
+import ComplaintVideo from '../../components/complaintVideo/complaintVideo';
+
+import DummyImg from '../../assets/dummyimg.jpg';
 
 const ComplaintDescription = ({navigation}) => {
   const route = useRoute();
   const {complaint} = route.params || {};
+  const {PoliceName, MobileNumber} = useSelector(
+    state => state.auth.userDetails,
+  );
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
 
@@ -26,6 +34,8 @@ const ComplaintDescription = ({navigation}) => {
   const handleBackPress = () => {
     navigation.navigate(previousScreen);
   };
+
+  console.log(complaint);
 
   return (
     <>
@@ -67,15 +77,35 @@ const ComplaintDescription = ({navigation}) => {
           <Text style={styles.highlight}>
             {complaint?.ProblemName || 'Unknown'}
           </Text>
-
+          {complaint.ComplainantImage ? (
+            <View
+              style={{
+                width: '100%',
+                flex: 1,
+                alignItems: 'center',
+              }}>
+              <Text style={styles.label}>शिकायत के समय ली गई छवि</Text>
+              <Image
+                source={
+                  complaint.ComplainantImage
+                    ? {uri: complaint?.ComplainantImage}
+                    : DummyImg
+                }
+                style={styles.image}
+              />
+            </View>
+          ) : (
+            <></>
+          )}
+          {complaint.ComplainantVideo ? (
+            <View style={{flex: 1}}>
+              <ComplaintVideo videoUrl={complaint.ComplainantVideo} />
+            </View>
+          ) : (
+            <></>
+          )}
           <Text style={styles.label}>शिकायत का दिनांक व समय</Text>
-          <Text style={styles.highlight}>
-            {(complaint?.ComplaintDate &&
-              new Date(
-                parseInt(complaint.ComplaintDate.match(/\d+/)[0]),
-              ).toLocaleDateString()) ||
-              'N/A'}
-          </Text>
+          <Text style={styles.highlight}>{complaint?.ComplaintDate}</Text>
 
           <Text style={styles.label}>शिकायत का स्थान</Text>
           <Text style={styles.highlight}>भ्रमण के दौरान</Text>
@@ -95,7 +125,7 @@ const ComplaintDescription = ({navigation}) => {
 
           <Text style={styles.label}>शिकायत पर कार्यवाहीकर्ता</Text>
           <Text style={styles.highlight}>
-            उ0नि0 श्री देवेंद्र सिंह, 9876543210
+            उ0नि0 {PoliceName} {MobileNumber}
           </Text>
         </View>
       </ScrollView>
@@ -145,6 +175,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#d32f2f',
+  },
+  image: {
+    width: '100%',
+    height: 150,
+    borderRadius: 8,
+    paddingHorizontal: '2%',
   },
 });
 

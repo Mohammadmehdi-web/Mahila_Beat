@@ -6,11 +6,9 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  Linking,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import {useRoute} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 
 import Header from '../../components/header/header';
@@ -38,16 +36,9 @@ const BhramadDetails = ({navigation}) => {
   const {MahilaBeatName, StateName, DistrictName, ThanaName} = useSelector(
     state => state.auth.userDetails,
   );
-  const details = activityData.bhramadDetails;
-  const samvadData = activityData.samvadDetails[0];
-  const complaintData = activityData.complaints[0];
-  console.log(samvadData);
-  console.log(complaintData.ComplainantImage);
-  console.log(complaintData.ComplainantName);
-  console.log(complaintData.ComplainantNumber);
-  console.log(complaintData.ComplaintStatusId);
-  console.log(complaintData.ComplainantVideo);
-  console.log(complaintData.ComplaintDate);
+  const details = activityData?.bhramadDetails || {};
+  const samvadData = activityData?.samvadDetails?.[0] || null;
+  const complaintData = activityData?.complaints?.[0] || null;
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -187,26 +178,30 @@ const BhramadDetails = ({navigation}) => {
             <Text style={styles.value}>{details.DistanceActivity} मीटर </Text>
           </View>
 
+          { samvadData?
             <Image
-              source={
-                samvadData.Image ?
-                {uri: samvadData.Image}:
-                DummyImg
-              }
+            source={samvadData.Image ? {uri: samvadData.Image} : DummyImg}
+            style={styles.image}
+            resizeMode="contain"
+          />:
+          <></>
+          }
 
-              style={styles.image}
-              resizeMode="contain"
-            />
-
-          {/* Pink Button */}
-          <View style={styles.pinkButton}>
+          {!samvadData? (
+            <View style={styles.fallbackContainer}>
+              <Text style={styles.fallbackText}>
+                ❌ संवाद का विवरण उपलब्ध नहीं है।
+              </Text>
+            </View>
+          ):(
+            <>
+            <View style={styles.pinkButton}>
             <Text style={styles.buttonText}>संवाद का विवरण</Text>
           </View>
 
           <TouchableOpacity
             style={styles.accordion}
-            onPress={() => setIsDropdownOpen(!isDropdownOpen)}
-            >
+            onPress={() => setIsDropdownOpen(!isDropdownOpen)}>
             <Text style={styles.accordionText}>मिशन शक्तिक कक्ष</Text>
             <MaterialIcon
               name={
@@ -289,9 +284,22 @@ const BhramadDetails = ({navigation}) => {
             </View>
           )}
 
-          <View style={styles.pinkButton}>
+            </>
+          )}
+
+          {/* Pink Button */}
+          
+           {/* 🔹 Fallback for Missing Complaint Details */}
+           { !complaintData? (
+            <View style={styles.fallbackContainer}>
+              <Text style={styles.fallbackText}>❌ शिकायत का विवरण उपलब्ध नहीं है।</Text>
+            </View>
+          ):(
+            <>
+             <View style={styles.pinkButton}>
             <Text style={styles.buttonText}>शिकायत का विवरण</Text>
           </View>
+
           <View>
             <View style={styles.nameContainer}>
               <Text style={styles.label}>शिकायतकर्ता का नाम:</Text>
@@ -322,8 +330,7 @@ const BhramadDetails = ({navigation}) => {
                 source={
                   complaintData.ComplainantImage
                     ? {uri: complaintData.ComplainantImage}
-                    : 
-                  DummyImg
+                    : DummyImg
                 }
                 style={styles.image}
               />
@@ -333,6 +340,11 @@ const BhramadDetails = ({navigation}) => {
           <TouchableOpacity style={styles.accordion}>
             <Text style={styles.accordionText}>{complaintData.ProblemId}</Text>
           </TouchableOpacity>
+            </>
+          )
+          }
+
+         
         </ScrollView>
       </View>
     </>
@@ -381,7 +393,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 150,
     borderRadius: 8,
-    paddingHorizontal:'2%'
+    paddingHorizontal: '2%',
   },
   pinkButton: {
     backgroundColor: '#E91E63',

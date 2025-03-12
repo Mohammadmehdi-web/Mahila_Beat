@@ -40,6 +40,7 @@ const Login = ({navigation}) => {
       },
     );
     if (response?.data?.success === true) {
+      console.log(response.data.sessionData)
       const userDetails = response.data.sessionData;
       dispatch(loginSuccess(userDetails));
       navigation.navigate('Home');

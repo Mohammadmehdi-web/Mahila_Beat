@@ -123,7 +123,7 @@ const AllVisits = ({navigation}) => {
                 key={index}
                 location={`${item.StateName}/ ${
                   item.DistrictName
-                }/ ${item.ThanaName}`}
+                }/ ${item.ThanaName.trim()}`}
                 officer={`${item.PoliceName} - ${item.MobileNumber}`}
                 distance={item.DistanceActivity}
                 date={item.ActivityDate}

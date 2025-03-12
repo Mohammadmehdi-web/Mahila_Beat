@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,7 @@ import {useNavigationState, useRoute} from '@react-navigation/native';
 
 const VisitInfo = ({navigation}) => {
   const route = useRoute();
-  const {visitInfo} = route.params || {}
+  const {visitInfo} = route.params || {};
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -24,16 +24,19 @@ const VisitInfo = ({navigation}) => {
     state => state.routes[state.index - 1]?.name,
   );
 
-  console.log(visitInfo);
-  const mahilaDetails=[
-    {id:1, name: visitInfo.OneWomanName, phn:visitInfo.OneWomanNumber},
-    {id:2, name: visitInfo.TwoWomanName, phn:visitInfo.TwoWomanNumber},
-    {id:3, name: visitInfo.ThreeWomanName, phn:visitInfo.ThreeWomanNumber},
- ]
+  const mahilaDetails = [
+    {id: 1, name: visitInfo.OneWomanName, phn: visitInfo.OneWomanNumber},
+    {id: 2, name: visitInfo.TwoWomanName, phn: visitInfo.TwoWomanNumber},
+    {id: 3, name: visitInfo.ThreeWomanName, phn: visitInfo.ThreeWomanNumber},
+  ];
 
   const handleBackPress = () => {
     navigation.navigate(previousScreen);
   };
+
+  useEffect(() => {
+    console.log(visitInfo);
+  }, []);
   return (
     <>
       <SideModal
@@ -128,7 +131,9 @@ const VisitInfo = ({navigation}) => {
                     <View>
                       <View style={styles.nameContainer}>
                         <Text style={styles.label}>नाम</Text>
-                        <Text style={[styles.value, styles.highlight]}>{item.name}</Text>
+                        <Text style={[styles.value, styles.highlight]}>
+                          {item.name}
+                        </Text>
                       </View>
                       <View
                         style={{
@@ -139,7 +144,9 @@ const VisitInfo = ({navigation}) => {
                       />
                       <View style={styles.nameContainer}>
                         <Text style={styles.label}>मोबाइल नं</Text>
-                        <Text style={[styles.value, styles.highlight]}>{item.phn}</Text>
+                        <Text style={[styles.value, styles.highlight]}>
+                          {item.phn}
+                        </Text>
                       </View>
                     </View>
                   </View>
@@ -151,7 +158,9 @@ const VisitInfo = ({navigation}) => {
                     {flexDirection: 'column'},
                   ]}>
                   <Text style={styles.label}>सरकारी योजनाओं की जानकारी</Text>
-                  <Text style={[styles.value, styles.highlight]}>प्रधानमंत्री उज्ज्वला योजना</Text>
+                  <Text style={[styles.value, styles.highlight]}>
+                    प्रधानमंत्री उज्ज्वला योजना
+                  </Text>
                 </View>
               </View>
             </View>
