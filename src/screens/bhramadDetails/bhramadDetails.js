@@ -316,7 +316,7 @@ const BhramadDetails = ({navigation}) => {
             <View style={styles.nameContainer}>
               <Text style={styles.label}>स्थिति:</Text>
               <Text style={styles.value}>
-                {complaintData.ComplaintStatusId}
+                {complaintData.ComplaintStatusName}
               </Text>
             </View>
             <Divider />
@@ -332,7 +332,7 @@ const BhramadDetails = ({navigation}) => {
                     ? {uri: complaintData.ComplainantImage}
                     : DummyImg
                 }
-                style={styles.image}
+                style={[styles.image, {padding:'4%'}]}
               />
             </View>
           </View>

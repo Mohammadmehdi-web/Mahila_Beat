@@ -48,6 +48,7 @@ const ComplaintScreen = ({navigation}) => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Function to handle camera
   const openCamera = () => {
@@ -81,7 +82,9 @@ const ComplaintScreen = ({navigation}) => {
   const handleSubmit = () => {
     if (!complainantName || !mobileNumber || !problemType) {
       Alert.alert('कृपया सभी आवश्यक फ़ील्ड भरें');
-    } else {
+    } else if (!loading) {
+      // Prevent multiple submissions
+      setLoading(true); // Disable button
       postComplaintData();
     }
   };
@@ -130,6 +133,8 @@ const ComplaintScreen = ({navigation}) => {
       formData.append('Status', selectedComplain?.name);
       formData.append('AddedBy', Number(UserId));
 
+      console.log(formData);
+
       // Append image if available
       if (imageUri) {
         formData.append('ComplainantImage', {
@@ -147,7 +152,6 @@ const ComplaintScreen = ({navigation}) => {
           name: 'complainant_video.mp4',
         });
       }
-
 
       const response = await axios.post(API_URL, formData, {
         headers: {
@@ -175,6 +179,8 @@ const ComplaintScreen = ({navigation}) => {
     } catch (error) {
       console.error('Error posting complaint data:', error);
       Alert.alert('कुछ गलत हो गया, कृपया पुनः प्रयास करें');
+    } finally {
+      setLoading(false); // Re-enable button
     }
   };
 
@@ -265,7 +271,9 @@ const ComplaintScreen = ({navigation}) => {
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={problemType}
-                onValueChange={itemValue => setSelectedComplain(JSON.parse(itemValue))}
+                onValueChange={itemValue =>
+                  setSelectedComplain(JSON.parse(itemValue))
+                }
                 style={styles.picker}
                 dropdownIconColor="black">
                 <Picker.Item label="शिकायत की स्थिति चुनें" value="" />
@@ -313,8 +321,13 @@ const ComplaintScreen = ({navigation}) => {
           </View>
 
           {/* Submit Button */}
-          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-            <Text style={styles.submitButtonText}>जानकारी सुरक्षित करें</Text>
+          <TouchableOpacity
+            style={[styles.submitButton, loading && {backgroundColor: '#ccc'}]}
+            onPress={handleSubmit}
+            disabled={loading}>
+            <Text style={styles.submitButtonText}>
+              {loading ? 'सहेजा जा रहा है...' : 'जानकारी सुरक्षित करें'}
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </View>

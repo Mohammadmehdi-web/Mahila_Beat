@@ -125,7 +125,8 @@ const ComplaintDescription = ({navigation}) => {
 
           <Text style={styles.label}>शिकायत पर कार्यवाहीकर्ता</Text>
           <Text style={styles.highlight}>
-            उ0नि0 {PoliceName} {MobileNumber}
+            उ0नि0 {PoliceName} {MobileNumber} {'\n'}
+           {complaint.PoliceName? `उ0नि0 ${complaint.PoliceName} ${complaint.PoliceId}` : <></>}
           </Text>
         </View>
       </ScrollView>

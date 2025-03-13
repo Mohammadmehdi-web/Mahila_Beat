@@ -7,7 +7,7 @@ const VisitCard = ({id,location, officer, distance, date, onPress}) => {
       <View style={styles.card}>
         <Text style={styles.location}>{location}</Text>
         <Text style={styles.officer}>{officer}</Text>
-        <Text style={styles.distance}>{distance} किलोमीटर</Text>
+        <Text style={styles.distance}>गांव / मोहल्ले से दूरी - {distance}</Text>
         <View style={styles.dateContainer}>
           <Text style={styles.date}>{date}</Text>
         </View>
