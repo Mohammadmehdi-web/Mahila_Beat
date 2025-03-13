@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -12,17 +13,27 @@ import SideModal from '../../components/sideModal/sideModal';
 import Header from '../../components/header/header';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import {useNavigationState, useRoute} from '@react-navigation/native';
+import axios from 'axios';
+import ComplaintVideo from '../../components/complaintVideo/complaintVideo';
+import Divider from '../../components/divider/divider';
+
+const API_URL = 'http://re.auctech.in/MobileAppApi/getTotalComplaintMaster';
+const API_BEARER =
+  'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxtotalComplaint';
 
 const VisitInfo = ({navigation}) => {
   const route = useRoute();
   const {visitInfo} = route.params || {};
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isSikhayatDropOpen, setIsShikayatDropOpen] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
   const previousScreen = useNavigationState(
     state => state.routes[state.index - 1]?.name,
   );
+
+  const [shikayatData, setShikayatData] = useState([]);
 
   const mahilaDetails = [
     {id: 1, name: visitInfo.OneWomanName, phn: visitInfo.OneWomanNumber},
@@ -34,8 +45,31 @@ const VisitInfo = ({navigation}) => {
     navigation.navigate(previousScreen);
   };
 
+  const getShikayatDetails = async () => {
+    const response = await axios.post(
+      API_URL,
+      {
+        ActivityId: visitInfo.ActivityId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${API_BEARER}`,
+        },
+      },
+    );
+
+    if (response.data.success === true) {
+      console.log(response.data.data);
+      setShikayatData(response.data.data);
+    } else {
+      console.log('Error in fetching shikayat details');
+    }
+  };
+
   useEffect(() => {
     console.log(visitInfo);
+    getShikayatDetails();
+    console.log(shikayatData);
   }, []);
   return (
     <>
@@ -72,7 +106,9 @@ const VisitInfo = ({navigation}) => {
 
             <Text style={styles.label}>क्षेत्र का नाम</Text>
             <Text style={[styles.value, styles.highlight]}>
-              {`${visitInfo?.StateName}/${visitInfo?.DistrictName}/${visitInfo?.ThanaName.trim()}`}
+              {`${visitInfo?.StateName}/${
+                visitInfo?.DistrictName
+              }/${visitInfo?.ThanaName.trim()}`}
             </Text>
 
             <Text style={styles.label}>भ्रमण में सहकर्मी का नाम</Text>
@@ -166,9 +202,77 @@ const VisitInfo = ({navigation}) => {
             </View>
           )}
 
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setIsShikayatDropOpen(!isSikhayatDropOpen)}>
             <Text style={styles.buttonText}>शिकायत का विवरण</Text>
           </TouchableOpacity>
+
+          {isSikhayatDropOpen && (
+            <View style={styles.dropdownContent}>
+              {shikayatData.length > 0 ? (
+                shikayatData.map((complaint, index) => (
+                  <View key={complaint.ComplaintId} style={{gap: 10}}>
+                    <View style={styles.pinkButton}>
+                      <Text style={styles.buttonText}>
+                        शिकायत {index + 1} का विवरण
+                      </Text>
+                    </View>
+                    <Divider />
+                    <View style={styles.bottomTextContainer}>
+                      <Text style={styles.label}>शिकायत दिनांक</Text>
+                      <Text style={[styles.value, styles.highlight]}>
+                        {complaint.ComplaintDate}
+                      </Text>
+                    </View>
+                    <View style={styles.bottomTextContainer}>
+                      <Text style={styles.label}>शिकायतकर्ता का नाम</Text>
+                      <Text style={[styles.value, styles.highlight]}>
+                        {complaint.ComplainantName}
+                      </Text>
+                    </View>
+                    <View style={styles.bottomTextContainer}>
+                      <Text style={styles.label}>शिकायतकर्ता का मोबाइल</Text>
+                      <Text style={[styles.value, styles.highlight]}>
+                        {complaint.ComplainantNumber}
+                      </Text>
+                    </View>
+                    <View style={styles.bottomTextContainer}>
+                      <Text style={styles.label}>समस्या का प्रकार</Text>
+                      <Text style={[styles.value, styles.highlight]}>
+                        {complaint.ProblemName}
+                      </Text>
+                    </View>
+                    {complaint.ComplainantImage && (
+                      <View style={styles.bottomTextContainer}>
+                        <Text style={styles.label}>शिकायत छवि</Text>
+                        <Image
+                          source={{uri: complaint.ComplainantImage}}
+                          style={{width: 100, height: 100}}
+                        />
+                      </View>
+                    )}
+                    {complaint.ComplainantVideo && (
+                      <View style={styles.bottomTextContainer}>
+                        <View
+                          style={{
+                            flex: 1,
+                            resizeMode: 'contain',
+                            paddingHorizontal: '2%',
+                          }}>
+                          <ComplaintVideo
+                            videoUrl={complaint.ComplainantVideo}
+                          />
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                ))
+              ) : (
+                <Text>No complaints available.</Text>
+              )}
+            </View>
+          )}
         </ScrollView>
       </View>
     </>
@@ -237,7 +341,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   button: {
-    width: '90%',
+    width: '95%',
     backgroundColor: '#E91E63',
     padding: 12,
     borderRadius: 8,
@@ -250,6 +354,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   dropdownContent: {
+    width: '90%',
     padding: '4%',
     borderRadius: 8,
     backgroundColor: '#fff',
