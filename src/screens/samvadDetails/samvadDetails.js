@@ -38,7 +38,7 @@ const ADD_SCH_BEARER =
 
 const SamvadDetails = ({navigation}) => {
   const routes = useRoute();
-  const { ActivityDate} = routes.params || {};
+  const {ActivityDate} = routes.params || {};
   const {UserId} = useSelector(state => state.auth.userDetails);
   const activityId = useSelector(state => state.activity.currentActivityId);
   const dispatch = useDispatch();
@@ -58,6 +58,7 @@ const SamvadDetails = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
   const [inputVisible, setInputVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = text => {
     setGovSchemeName(text);
@@ -90,37 +91,14 @@ const SamvadDetails = ({navigation}) => {
     setWomenData(newData);
   };
 
-  // const uploadFile = async (fileUri, fileType) => {
-  //   if (!fileUri) return null;
-
-  //   const formData = new FormData();
-  //   formData.append('file', {
-  //     uri: fileUri,
-  //     name: fileUri.split('/').pop(),
-  //     type: fileType,
-  //   });
-
-  //   try {
-  //     const response = await axios.post(UPLOAD_API, formData, {
-  //       headers: {'Content-Type': 'multipart/form-data'},
-  //     });
-  //     if (response.data.success) {
-  //       return response.data.fileUrl; // Assume the API returns the file URL
-  //     } else {
-  //       Alert.alert('फ़ाइल अपलोड विफल');
-  //       return null;
-  //     }
-  //   } catch (error) {
-  //     console.error('Upload Error:', error);
-  //     Alert.alert('फ़ाइल अपलोड विफल');
-  //     return null;
-  //   }
-  // };
-
   const handleValidation = () => {
     if (!selectedLocation || !selectedScheme || !womenCount || !womenData) {
       Alert.alert('सभी फ़ील्ड भरें');
-    } else postSamvadData();
+    } else if (!loading) {
+      // Prevent multiple submissions
+      setLoading(true); // Disable button
+      postSamvadData();
+    }
   };
 
   const addGovScheme = async () => {
@@ -156,7 +134,7 @@ const SamvadDetails = ({navigation}) => {
   const postSamvadData = async () => {
     try {
       const formData = new FormData();
-  
+
       formData.append('ActivityId', activityId);
       formData.append('ConversationNumer', womenCount);
       formData.append('OneWomanName', womenData[0].name);
@@ -167,31 +145,31 @@ const SamvadDetails = ({navigation}) => {
       formData.append('ThreeWomanNumber', womenData[2].mobileNumber);
       formData.append('GovernmentschemesId', selectedScheme);
       formData.append('AddedBy', UserId);
-  
+
       // Check if the image exists before appending
       if (imageUri) {
         formData.append('Image', {
           uri: imageUri,
           type: 'image/jpeg', // Modify type accordingly
-          name: 'photo.jpg',  // File name
+          name: 'photo.jpg', // File name
         });
       }
-  
+
       const response = await axios.post(API_URL, formData, {
         headers: {
           Authorization: `Bearer ${BEARER_TOKEN}`,
           'Content-Type': 'multipart/form-data',
         },
       });
-  
+
       if (response.data.success === true) {
         Alert.alert('आपका संवाद विवरण सहेज लिया गया है');
         console.log(response.data.data[0]);
-        
+
         dispatch(
           addSamvadDetails({
             activityId,
-            samvadData: {...response.data.data[0], PlaceName: selectedLocation} ,
+            samvadData: {...response.data.data[0], PlaceName: selectedLocation},
           }),
         );
         navigation.navigate('VisitDetails');
@@ -201,9 +179,11 @@ const SamvadDetails = ({navigation}) => {
     } catch (error) {
       console.error('Error posting Samvad data:', error);
       Alert.alert('कुछ गलत हो गया, कृपया पुनः प्रयास करें');
+    } finally {
+      setLoading(false); // Re-enable button
     }
   };
-  
+
   useEffect(() => {
     getGovScheme();
   }, []);
@@ -338,9 +318,12 @@ const SamvadDetails = ({navigation}) => {
           </View>
 
           <TouchableOpacity
-            style={styles.submitButton}
-            onPress={handleValidation}>
-            <Text style={styles.submitButtonText}>जानकारी सुरक्षित करें</Text>
+            style={[styles.submitButton, loading && {backgroundColor: '#ccc'}]}
+            onPress={handleValidation}
+            disabled={loading}>
+            <Text style={styles.submitButtonText}>
+              {loading ? 'सहेजा जा रहा है...' : 'जानकारी सुरक्षित करें'}
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </View>

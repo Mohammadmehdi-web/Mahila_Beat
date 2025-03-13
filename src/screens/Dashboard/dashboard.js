@@ -56,7 +56,6 @@ const Dashboard = ({navigation}) => {
     );
 
     if (response.data.success === true) {
-      console.log(response.data.data);
 
       setTotalCount(response?.data?.data);
     } else {

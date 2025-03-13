@@ -72,7 +72,7 @@ const VisitInfo = ({navigation}) => {
 
             <Text style={styles.label}>क्षेत्र का नाम</Text>
             <Text style={[styles.value, styles.highlight]}>
-              {`${visitInfo?.StateName}/${visitInfo?.DistrictName}/${visitInfo?.ThanaName}`}
+              {`${visitInfo?.StateName}/${visitInfo?.DistrictName}/${visitInfo?.ThanaName.trim()}`}
             </Text>
 
             <Text style={styles.label}>भ्रमण में सहकर्मी का नाम</Text>

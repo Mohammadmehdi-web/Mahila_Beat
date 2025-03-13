@@ -25,7 +25,6 @@ const ComplaintCard = ({
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.phone}>{phone}</Text>
         <Text style={styles.category}>{category}</Text>
-        <Text style={styles.address}>{address}</Text>
         <Text style={styles.date}>शिकायत दिनांक - {date}</Text>
       </View>
     </TouchableOpacity>

@@ -143,7 +143,7 @@ const DetailsScreen = ({navigation}) => {
     const response = await axios.post(
       API_URL,
       {
-        ActivityDate: date,
+        ActivityDate: formatDate(date),
         DistanceActivity: `${formattedDistance} मीटर`,
         BeatAreaName: selectedVillage?.name,
         SahkramiId: selectedAssistant?.id,
@@ -236,13 +236,15 @@ console.log(selectedVillage);
               />
             </View>
 
-            <TouchableOpacity style={[styles.pinkButton, {flexDirection:'row'}]}>
+            <TouchableOpacity style={[styles.inputRow, { paddingHorizontal:'3%'}]}>
               <Text style={styles.buttonText}>गाँव / मोहल्ला की दूरी</Text>
               <TextInput
                 style={styles.input}
                 value={distance}
+                placeholder='0.0'
                 onChangeText={(text) =>setDistance(text)}
                 editable={true}
+                keyboardType='numeric'
               />
               <Text style={styles.buttonText}>मीटर</Text>
             </TouchableOpacity>
