@@ -20,6 +20,7 @@ import Header from '../../components/header/header';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import {addComplaintDetails} from '../../redux/slice/activitySlice';
+import {validateComplainantDetails} from '../../utils/validation';
 
 const PROBLEM_API = 'http://re.auctech.in/MobileAppApi/GetProblemMasterDetails';
 const PROBLEM_BEARER =
@@ -45,6 +46,7 @@ const ComplaintScreen = ({navigation}) => {
   });
   const [imageUri, setImageUri] = useState(null);
   const [videoUri, setVideoUri] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
@@ -82,7 +84,9 @@ const ComplaintScreen = ({navigation}) => {
   const handleSubmit = () => {
     if (!complainantName || !mobileNumber || !problemType) {
       Alert.alert('कृपया सभी आवश्यक फ़ील्ड भरें');
-    } else if (!loading) {
+    } else if (
+      validateComplainantDetails(complainantName, mobileNumber, setErrors)
+    ) {
       // Prevent multiple submissions
       setLoading(true); // Disable button
       postComplaintData();
@@ -225,25 +229,37 @@ const ComplaintScreen = ({navigation}) => {
           <View style={styles.inputSection}>
             <Text style={styles.label}>शिकायतकर्ता का नाम</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                errors.complainantName ? {borderColor: 'red'} : null,
+              ]}
               value={complainantName}
               onChangeText={setComplainantName}
               placeholder="नाम दर्ज करें"
               placeholderTextColor="#B3B3B3"
             />
+            {errors.complainantName && (
+              <Text style={styles.errorText}>{errors.complainantName}</Text>
+            )}
           </View>
 
           {/* Mobile Number Input */}
           <View style={styles.inputSection}>
             <Text style={styles.label}>शिकायतकर्ता का मोबाइल नंबर</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                errors.mobileNumber ? {borderColor: 'red'} : null,
+              ]}
               value={mobileNumber}
               onChangeText={setMobileNumber}
               placeholder="मोबाइल नंबर दर्ज करें"
               keyboardType="numeric"
               placeholderTextColor="#B3B3B3"
             />
+            {errors.mobileNumber && (
+              <Text style={styles.errorText}>{errors.mobileNumber}</Text>
+            )}
           </View>
 
           <View style={styles.inputSection}>
@@ -436,6 +452,11 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 5,
   },
 });
 

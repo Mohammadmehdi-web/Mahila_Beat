@@ -212,7 +212,7 @@ const VisitInfo = ({navigation}) => {
             <View style={styles.dropdownContent}>
               {shikayatData.length > 0 ? (
                 shikayatData.map((complaint, index) => (
-                  <View key={complaint.ComplaintId} style={{gap: 10}}>
+                  <View key={complaint.ComplaintId} style={{gap: 15}}>
                     <View style={styles.pinkButton}>
                       <Text style={styles.buttonText}>
                         शिकायत {index + 1} का विवरण
@@ -324,7 +324,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: '#000',
-    marginTop: 10,
   },
   value: {
     fontSize: 14,

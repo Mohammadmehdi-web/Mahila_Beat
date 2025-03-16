@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import {View, Text, TextInput, StyleSheet} from 'react-native';
 
-const WomenInfoCard = ({ index, womanData, updateData }) => {
+const WomenInfoCard = ({index, womanData, updateData, errors}) => {
   return (
     <View style={styles.cardContainer}>
       <Text style={styles.sectionHeader}>{index + 1}. महिला की जानकारी</Text>
@@ -12,10 +12,13 @@ const WomenInfoCard = ({ index, womanData, updateData }) => {
         <TextInput
           style={styles.input}
           value={womanData.name}
-          onChangeText={(text) => updateData(index, 'name', text)}
+          onChangeText={text => updateData(index, 'name', text)}
           placeholder="नाम दर्ज करें"
           placeholderTextColor="#B3B3B3"
         />
+        {errors[`name${index + 1}`] && (
+          <Text style={styles.errorText}>{errors[`name${index + 1}`]}</Text>
+        )}
       </View>
 
       <View style={styles.inputContainer}>
@@ -24,11 +27,14 @@ const WomenInfoCard = ({ index, womanData, updateData }) => {
         <TextInput
           style={styles.input}
           value={womanData.mobileNumber}
-          onChangeText={(text) => updateData(index, 'mobileNumber', text)}
+          onChangeText={text => updateData(index, 'mobileNumber', text)}
           placeholder="मोबाइल नंबर दर्ज करें"
           keyboardType="numeric"
           placeholderTextColor="#B3B3B3"
         />
+        {errors[`mobile${index + 1}`] && (
+          <Text style={styles.errorText}>{errors[`mobile${index + 1}`]}</Text>
+        )}
       </View>
     </View>
   );
@@ -70,6 +76,11 @@ const styles = StyleSheet.create({
     padding: 8,
     fontSize: 14,
     backgroundColor: '#f9f9f9',
+    marginTop: 5,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
     marginTop: 5,
   },
 });

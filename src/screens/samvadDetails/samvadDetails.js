@@ -22,6 +22,7 @@ import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import {addSamvadDetails} from '../../redux/slice/activitySlice';
 import InputModal from '../../components/inputModal/inputModal';
+import {validateWomanDetails} from '../../utils/validation';
 
 const API_URL = 'http://re.auctech.in/MobileAppApi/AddConversationMaster';
 const BEARER_TOKEN =
@@ -54,6 +55,14 @@ const SamvadDetails = ({navigation}) => {
     {name: '', mobileNumber: ''},
   ]);
   const [govSchemeName, setGovSchemeName] = useState('');
+  const [errors, setErrors] = useState({
+    name1: '',
+    mobile1: '',
+    name2: '',
+    mobile2: '',
+    name3: '',
+    mobile3: '',
+  });
 
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
@@ -94,7 +103,7 @@ const SamvadDetails = ({navigation}) => {
   const handleValidation = () => {
     if (!selectedLocation || !selectedScheme || !womenCount || !womenData) {
       Alert.alert('सभी फ़ील्ड भरें');
-    } else if (!loading) {
+    } else if (validateWomanDetails(womenData, errors, setErrors)) {
       // Prevent multiple submissions
       setLoading(true); // Disable button
       postSamvadData();
@@ -270,6 +279,7 @@ const SamvadDetails = ({navigation}) => {
                 index={index}
                 womanData={item}
                 updateData={updateData}
+                errors={errors}
               />
             ))}
           </View>
