@@ -113,6 +113,13 @@ const ComplaintList = ({navigation}) => {
     setFilteredComplaints(filtered);
   };
 
+  const handleComplaintPress = complaint => {
+    // Navigate and pass only the necessary data
+    navigation.navigate('ComplaintDescription', {
+      complaint: complaint, // Pass the complaint object
+    });
+  };
+
   return (
     <>
       <SideModal
@@ -158,26 +165,26 @@ const ComplaintList = ({navigation}) => {
           keyExtractor={item => item.ComplaintId.toString()}
           renderItem={({item}) => (
             <View style={{flex: 1, paddingHorizontal: '3%'}}>
-              <ComplaintCard
-                id={item.ComplaintId.toString()}
-                name={item.ComplainantName || 'N/A'}
-                phone={item.ComplainantNumber || 'N/A'}
-                category={item.ProblemName || 'Unknown'}
-                address={item.location || 'Not available'}
-                date={
-                  item.ComplaintDate
-                    ? new Date(
-                        parseInt(item.ComplaintDate.match(/\d+/)[0]),
-                      ).toLocaleDateString()
-                    : 'N/A'
-                }
-                onPress={() =>
-                  navigation.navigate('ComplaintDescription', {
-                    complaint: item,
-                  })
-                }
-                color="#D44624"
-              />
+              {item.ComplaintStatusName ? (
+                <ComplaintCard
+                  id={item.ComplaintId.toString()}
+                  name={item.ComplainantName || 'N/A'}
+                  phone={item.ComplainantNumber || 'N/A'}
+                  category={item.ProblemName || 'Unknown'}
+                  address={item.location || 'Not available'}
+                  date={
+                    item.ComplaintDate
+                      ? new Date(
+                          parseInt(item.ComplaintDate.match(/\d+/)[0]),
+                        ).toLocaleDateString()
+                      : 'N/A'
+                  }
+                  onPress={() => handleComplaintPress(item)}
+                  color="#D44624"
+                />
+              ) : (
+                <></>
+              )}
             </View>
           )}
         />
