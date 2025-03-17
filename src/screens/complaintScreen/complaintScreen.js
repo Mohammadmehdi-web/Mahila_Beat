@@ -37,7 +37,7 @@ const ComplaintScreen = ({navigation}) => {
   const {ActivityDate} = route.params || {};
   const [complainantName, setComplainantName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
-  const [problemType, setProblemType] = useState(null);
+  const [selected, setProblemType] = useState(null);
   const [problemList, setProblemList] = useState([]);
   const [complaintStatusList, setComplaintStatusList] = useState([]);
   const [selectedComplain, setSelectedComplain] = useState({
@@ -82,7 +82,7 @@ const ComplaintScreen = ({navigation}) => {
   };
 
   const handleSubmit = () => {
-    if (!complainantName || !mobileNumber || !problemType) {
+    if (!complainantName || !mobileNumber || !selected) {
       Alert.alert('कृपया सभी आवश्यक फ़ील्ड भरें');
     } else if (
       validateComplainantDetails(complainantName, mobileNumber, setErrors)
@@ -130,7 +130,7 @@ const ComplaintScreen = ({navigation}) => {
 
       formData.append('ActivityId', Number(activityId));
       formData.append('ComplaintDate', ActivityDate);
-      formData.append('ProblemId', Number(problemType));
+      formData.append('ProblemId', Number(selected));
       formData.append('ComplainantName', complainantName);
       formData.append('ComplaintStatusId', Number(selectedComplain?.id || 0));
       formData.append('ComplainantNumber', mobileNumber);
@@ -266,7 +266,7 @@ const ComplaintScreen = ({navigation}) => {
             <Text style={styles.label}>समस्या का प्रकार</Text>
             <View style={styles.pickerContainer}>
               <Picker
-                selectedValue={problemType}
+                selectedValue={selected}
                 onValueChange={itemValue => setProblemType(itemValue)}
                 style={styles.picker}
                 dropdownIconColor="black">
@@ -286,7 +286,7 @@ const ComplaintScreen = ({navigation}) => {
             <Text style={styles.label}>शिकायत की स्थिति</Text>
             <View style={styles.pickerContainer}>
               <Picker
-                selectedValue={problemType}
+                selectedValue={selectedComplain}
                 onValueChange={itemValue =>
                   setSelectedComplain(JSON.parse(itemValue))
                 }
