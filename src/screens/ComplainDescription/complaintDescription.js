@@ -108,7 +108,7 @@ const ComplaintDescription = ({navigation}) => {
 
       if (response.data.success === true) {
         Alert.alert('Complaint updated successfully');
-        navigation.navigate('ComplaintList');
+        handleBackPress();
         setUpdateModalVisible(false);
       } else {
         Alert.alert(`Error: 'Failed to update complaint'}`);
@@ -219,11 +219,13 @@ const ComplaintDescription = ({navigation}) => {
             )}
           </Text>
         </View>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setUpdateModalVisible(true)}>
-          <Text style={styles.buttonText}>शिकायत की स्थिति बदलें</Text>
-        </TouchableOpacity>
+        {complaint.ComplaintStatusName !== 'Complete' && (
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setUpdateModalVisible(true)}>
+            <Text style={styles.buttonText}>शिकायत की स्थिति बदलें</Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
       <Modal
         visible={updateModalVisible}

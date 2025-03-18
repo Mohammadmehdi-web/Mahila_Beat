@@ -239,7 +239,12 @@ const VisitInfo = ({navigation}) => {
                     </View>
                     <View style={styles.bottomTextContainer}>
                       <Text style={styles.label}>समस्या का प्रकार</Text>
-                      <Text style={[styles.value, styles.highlight]}>
+                      <Text
+                        style={[
+                          styles.value,
+                          styles.highlight,
+                          {width: '50%'},
+                        ]}>
                         {complaint.ProblemName}
                       </Text>
                     </View>

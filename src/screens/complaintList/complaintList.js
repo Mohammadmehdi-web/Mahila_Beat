@@ -174,10 +174,10 @@ const ComplaintList = ({navigation}) => {
                   address={item.location || 'Not available'}
                   date={
                     item.ComplaintDate
-                      ? new Date(
-                          parseInt(item.ComplaintDate.match(/\d+/)[0]),
-                        ).toLocaleDateString()
-                      : 'N/A'
+                    // ? new Date(
+                    //     parseInt(item.ComplaintDate.match(/\d+/)[0]),
+                    //   ).toLocaleDateString()
+                    // : 'N/A'
                   }
                   onPress={() => handleComplaintPress(item)}
                   color="#D44624"
