@@ -14,6 +14,7 @@ import axios from 'axios';
 import Logo from '../../assets/policeLogo.png';
 import {useDispatch} from 'react-redux';
 import {loginSuccess} from '../../redux/slice/authSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_URL = 'http://re.auctech.in/MobileAppApi/Login';
 const BEARER_TOKEN =
@@ -40,10 +41,18 @@ const Login = ({navigation}) => {
       },
     );
     if (response?.data?.success === true) {
-      console.log(response.data.sessionData)
+      console.log(response.headers.Authorization);
       const userDetails = response.data.sessionData;
-      dispatch(loginSuccess(userDetails));
-      navigation.navigate('Home');
+      const token = BEARER_TOKEN;
+
+      // Store in AsyncStorage before dispatching Redux action
+      await AsyncStorage.setItem('userDetails', JSON.stringify(userDetails));
+      await AsyncStorage.setItem('token', token);
+
+      dispatch(loginSuccess({userDetails, token}));
+      navigation.dispatch(
+        CommonActions.reset({index: 0, routes: [{name: 'Home'}]}),
+      );
     } else {
       Alert.alert(response.data.message);
     }

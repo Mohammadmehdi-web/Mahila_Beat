@@ -9,12 +9,15 @@ import {
   Modal,
   TouchableWithoutFeedback,
 } from 'react-native';
-// import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Logo from '../../assets/policeLogo.png';
+import {logout} from '../../redux/slice/authSlice';
+import {useDispatch} from 'react-redux';
+import {CommonActions} from '@react-navigation/native';
 
 const SideModal = ({isVisible, onClose, navigation}) => {
+  const dispatch = useDispatch();
   const menuItems = [
     {label: ' एप होम', icon: 'home', screen: 'Home'},
     {label: ' डैशबोर्ड', icon: 'view-dashboard', screen: 'Dashboard'},
@@ -42,43 +45,58 @@ const SideModal = ({isVisible, onClose, navigation}) => {
       onRequestClose={onClose}
       style={{margin: 0}}>
       <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.modalContent}>
-          {/* Header Section with Logo */}
-          <View style={styles.header}>
-            <Image source={Logo} style={styles.logo} />
-            <Text style={styles.title}>आगरा जोन पुलिस</Text>
-            <Text style={styles.subtitle}>सुरक्षा आपकी संकल्प हमारा</Text>
-          </View>
+        <View style={styles.modalBackground}>
+          <TouchableWithoutFeedback>
+            <View style={styles.modalContent}>
+              {/* Header Section with Logo */}
+              <View style={styles.header}>
+                <Image source={Logo} style={styles.logo} />
+                <Text style={styles.title}>आगरा जोन पुलिस</Text>
+                <Text style={styles.subtitle}>सुरक्षा आपकी संकल्प हमारा</Text>
+              </View>
 
-          {/* Menu Items */}
-          <ScrollView>
-            {menuItems.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.menuItem}
-                onPress={() => {
-                  if (item.screen === 'Login') {
-                    navigation.navigate('Login');
-                  } else {
-                    navigation.navigate(item.screen);
-                    onClose();
-                  }
-                }}>
-                <Icon
-                  name={item.icon}
-                  size={24}
-                  color="#C2185B"
-                  style={styles.icon}
-                />
-                <Text style={styles.menuText}>{item.label}</Text>
+              {/* Menu Items */}
+              <ScrollView>
+                {menuItems.map((item, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.menuItem}
+                    onPress={() => {
+                      if (item.screen === 'Login') {
+                        dispatch(logout());
+                        navigation.dispatch(
+                          CommonActions.reset({
+                            index: 0,
+                            routes: [{name: 'Login'}],
+                          }),
+                        );
+                      } else {
+                        navigation.dispatch(
+                          CommonActions.reset({
+                            index: 0,
+                            routes: [{name: item.screen}],
+                          }),
+                        );
+                        onClose();
+                      }
+                    }}>
+                    <Icon
+                      name={item.icon}
+                      size={24}
+                      color="#C2185B"
+                      style={styles.icon}
+                    />
+                    <Text style={styles.menuText}>{item.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              {/* Close Button */}
+              <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                <Text style={styles.closeText}>बंद करें</Text>
               </TouchableOpacity>
-            ))}
-          </ScrollView>
-
-          {/* Close Button */}
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeText}>बंद करें</Text>
-          </TouchableOpacity>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
     </Modal>
@@ -86,6 +104,10 @@ const SideModal = ({isVisible, onClose, navigation}) => {
 };
 
 const styles = StyleSheet.create({
+  modalBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
   modalContent: {
     width: '70%',
     height: '100%',

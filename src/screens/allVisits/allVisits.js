@@ -42,7 +42,7 @@ const AllVisits = ({navigation}) => {
     if (response?.data?.success === true) {
       console.log(response.data.data);
       setVisits(response.data.data);
-      setFilteredData(response.data.data)
+      setFilteredData(response.data.data);
     } else {
       console.log(response.data.message);
     }
@@ -53,35 +53,35 @@ const AllVisits = ({navigation}) => {
   }, []);
 
   const handleSearch = (selectedArea, fromDate, toDate) => {
-    console.log("Search Params:", { selectedArea, fromDate, toDate });
-  
+    console.log('Search Params:', {selectedArea, fromDate, toDate});
+
     if (!selectedArea && !fromDate && !toDate) {
       setFilteredData(visits);
       return;
     }
-  
+
     const filtered = visits.filter(item => {
-      console.log("Raw ActivityDate:", item.ActivityDate);
-  
+      console.log('Raw ActivityDate:', item.ActivityDate);
+
       // Convert "DD/MM/YYYY" → "YYYY-MM-DD"
-      const [day, month, year] = item.ActivityDate.split("/");
+      const [day, month, year] = item.ActivityDate.split('/');
       const visitDate = new Date(`${year}-${month}-${day}`); // Correct format for JavaScript
-  
-      console.log("Parsed VisitDate:", visitDate);
-  
+
+      console.log('Parsed VisitDate:', visitDate);
+
       // Convert `fromDate` and `toDate` to Date objects
       const from = fromDate ? new Date(fromDate) : null;
       const to = toDate ? new Date(toDate) : null;
-  
-      console.log("From Date:", from, "To Date:", to);
-  
+
+      console.log('From Date:', from, 'To Date:', to);
+
       return (!from || visitDate >= from) && (!to || visitDate <= to);
     });
-  
-    console.log("Filtered Results:", filtered.length);
+
+    console.log('Filtered Results:', filtered.length);
     setFilteredData(filtered);
   };
-  
+
   return (
     <>
       <SideModal
@@ -102,12 +102,17 @@ const AllVisits = ({navigation}) => {
         />
         <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.section}>
-            <Search handleChange={handleSearch}/>
+            <Search handleChange={handleSearch} />
             <View style={styles.statusBar}>
               <Text style={styles.totalCount}>
                 🔵 कुल भ्रमण - {filteredData.length}
               </Text>
-              <Icon name="reload" size={20} color="green" onPress={() => getVisitsList()}/>
+              <Icon
+                name="reload"
+                size={20}
+                color="green"
+                onPress={() => getVisitsList()}
+              />
               <Icon name="arrow-down" size={20} color="green" />
               <Icon
                 name="sort-alphabetical-ascending"
@@ -145,7 +150,7 @@ const styles = StyleSheet.create({
   container: {
     padding: '5%',
     backgroundColor: '#f8f8f8',
-    marginBottom:"20%",
+    paddingBottom: '15%',
   },
   section: {
     backgroundColor: '#fff',
@@ -168,7 +173,7 @@ const styles = StyleSheet.create({
   statusBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical:'3%',
+    paddingVertical: '3%',
     justifyContent: 'space-around',
   },
   totalCount: {
