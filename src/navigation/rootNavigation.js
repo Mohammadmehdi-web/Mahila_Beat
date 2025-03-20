@@ -1,59 +1,46 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {useDispatch, useSelector} from 'react-redux';
+import {restoreSession} from '../redux/slice/authSlice';
 
-import SplashScreen from '../screens/splashScreen/splashScreen';
-import Login from '../screens/login/login';
-import HomeScreen from '../screens/homeScreen/homeScreen';
-import Dashboard from '../screens/Dashboard/dashboard';
-import MeriBeat from '../screens/meriBeat/meriBeat';
-import DetailsScreen from '../screens/detailsScreen/detailsScreen';
-import VisitDetailsScreen from '../screens/visitDetailsScreen/visitDetailsScreen';
-import SamvadDetails from '../screens/samvadDetails/samvadDetails';
-import ComplaintScreen from '../screens/complaintScreen/complaintScreen';
-import ComplaintList from '../screens/complaintList/complaintList';
-import CompletedComplaints from '../screens/completedComplains/completedComplains';
-import BhramadDetails from '../screens/bhramadDetails/bhramadDetails';
-import ComplaintDescription from '../screens/ComplainDescription/complaintDescription';
-import AllComplaints from '../screens/allComplaints/allComplaints';
-import AllVisits from '../screens/allVisits/allVisits';
-import VisitInfo from '../screens/visitInfo/visitInfo';
-import MyVisits from '../screens/myVisits/myVisits';
+import AuthNav from './authNav';
+import UnauthNav from './unauthNav';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ActivityIndicator, View} from 'react-native';
 
 const Stack = createStackNavigator();
 
 const RootNav = () => {
+  const dispatch = useDispatch();
+  const isLoading = useSelector(state => state.auth.isLoading);
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+
+  useEffect(() => {
+    const loadSession = async () => {
+      const storedUser = await AsyncStorage.getItem('userDetails');
+      const storedToken = await AsyncStorage.getItem('token');
+      dispatch(
+        restoreSession({
+          userDetails: storedUser ? JSON.parse(storedUser) : null,
+          token: storedToken,
+        }),
+      );
+    };
+    loadSession();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <ActivityIndicator size="large" color="#C2185B" />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          gestureEnabled: true,
-        }}>
-        <Stack.Screen name="SplashScreen" component={SplashScreen} />
-        <Stack.Screen name="Login" component={Login} screenOptions={{gestureEnabled:false}}/>
-        <Stack.Screen name="Home" component={HomeScreen} screenOptions={{gestureEnabled:false}}/>
-        <Stack.Screen name="Dashboard" component={Dashboard} />
-        <Stack.Screen name="MeriBeat" component={MeriBeat} />
-        <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
-        <Stack.Screen name="VisitDetails" component={VisitDetailsScreen} />
-        <Stack.Screen name="SamvadDetails" component={SamvadDetails} />
-        <Stack.Screen name="ComplaintScreen" component={ComplaintScreen} />
-        <Stack.Screen name="ComplaintList" component={ComplaintList} />
-        <Stack.Screen
-          name="CompletedComplaints"
-          component={CompletedComplaints}
-        />
-        <Stack.Screen name="BhramadDetails" component={BhramadDetails} />
-        <Stack.Screen
-          name="ComplaintDescription"
-          component={ComplaintDescription}
-        />
-        <Stack.Screen name="AllComplaints" component={AllComplaints} />
-        <Stack.Screen name="AllVisits" component={AllVisits} />
-        <Stack.Screen name="VisitInfo" component={VisitInfo} />
-        <Stack.Screen name="MyVisits" component={MyVisits} />
-      </Stack.Navigator>
+      {isAuthenticated ? <AuthNav /> : <UnauthNav />}
     </NavigationContainer>
   );
 };

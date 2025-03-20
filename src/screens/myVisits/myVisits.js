@@ -10,40 +10,14 @@ import SideModal from '../../components/sideModal/sideModal';
 import Search from '../../components/search/search';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 
-const API_URL = 'http://re.auctech.in/MobileAppApi/GetYourVisitDetails'
-const BEARER_TOKEN='zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxYourVisitDetailsdssdtetts'
-
-// const complaints = [
-//   {
-//     location: 'उत्तर प्रदेश / आगरा / एत्मादपुर / अछार',
-//     officer: 'उ0नि0 श्री देवेंद्र सिंह - 6393292234',
-//     distance: '0.0',
-//     date: 'Oct 22, 2021',
-//   },
-//   {
-//     location: 'उत्तर प्रदेश / आगरा / एत्मादपुर / अछार',
-//     officer: 'प्रभा - 9585555555',
-//     distance: '21.0',
-//     date: 'Oct 21, 2021',
-//   },
-//   {
-//     location: 'उत्तर प्रदेश / आगरा / एत्मादपुर / कुबेरपुर',
-//     officer: 'प्रभा - 9585555555',
-//     distance: '21.0',
-//     date: 'Oct 21, 2021',
-//   },
-//   {
-//     location: 'उत्तर प्रदेश / आगरा / एत्मादपुर / कचा एत्मादपुर',
-//     officer: 'उ0नि0 श्री देवेंद्र सिंह - 6393292234',
-//     distance: '21.0',
-//     date: 'Oct 20, 2021',
-//   },
-// ];
+const API_URL = 'http://re.auctech.in/MobileAppApi/GetYourVisitDetails';
+const BEARER_TOKEN =
+  'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxYourVisitDetailsdssdtetts';
 
 const MyVisits = ({navigation}) => {
   const {UserId} = useSelector(state => state.auth.userDetails);
   const [myVisits, setMyVisits] = useState([]);
-  const [filteredData, setFilteredData] = useState([])
+  const [filteredData, setFilteredData] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
 
@@ -62,7 +36,7 @@ const MyVisits = ({navigation}) => {
     if (response?.data?.success === true) {
       console.log(response.data.data);
       setMyVisits(response.data.data);
-      setFilteredData(response.data.data); 
+      setFilteredData(response.data.data);
     } else {
       console.log(response.data.message);
     }
@@ -73,32 +47,32 @@ const MyVisits = ({navigation}) => {
   }, []);
 
   const handleSearch = (selectedArea, fromDate, toDate) => {
-    console.log("Search Params:", { selectedArea, fromDate, toDate });
-  
+    console.log('Search Params:', {selectedArea, fromDate, toDate});
+
     if (!selectedArea && !fromDate && !toDate) {
       setFilteredData(myVisits);
       return;
     }
-  
+
     const filtered = myVisits.filter(item => {
-      console.log("Raw ActivityDate:", item.ActivityDate);
-  
+      console.log('Raw ActivityDate:', item.ActivityDate);
+
       // Convert "DD/MM/YYYY" → "YYYY-MM-DD"
-      const [day, month, year] = item.ActivityDate.split("/");
+      const [day, month, year] = item.ActivityDate.split('/');
       const visitDate = new Date(`${year}-${month}-${day}`); // Correct format for JavaScript
-  
-      console.log("Parsed VisitDate:", visitDate);
-  
+
+      console.log('Parsed VisitDate:', visitDate);
+
       // Convert `fromDate` and `toDate` to Date objects
       const from = fromDate ? new Date(fromDate) : null;
       const to = toDate ? new Date(toDate) : null;
-  
-      console.log("From Date:", from, "To Date:", to);
-  
+
+      console.log('From Date:', from, 'To Date:', to);
+
       return (!from || visitDate >= from) && (!to || visitDate <= to);
     });
-  
-    console.log("Filtered Results:", filtered.length);
+
+    console.log('Filtered Results:', filtered.length);
     setFilteredData(filtered);
   };
 
@@ -120,12 +94,21 @@ const MyVisits = ({navigation}) => {
           onMenuPress={() => setModalVisible(true)}
           onProfilePress={() => setInfoVisible(true)}
         />
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled">
           <View style={styles.section}>
-            <Search handleChange={handleSearch}/>
+            <Search handleChange={handleSearch} />
             <View style={styles.statusBar}>
-              <Text style={styles.totalCount}>🔵 कुल भ्रमण - {filteredData.length}</Text>
-              <Icon name="reload" size={20} color="green" onPress={() => getMyVisitsList()} />
+              <Text style={styles.totalCount}>
+                🔵 कुल भ्रमण - {filteredData.length}
+              </Text>
+              <Icon
+                name="reload"
+                size={20}
+                color="green"
+                onPress={() => getMyVisitsList()}
+              />
               <Icon name="arrow-down" size={20} color="green" />
               <Icon
                 name="sort-alphabetical-ascending"
@@ -135,22 +118,25 @@ const MyVisits = ({navigation}) => {
             </View>
           </View>
 
-          {filteredData.length?
-             filteredData.map((item, index) => (
-            <VisitCard
-              key={index}
-              id={index}
-              location={`${item.StateName}/ ${item.DistrictName}/ ${item.ThanaName.trim()}`}
-              officer={`${item.PoliceName} - ${item.MobileNumber}`}
-              distance={item.DistanceActivity}
-              date={item.ActivityDate}
-              onPress={() =>
-                navigation.navigate('VisitInfo', {visitInfo: item})
-              }
-            />
-          )):
-          <Text>No data Found</Text>
-          }
+          {filteredData.length ? (
+            filteredData.map((item, index) => (
+              <VisitCard
+                key={index}
+                id={index}
+                location={`${item.StateName}/ ${
+                  item.DistrictName
+                }/ ${item.ThanaName.trim()}`}
+                officer={`${item.PoliceName} - ${item.MobileNumber}`}
+                distance={item.DistanceActivity}
+                date={item.ActivityDate}
+                onPress={() =>
+                  navigation.navigate('VisitInfo', {visitInfo: item})
+                }
+              />
+            ))
+          ) : (
+            <Text>No data Found</Text>
+          )}
         </ScrollView>
       </View>
     </>
@@ -161,7 +147,7 @@ const styles = StyleSheet.create({
   container: {
     padding: '3%',
     backgroundColor: '#f8f8f8',
-    paddingBottom:"15%"
+    paddingBottom: '15%',
   },
   section: {
     backgroundColor: '#fff',
