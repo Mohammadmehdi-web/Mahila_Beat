@@ -41,7 +41,7 @@ const Login = ({navigation}) => {
       },
     );
     if (response?.data?.success === true) {
-      console.log(response.headers.Authorization);
+      console.log(response.data.sessionData);
       const userDetails = response.data.sessionData;
       const token = BEARER_TOKEN;
 

@@ -8,7 +8,6 @@ import {
   Modal,
   TouchableWithoutFeedback,
 } from 'react-native';
-// import Modal from 'react-native-modal'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useSelector} from 'react-redux';
 
