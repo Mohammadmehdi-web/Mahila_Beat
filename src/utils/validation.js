@@ -63,3 +63,29 @@ export const validateWomanDetails = (womenData, errors, setErrors) => {
   setErrors(newErrors); // Update errors state
   return valid; // Return whether the form is valid
 };
+
+export const validatePasswords = (oldPassword, newPassword, confirmPassword) => {
+  let errors = {};
+
+  // Check if old password is entered
+  if (!oldPassword) {
+    errors.oldPassword = "पुराना पासवर्ड आवश्यक है";
+  }
+
+  // New password validation
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!newPassword) {
+    errors.newPassword = "नया पासवर्ड आवश्यक है";
+  } else if (!passwordRegex.test(newPassword)) {
+    errors.newPassword = "पासवर्ड में कम से कम 8 वर्ण, एक बड़ा अक्षर, एक छोटा अक्षर, एक संख्या और एक विशेष अक्षर होना चाहिए।";
+  }
+
+  // Confirm password validation
+  if (!confirmPassword) {
+    errors.confirmPassword = "पासवर्ड की पुष्टि आवश्यक है";
+  } else if (confirmPassword !== newPassword) {
+    errors.confirmPassword = "नया पासवर्ड और पुष्टि पासवर्ड मेल नहीं खाते";
+  }
+
+  return errors;
+};

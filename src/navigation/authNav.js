@@ -16,6 +16,7 @@ import AllComplaints from '../screens/allComplaints/allComplaints';
 import AllVisits from '../screens/allVisits/allVisits';
 import VisitInfo from '../screens/visitInfo/visitInfo';
 import MyVisits from '../screens/myVisits/myVisits';
+import ChangePasswordScreen from '../screens/changePass/changePass';
 
 const Stack = createStackNavigator();
 
@@ -46,6 +47,7 @@ const AuthNav = () => {
       <Stack.Screen name="AllVisits" component={AllVisits} />
       <Stack.Screen name="VisitInfo" component={VisitInfo} />
       <Stack.Screen name="MyVisits" component={MyVisits} />
+      <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
     </Stack.Navigator>
   );
 };

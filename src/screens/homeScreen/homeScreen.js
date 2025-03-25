@@ -12,7 +12,7 @@ const HomeScreen = ({navigation}) => {
       <View style={styles.logoContainer}>
         <Image style={styles.logo} source={Logo} />
         <View style={styles.headingContainer}>
-          <Text style={[styles.heading, {color: "red"}]}>आगरा जोन पुलिस</Text>
+          <Text style={[styles.heading, {color: "red"}]}>सोनभद्र पुलिस</Text>
           <Text style={[styles.heading,{color:"darkblue"}]}>सुरक्षा आपकी,संकल्प हमारा</Text>
         </View>
       </View>

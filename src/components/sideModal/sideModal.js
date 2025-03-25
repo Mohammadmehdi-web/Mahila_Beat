@@ -31,6 +31,7 @@ const SideModal = ({isVisible, onClose, navigation}) => {
     {label: ' सभी शिकायत', icon: 'file-document', screen: 'AllComplaints'},
     {label: ' सभी भ्रमण', icon: 'car', screen: 'AllVisits'},
     {label: ' आपके भ्रमण', icon: 'walk', screen: 'MyVisits'},
+    {label: ' पासवर्ड बदलें', icon: 'onepassword', screen: 'ChangePassword'},
     {label: ' लॉग आउट', icon: 'logout', screen: 'Login'},
   ];
 
@@ -51,7 +52,7 @@ const SideModal = ({isVisible, onClose, navigation}) => {
               {/* Header Section with Logo */}
               <View style={styles.header}>
                 <Image source={Logo} style={styles.logo} />
-                <Text style={styles.title}>आगरा जोन पुलिस</Text>
+                <Text style={styles.title}>सोनभद्र पुलिस</Text>
                 <Text style={styles.subtitle}>सुरक्षा आपकी संकल्प हमारा</Text>
               </View>
 
