@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {use, useState} from 'react';
 import {
   View,
   TextInput,
@@ -12,9 +12,16 @@ import Logo from '../../assets/policeLogo.png';
 import Header from '../../components/header/header';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import SideModal from '../../components/sideModal/sideModal';
-import { validatePasswords } from '../../utils/validation';
+import {validatePasswords} from '../../utils/validation';
+import axios from 'axios';
+import {useSelector} from 'react-redux';
+
+const API = 'http://re.auctech.in/MobileAppApi/UpdatePassword';
+const BEARER_TOKEN =
+  'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxUpdatepassword';
 
 const ChangePasswordScreen = ({navigation}) => {
+  const {UserId, MobileNumber} = useSelector(state => state.auth.userDetails);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -29,18 +36,54 @@ const ChangePasswordScreen = ({navigation}) => {
       return;
     }
 
-    const error = validatePasswords(currentPassword, newPassword, confirmPassword)
+    const error = validatePasswords(
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    );
+    console.log(error);
 
     if (error) {
-      Alert.alert(
-        'Error',
-        {error}
-      );
+      Alert.alert('Error', error);
       return;
     }
 
-    // Proceed with password change logic (e.g., API call)
-    Alert.alert('Success', 'Password has been changed successfully');
+    postChangePassword();
+  };
+
+  const postChangePassword = async () => {
+    try {
+      console.log(UserId, MobileNumber, newPassword);
+
+      const response = await axios.post(API, {
+        userid: UserId,
+        MObile: MobileNumber,
+        Password: newPassword,
+      });
+
+      console.log(response.data.message);
+
+      if (response.data.success === true) {
+        const message =
+          response.data.data[0].message || 'Password updated successfully';
+        Alert.alert('Success', 'Password updated successfully');
+      } else {
+        Alert.alert('Error', 'Failed to update password');
+      }
+    } catch (error) {
+      console.log('Error:', 'Failed to update password');
+
+      // Ensure error message is extracted properly
+      // let errorMessage = 'An unexpected error occurred';
+      // if (error.response) {
+      //   errorMessage =
+      //     error.response.data?.message || JSON.stringify(error.response.data);
+      // } else if (error.message) {
+      //   errorMessage = error.message;
+      // }
+
+      // Alert.alert('Error', errorMessage);
+    }
   };
 
   return (
@@ -121,6 +164,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   input: {
+    color: '#000',
     width: '90%',
     height: 50,
     borderColor: '#ddd',
