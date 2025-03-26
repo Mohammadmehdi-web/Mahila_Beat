@@ -8,6 +8,7 @@ import {
   ScrollView,
   Image,
   Alert,
+  StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Picker} from '@react-native-picker/picker';
@@ -219,6 +220,7 @@ const SamvadDetails = ({navigation}) => {
         navigation={navigation}
       />
       <View style={styles.container}>
+        <StatusBar />
         <Header
           title="महिला बीट"
           onMenuPress={() => setModalVisible(true)}

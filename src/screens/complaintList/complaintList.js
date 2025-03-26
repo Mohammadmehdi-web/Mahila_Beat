@@ -1,5 +1,5 @@
 import React, {use, useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity, FlatList, StyleSheet} from 'react-native';
+import {View, Text, TouchableOpacity, FlatList, StyleSheet, StatusBar} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../../components/header/header';
 import ComplaintCard from '../../components/complainCard/complaintCard';
@@ -133,6 +133,7 @@ const ComplaintList = ({navigation}) => {
         navigation={navigation}
       />
       <View style={styles.container}>
+        <StatusBar />
         <Header
           title="महिला बीट"
           onMenuPress={() => setModalVisible(true)}
@@ -198,6 +199,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5F5F5',
     gap: 5,
+    paddingBottom:"1%"
   },
   searchBar: {
     flexDirection: 'row',

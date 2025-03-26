@@ -65,6 +65,7 @@ export const validateWomanDetails = (womenData, errors, setErrors) => {
 };
 
 export const validatePasswords = (
+  password,
   oldPassword,
   newPassword,
   confirmPassword,
@@ -74,6 +75,8 @@ export const validatePasswords = (
   // Check if old password is entered
   if (!oldPassword) {
     errors = 'पुराना पासवर्ड आवश्यक है';
+  } else if(oldPassword !== password){
+    errors = "पुराना पासवर्ड गलत है"
   }
 
   // New password validation
@@ -84,6 +87,8 @@ export const validatePasswords = (
   } else if (!passwordRegex.test(newPassword)) {
     errors =
       'पासवर्ड में कम से कम 8 वर्ण, एक बड़ा अक्षर, एक छोटा अक्षर, एक संख्या और एक विशेष अक्षर होना चाहिए।';
+  } else if (newPassword === password){
+    errors="नया पासवर्ड पुराने पासवर्ड से अलग होना चाहिए"
   }
 
   // Confirm password validation

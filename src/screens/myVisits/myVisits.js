@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, ScrollView, StyleSheet} from 'react-native';
+import {View, Text, ScrollView, StyleSheet, StatusBar} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useSelector} from 'react-redux';
 import axios from 'axios';
@@ -89,6 +89,7 @@ const MyVisits = ({navigation}) => {
         navigation={navigation}
       />
       <View>
+        <StatusBar/>
         <Header
           title="महिला बीट"
           onMenuPress={() => setModalVisible(true)}

@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -143,6 +144,7 @@ const BhramadDetails = ({navigation}) => {
         navigation={navigation}
       />
       <View style={styles.container}>
+        <StatusBar />
         <Header
           title="महिला बीट"
           onMenuPress={() => setModalVisible(true)}
@@ -178,173 +180,180 @@ const BhramadDetails = ({navigation}) => {
             <Text style={styles.value}>{details.DistanceActivity} मीटर </Text>
           </View>
 
-          { samvadData?
+          {samvadData ? (
             <Image
-            source={samvadData.Image ? {uri: samvadData.Image} : DummyImg}
-            style={styles.image}
-            resizeMode="contain"
-          />:
-          <></>
-          }
+              source={samvadData.Image ? {uri: samvadData.Image} : DummyImg}
+              style={styles.image}
+              resizeMode="contain"
+            />
+          ) : (
+            <></>
+          )}
 
-          {!samvadData? (
+          {!samvadData ? (
             <View style={styles.fallbackContainer}>
               <Text style={styles.fallbackText}>
                 ❌ संवाद का विवरण उपलब्ध नहीं है।
               </Text>
             </View>
-          ):(
+          ) : (
             <>
-            <View style={styles.pinkButton}>
-            <Text style={styles.buttonText}>संवाद का विवरण</Text>
-          </View>
+              <View style={styles.pinkButton}>
+                <Text style={styles.buttonText}>संवाद का विवरण</Text>
+              </View>
 
-          <TouchableOpacity
-            style={styles.accordion}
-            onPress={() => setIsDropdownOpen(!isDropdownOpen)}>
-            <Text style={styles.accordionText}>मिशन शक्तिक कक्ष</Text>
-            <MaterialIcon
-              name={
-                isDropdownOpen ? 'keyboard-arrow-up' : 'keyboard-arrow-down'
-              }
-              size={24}
-              color="#fff"
-            />
-          </TouchableOpacity>
-
-          {isDropdownOpen && (
-            <View style={styles.dropdownContent}>
-              <View style={{gap: 10}}>
-                <View style={styles.pinkButton}>
-                  <Text style={styles.buttonText}>
-                    संदर्भ में सम्मिलित किन्ही तीन महिलाओं की जानकारी
-                  </Text>
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  <Text style={styles.label}>संवाद का स्थान</Text>
-                  <Text style={styles.value}>{samvadData.PlaceName}</Text>
-                </View>
-                <View
-                  style={{
-                    height: 1,
-                    backgroundColor: '#ccc',
-                    marginVertical: 10,
-                  }}
+              <TouchableOpacity
+                style={styles.accordion}
+                onPress={() => setIsDropdownOpen(!isDropdownOpen)}>
+                <Text style={styles.accordionText}>मिशन शक्तिक कक्ष</Text>
+                <MaterialIcon
+                  name={
+                    isDropdownOpen ? 'keyboard-arrow-up' : 'keyboard-arrow-down'
+                  }
+                  size={24}
+                  color="#fff"
                 />
-                <View style={styles.bottomTextContainer}>
-                  <Text style={[styles.label, {fontSize: 16}]}>
-                    सम्वाद म समिलित महिलाओं की संख्या
-                  </Text>
-                  <Text style={styles.value}>
-                    {samvadData.ConversationNumer}
-                  </Text>
-                </View>
+              </TouchableOpacity>
 
-                {mahilaDetails.map(item => (
-                  <View key={item.id} style={{gap: 5}}>
-                    <View key={item.id} style={styles.pinkButtonSmall}>
+              {isDropdownOpen && (
+                <View style={styles.dropdownContent}>
+                  <View style={{gap: 10}}>
+                    <View style={styles.pinkButton}>
                       <Text style={styles.buttonText}>
-                        {item.id}. महिला की जानकारी
+                        संदर्भ में सम्मिलित किन्ही तीन महिलाओं की जानकारी
                       </Text>
                     </View>
-                    <View>
-                      <View style={styles.nameContainer}>
-                        <Text style={styles.label}>नाम</Text>
-                        <Text style={styles.value}>{item.name}</Text>
+
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.label}>संवाद का स्थान</Text>
+                      <Text style={styles.value}>{samvadData.PlaceName}</Text>
+                    </View>
+                    <View
+                      style={{
+                        height: 1,
+                        backgroundColor: '#ccc',
+                        marginVertical: 10,
+                      }}
+                    />
+                    <View style={styles.bottomTextContainer}>
+                      <Text style={[styles.label, {fontSize: 16}]}>
+                        सम्वाद म समिलित महिलाओं की संख्या
+                      </Text>
+                      <Text style={styles.value}>
+                        {samvadData.ConversationNumer}
+                      </Text>
+                    </View>
+
+                    {mahilaDetails.map(item => (
+                      <View key={item.id} style={{gap: 5}}>
+                        <View key={item.id} style={styles.pinkButtonSmall}>
+                          <Text style={styles.buttonText}>
+                            {item.id}. महिला की जानकारी
+                          </Text>
+                        </View>
+                        <View>
+                          <View style={styles.nameContainer}>
+                            <Text style={styles.label}>नाम</Text>
+                            <Text style={styles.value}>{item.name}</Text>
+                          </View>
+                          <View
+                            style={{
+                              height: 1,
+                              backgroundColor: '#ccc',
+                              marginVertical: 10,
+                            }}
+                          />
+                          <View style={styles.nameContainer}>
+                            <Text style={styles.label}>मोबाइल नं</Text>
+                            <Text style={styles.value}>{item.phn}</Text>
+                          </View>
+                        </View>
                       </View>
-                      <View
-                        style={{
-                          height: 1,
-                          backgroundColor: '#ccc',
-                          marginVertical: 10,
-                        }}
-                      />
-                      <View style={styles.nameContainer}>
-                        <Text style={styles.label}>मोबाइल नं</Text>
-                        <Text style={styles.value}>{item.phn}</Text>
-                      </View>
+                    ))}
+                    <View style={styles.bottomHeadSection} />
+                    <View
+                      style={[
+                        styles.bottomTextContainer,
+                        {flexDirection: 'column'},
+                      ]}>
+                      <Text style={styles.label}>
+                        सरकारी योजनाओं की जानकारी
+                      </Text>
+                      <Text style={styles.value}>
+                        प्रधानमंत्री उज्ज्वला योजना
+                      </Text>
                     </View>
                   </View>
-                ))}
-                <View style={styles.bottomHeadSection} />
-                <View
-                  style={[
-                    styles.bottomTextContainer,
-                    {flexDirection: 'column'},
-                  ]}>
-                  <Text style={styles.label}>सरकारी योजनाओं की जानकारी</Text>
-                  <Text style={styles.value}>प्रधानमंत्री उज्ज्वला योजना</Text>
                 </View>
-              </View>
-            </View>
-          )}
-
+              )}
             </>
           )}
 
           {/* Pink Button */}
-          
-           {/* 🔹 Fallback for Missing Complaint Details */}
-           { !complaintData? (
+
+          {/* 🔹 Fallback for Missing Complaint Details */}
+          {!complaintData ? (
             <View style={styles.fallbackContainer}>
-              <Text style={styles.fallbackText}>❌ शिकायत का विवरण उपलब्ध नहीं है।</Text>
+              <Text style={styles.fallbackText}>
+                ❌ शिकायत का विवरण उपलब्ध नहीं है।
+              </Text>
             </View>
-          ):(
+          ) : (
             <>
-             <View style={styles.pinkButton}>
-            <Text style={styles.buttonText}>शिकायत का विवरण</Text>
-          </View>
+              <View style={styles.pinkButton}>
+                <Text style={styles.buttonText}>शिकायत का विवरण</Text>
+              </View>
 
-          <View>
-            <View style={styles.nameContainer}>
-              <Text style={styles.label}>शिकायतकर्ता का नाम:</Text>
-              <Text style={styles.value}>{complaintData.ComplainantName}</Text>
-            </View>
-            <Divider />
-            <View style={styles.nameContainer}>
-              <Text style={styles.label}>मोबाइल नंबर</Text>
-              <Text style={styles.value}>
-                {complaintData.ComplainantNumber}
-              </Text>
-            </View>
-            <Divider />
-            <View style={styles.nameContainer}>
-              <Text style={styles.label}>स्थिति:</Text>
-              <Text style={styles.value}>
-                {complaintData.ComplaintStatusName}
-              </Text>
-            </View>
-            <Divider />
-            <View style={styles.nameContainer}>
-              <ComplaintVideo videoUrl={complaintData.ComplainantVideo} />
-            </View>
-            <Divider />
-            <View style={styles.nameContainer}>
-              <Text style={styles.label}>छवि:</Text>
-              <Image
-                source={
-                  complaintData.ComplainantImage
-                    ? {uri: complaintData.ComplainantImage}
-                    : DummyImg
-                }
-                style={[styles.image, {padding:'4%'}]}
-              />
-            </View>
-          </View>
+              <View>
+                <View style={styles.nameContainer}>
+                  <Text style={styles.label}>शिकायतकर्ता का नाम:</Text>
+                  <Text style={styles.value}>
+                    {complaintData.ComplainantName}
+                  </Text>
+                </View>
+                <Divider />
+                <View style={styles.nameContainer}>
+                  <Text style={styles.label}>मोबाइल नंबर</Text>
+                  <Text style={styles.value}>
+                    {complaintData.ComplainantNumber}
+                  </Text>
+                </View>
+                <Divider />
+                <View style={styles.nameContainer}>
+                  <Text style={styles.label}>स्थिति:</Text>
+                  <Text style={styles.value}>
+                    {complaintData.ComplaintStatusName}
+                  </Text>
+                </View>
+                <Divider />
+                <View style={styles.nameContainer}>
+                  <ComplaintVideo videoUrl={complaintData.ComplainantVideo} />
+                </View>
+                <Divider />
+                <View style={styles.nameContainer}>
+                  <Text style={styles.label}>छवि:</Text>
+                  <Image
+                    source={
+                      complaintData.ComplainantImage
+                        ? {uri: complaintData.ComplainantImage}
+                        : DummyImg
+                    }
+                    style={[styles.image, {padding: '4%'}]}
+                  />
+                </View>
+              </View>
 
-          <TouchableOpacity style={styles.accordion}>
-            <Text style={styles.accordionText}>{complaintData.ProblemId}</Text>
-          </TouchableOpacity>
+              <TouchableOpacity style={styles.accordion}>
+                <Text style={styles.accordionText}>
+                  {complaintData.ProblemId}
+                </Text>
+              </TouchableOpacity>
             </>
-          )
-          }
-
-         
+          )}
         </ScrollView>
       </View>
     </>

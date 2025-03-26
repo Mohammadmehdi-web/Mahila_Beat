@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, StyleSheet, View} from 'react-native';
+import {Alert, StatusBar, StyleSheet, View} from 'react-native';
 import Header from '../../components/header/header';
 import SummaryTable from '../../components/summaryTable/summaryTable';
 import SideModal from '../../components/sideModal/sideModal';
@@ -82,6 +82,7 @@ const Dashboard = ({navigation}) => {
         navigation={navigation}
       />
       <View style={styles.container}>
+        <StatusBar />
         <Header
           title="महिला बीट"
           onMenuPress={() => setModalVisible(true)}

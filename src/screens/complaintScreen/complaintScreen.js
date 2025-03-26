@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  StatusBar,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import {launchCamera} from 'react-native-image-picker';
@@ -206,6 +207,7 @@ const ComplaintScreen = ({navigation}) => {
         navigation={navigation}
       />
       <View style={{flex: 1, backgroundColor: '#f5f5f5'}}>
+        <StatusBar />
         <Header
           title="महिला बीट"
           onMenuPress={() => setModalVisible(true)}
