@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   Image,
+  StatusBar,
 } from 'react-native';
 import Logo from '../../assets/policeLogo.png';
 import Header from '../../components/header/header';
@@ -14,20 +15,25 @@ import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import SideModal from '../../components/sideModal/sideModal';
 import {validatePasswords} from '../../utils/validation';
 import axios from 'axios';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import { logout } from '../../redux/slice/authSlice';
 
 const API = 'http://re.auctech.in/MobileAppApi/UpdatePassword';
 const BEARER_TOKEN =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxUpdatepassword';
 
 const ChangePasswordScreen = ({navigation}) => {
-  const {UserId, MobileNumber} = useSelector(state => state.auth.userDetails);
+  const dispatch = useDispatch()
+  const {UserId, MobileNumber,Password} = useSelector(state => state.auth.userDetails);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
+
+  console.log(Password);
+  
 
   const handleChangePassword = () => {
     // Basic validation
@@ -36,7 +42,9 @@ const ChangePasswordScreen = ({navigation}) => {
       return;
     }
 
+
     const error = validatePasswords(
+      Password,
       currentPassword,
       newPassword,
       confirmPassword,
@@ -59,7 +67,13 @@ const ChangePasswordScreen = ({navigation}) => {
         userid: UserId,
         MObile: MobileNumber,
         Password: newPassword,
-      });
+      },
+      {
+        headers:{
+          Authorization:`Bearer ${BEARER_TOKEN}`
+        }
+      }
+    );
 
       console.log(response.data.message);
 
@@ -67,22 +81,13 @@ const ChangePasswordScreen = ({navigation}) => {
         const message =
           response.data.data[0].message || 'Password updated successfully';
         Alert.alert('Success', 'Password updated successfully');
+        dispatch(logout())
+        navigation.navigate('Login')
       } else {
         Alert.alert('Error', 'Failed to update password');
       }
     } catch (error) {
       console.log('Error:', 'Failed to update password');
-
-      // Ensure error message is extracted properly
-      // let errorMessage = 'An unexpected error occurred';
-      // if (error.response) {
-      //   errorMessage =
-      //     error.response.data?.message || JSON.stringify(error.response.data);
-      // } else if (error.message) {
-      //   errorMessage = error.message;
-      // }
-
-      // Alert.alert('Error', errorMessage);
     }
   };
 
@@ -98,6 +103,7 @@ const ChangePasswordScreen = ({navigation}) => {
         onClose={() => setInfoVisible(false)}
         navigation={navigation}
       />
+      <StatusBar />
       <Header
         title="महिला बीट"
         onMenuPress={() => setModalVisible(true)}

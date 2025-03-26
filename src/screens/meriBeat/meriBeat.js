@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import {StyleSheet, View,} from 'react-native';
+import React, {useState} from 'react';
+import {StatusBar, StyleSheet, View} from 'react-native';
 import Header from '../../components/header/header';
 import WomenBeatCard from '../../components/womenBeatCard/womenBeatCard';
 import SideModal from '../../components/sideModal/sideModal';
@@ -17,19 +17,19 @@ const MeriBeat = ({navigation}) => {
         navigation={navigation}
       />
       <UserInfoCard
-       isVisible={infoVisible}
-       onClose={() => setInfoVisible(false)}
-       navigation={navigation}
+        isVisible={infoVisible}
+        onClose={() => setInfoVisible(false)}
+        navigation={navigation}
       />
       <View style={styles.container}>
+        <StatusBar />
+
         <Header
           title="महिला बीट"
-          onMenuPress={() => setModalVisible(true) }
+          onMenuPress={() => setModalVisible(true)}
           onProfilePress={() => setInfoVisible(true)}
         />
-        <WomenBeatCard 
-        onPress={() => navigation.navigate('DetailsScreen')}
-        />
+        <WomenBeatCard onPress={() => navigation.navigate('DetailsScreen')} />
       </View>
     </>
   );

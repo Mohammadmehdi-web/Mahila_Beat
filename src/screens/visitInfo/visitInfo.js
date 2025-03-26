@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -84,6 +85,7 @@ const VisitInfo = ({navigation}) => {
         navigation={navigation}
       />
       <View style={styles.container}>
+        <StatusBar/>
         <Header
           title="महिला बीट"
           onMenuPress={() => setModalVisible(true)}

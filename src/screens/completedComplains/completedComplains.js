@@ -6,6 +6,7 @@ import {
   FlatList,
   StyleSheet,
   Alert,
+  StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
@@ -119,6 +120,7 @@ const CompletedComplaints = ({navigation}) => {
         navigation={navigation}
       />
       <View style={styles.container}>
+        <StatusBar />
         <Header
           title="महिला बीट"
           onMenuPress={() => setModalVisible(true)}
@@ -173,6 +175,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5F5F5',
     gap: 5,
+    paddingBottom:"1%"
   },
   searchBar: {
     flexDirection: 'row',

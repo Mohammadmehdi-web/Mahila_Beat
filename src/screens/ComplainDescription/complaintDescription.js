@@ -10,6 +10,7 @@ import {
   TextInput,
   Button,
   Alert,
+  StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useNavigationState, useRoute} from '@react-navigation/native';
@@ -135,6 +136,7 @@ const ComplaintDescription = ({navigation}) => {
         onClose={() => setInfoVisible(false)}
         navigation={navigation}
       />
+      <StatusBar/>
       <Header
         title="महिला बीट"
         onMenuPress={() => setModalVisible(true)}

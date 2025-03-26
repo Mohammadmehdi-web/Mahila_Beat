@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, FlatList, StyleSheet} from 'react-native';
+import {View, Text, FlatList, StyleSheet, StatusBar} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import {useSelector} from 'react-redux';
@@ -96,6 +96,7 @@ const AllComplaints = ({navigation}) => {
         navigation={navigation}
       />
       <View style={styles.container}>
+        <StatusBar />
         <Header
           title="महिला बीट"
           onMenuPress={() => setModalVisible(true)}
@@ -122,7 +123,7 @@ const AllComplaints = ({navigation}) => {
           keyExtractor={item => item.ComplaintId.toString()}
           renderItem={({item}) => (
             <View style={{flex: 1, paddingHorizontal: '3%'}}>
-              {item.ComplaintStatusName === "Complete" ? (
+              {item.ComplaintStatusName === 'Complete' ? (
                 <ComplaintCard
                   id={item.ComplaintId.toString()}
                   name={item.ComplainantName || 'N/A'}
@@ -146,9 +147,7 @@ const AllComplaints = ({navigation}) => {
                   phone={item.ComplainantNumber || 'N/A'}
                   category={item.ProblemName || 'Unknown'}
                   address={item.location || 'Not available'}
-                  date={
-                    item.ComplaintDate
-                  }
+                  date={item.ComplaintDate}
                   onPress={() =>
                     navigation.navigate('ComplaintDescription', {
                       complaint: item,
@@ -170,6 +169,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5F5F5',
     gap: 5,
+    paddingBottom:"1%"
   },
   searchBar: {
     flexDirection: 'row',

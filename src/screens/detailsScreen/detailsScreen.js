@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  StatusBar,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -41,14 +42,14 @@ const DetailsScreen = ({navigation}) => {
 
   const [beatArea, setBeatArea] = useState([]);
   const [sahkarmi, setSahkarmi] = useState([]);
-  const [beatName, setBeatName] = useState({id:0, name:''});
+  const [beatName, setBeatName] = useState({id: 0, name: ''});
   const [selectedVillage, setSelectedVillage] = useState('');
   const [selectedAssistant, setSelectedAssistant] = useState({
     id: '',
     value: '',
   });
   const [activityDetails, setActivityDetails] = useState([]);
-  const[distance,setDistance] = useState('')
+  const [distance, setDistance] = useState('');
 
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
@@ -109,7 +110,7 @@ const DetailsScreen = ({navigation}) => {
     );
     if (response.data.success === true) {
       console.log(response.data.data);
-      
+
       setBeatArea(response.data.data);
     }
   };
@@ -133,7 +134,6 @@ const DetailsScreen = ({navigation}) => {
   };
 
   const addActivityDetails = async () => {
-
     const formattedDistance = parseFloat(distance); // Convert to number
     if (isNaN(formattedDistance)) {
       alert('कृपया मान्य दूरी दर्ज करें!');
@@ -147,7 +147,7 @@ const DetailsScreen = ({navigation}) => {
         DistanceActivity: `${formattedDistance} मीटर`,
         BeatAreaName: selectedVillage?.name,
         SahkramiId: selectedAssistant?.id,
-        SahkarmiName:selectedAssistant?.name,
+        SahkarmiName: selectedAssistant?.name,
         AreaId: selectedVillage?.id,
         AddedBy: UserId,
       },
@@ -168,7 +168,7 @@ const DetailsScreen = ({navigation}) => {
             ActivityDate: date,
             DistanceActivity: `${formattedDistance}`,
             BeatAreaName: selectedVillage?.name,
-            BeatAreaId:selectedVillage?.id,
+            BeatAreaId: selectedVillage?.id,
             SahkramiId: selectedAssistant?.id,
             SahkarmiName: selectedAssistant?.name,
             AreaId: BeatId,
@@ -183,7 +183,7 @@ const DetailsScreen = ({navigation}) => {
     getBeatList();
     getSahkarmiList();
   }, []);
-console.log(selectedVillage);
+  console.log(selectedVillage);
 
   return (
     <>
@@ -207,6 +207,7 @@ console.log(selectedVillage);
         navigation={navigation}
       />
       <View>
+        <StatusBar />
         <Header
           title="महिला बीट"
           onMenuPress={() => setModalVisible(true)}
@@ -236,15 +237,16 @@ console.log(selectedVillage);
               />
             </View>
 
-            <TouchableOpacity style={[styles.inputRow, { paddingHorizontal:'3%'}]}>
+            <TouchableOpacity
+              style={[styles.inputRow, {paddingHorizontal: '3%'}]}>
               <Text style={styles.buttonText}>गाँव / मोहल्ला की दूरी</Text>
               <TextInput
                 style={styles.input}
                 value={distance}
-                placeholder='0.0'
-                onChangeText={(text) =>setDistance(text)}
+                placeholder="0.0"
+                onChangeText={text => setDistance(text)}
                 editable={true}
-                keyboardType='numeric'
+                keyboardType="numeric"
               />
               <Text style={styles.buttonText}>मीटर</Text>
             </TouchableOpacity>
@@ -271,17 +273,25 @@ console.log(selectedVillage);
             </View>
             <View style={styles.pickerContainer}>
               <Picker
-                style={{color:'black'}}
+                style={{color: 'black'}}
                 selectedValue={selectedVillage}
-                onValueChange={itemValue => setSelectedVillage(JSON.parse(itemValue))}
-                dropdownIconColor="black"
-                >
-                <Picker.Item style={{fontSize: 18}} label="गाँव / मोहल्ला" value="" />
+                onValueChange={itemValue =>
+                  setSelectedVillage(JSON.parse(itemValue))
+                }
+                dropdownIconColor="black">
+                <Picker.Item
+                  style={{fontSize: 18}}
+                  label="गाँव / मोहल्ला"
+                  value=""
+                />
 
                 {beatArea.map(item => (
                   <Picker.Item
                     label={item.BeatAreaName}
-                    value={JSON.stringify({id: item.BeatAreaId,name:item.BeatAreaName})}
+                    value={JSON.stringify({
+                      id: item.BeatAreaId,
+                      name: item.BeatAreaName,
+                    })}
                   />
                 ))}
               </Picker>
@@ -290,15 +300,18 @@ console.log(selectedVillage);
             {/* Assistant Selection */}
             <Text style={styles.fieldLabel}>सहकर्मी का चयन करें *</Text>
             <View style={styles.pickerContainer}>
-              <Picker 
-                style={{color:'black'}}
+              <Picker
+                style={{color: 'black'}}
                 selectedValue={selectedAssistant}
                 onValueChange={itemValue =>
                   setSelectedAssistant(JSON.parse(itemValue))
                 }
-                dropdownIconColor="black"
-                >
-                <Picker.Item style={{fontSize: 18}} label="सहकर्मी का चयन करें" value="" />
+                dropdownIconColor="black">
+                <Picker.Item
+                  style={{fontSize: 18}}
+                  label="सहकर्मी का चयन करें"
+                  value=""
+                />
                 {sahkarmi.map(item => (
                   <Picker.Item
                     label={item.SahkarmiName}
