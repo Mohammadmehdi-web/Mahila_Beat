@@ -22,6 +22,7 @@ import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import {addComplaintDetails} from '../../redux/slice/activitySlice';
 import {validateComplainantDetails} from '../../utils/validation';
+import StatusCheck from '../../components/statusCheck/statusCheck';
 
 const PROBLEM_API = 'http://re.auctech.in/MobileAppApi/GetProblemMasterDetails';
 const PROBLEM_BEARER =
@@ -41,6 +42,7 @@ const ComplaintScreen = ({navigation}) => {
   const [selected, setProblemType] = useState(null);
   const [problemList, setProblemList] = useState([]);
   const [complaintStatusList, setComplaintStatusList] = useState([]);
+  const [isChecked, setIsChecked] = useState(false);
   const [selectedComplain, setSelectedComplain] = useState({
     id: 0,
     name: '',
@@ -307,6 +309,10 @@ const ComplaintScreen = ({navigation}) => {
                 ))}
               </Picker>
             </View>
+          </View>
+          <View>
+          <Text>इस शिकायत को पूर्ण के रूप में चिह्नित करें</Text>
+          <StatusCheck isChecked={isChecked} setIsChecked={setIsChecked}/>
           </View>
 
           {/* Image Upload Section */}
