@@ -215,7 +215,7 @@ const ComplaintDescription = ({navigation}) => {
 
           <Text style={styles.label}>शिकायत का स्टेटस</Text>
           <Text style={styles.highlight}>
-            {selectedComplain.name || 'Not Available'}
+            {selectedComplain.ComplaintStatusName || 'Not Available'}
           </Text>
 
           <Text style={styles.label}>शिकायत पर कार्यवाही</Text>

@@ -168,7 +168,7 @@ const ComplaintList = ({navigation}) => {
           keyExtractor={item => item.ComplaintId.toString()}
           renderItem={({item}) => (
             <View style={{flex: 1, paddingHorizontal: '3%'}}>
-              {item ? (
+              {item.FinalDisposal !== 'Yes' ? (
                 <ComplaintCard
                   id={item.ComplaintId.toString()}
                   name={item.ComplainantName || 'N/A'}
