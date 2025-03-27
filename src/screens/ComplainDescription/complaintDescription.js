@@ -24,6 +24,8 @@ import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import ComplaintVideo from '../../components/complaintVideo/complaintVideo';
 
 import DummyImg from '../../assets/dummyimg.jpg';
+import StatusCheck from '../../components/statusCheck/statusCheck';
+import Divider from '../../components/divider/divider';
 
 const STATUS_API = 'http://re.auctech.in/MobileAppApi/UpdateComplaintMaster';
 const STATUS_BEARER =
@@ -40,6 +42,9 @@ const ComplaintDescription = ({navigation}) => {
   const [infoVisible, setInfoVisible] = useState(false);
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
 
+  const [isChecked, setIsChecked] = useState(false);
+  const [finalCheck, setFinalCheck] = useState('no');
+  const [remark, setRemark] = useState('');
   const [complaintStatusList, setComplaintStatusList] = useState([]);
   const [complaintData, setComplaintData] = useState({
     complainantName: complaint?.ComplainantName || '',
@@ -50,6 +55,8 @@ const ComplaintDescription = ({navigation}) => {
     complaintStatus: complaint?.ComplaintStatusName || 'Pending',
     policeName: complaint?.PoliceName || '',
     policeId: complaint?.PoliceId || '',
+    FinalDisposal: isChecked? 'Yes' : 'No',
+    FinalRemark:remark? remark : "इस शिकायत पर कोई टिप्पणी नहीं"
   });
 
   const [selectedComplain, setSelectedComplain] = useState({
@@ -85,41 +92,44 @@ const ComplaintDescription = ({navigation}) => {
 
   const handleSave = async () => {
     try {
-      const dataToSend = {
-        ActivityId: complaint.ActivityId, // Complaint Activity ID
-        ProblemId: complaint.ProblemId || 1, // If ProblemId is not available, assume default value of 1
-        ComplaintDate: complaintData.complaintDate, // Date of the complaint
-        ComplainantName: complaintData.complainantName, // Complainant's name
-        ComplainantNumber: complaintData.complainantNumber, // Complainant's mobile number
-        ComplaintStatusId: selectedComplain.id, // The ID of the selected complaint status
-        ComplainantImage: complaint.ComplainantImage || '', // Complainant's image URL (if any)
-        ComplainantVideo: complaint.ComplainantVideo || '', // Complainant's video URL (if any)
-        UpdatedBy: UserId,
-        ComplaintId: complaint.ComplaintId,
-      };
-
-      // Send data to API
+      const dataToSend = new FormData();
+      
+      dataToSend.append('ActivityId', parseInt(complaint.ActivityId)); // Convert to number
+      dataToSend.append('ProblemId', parseInt(complaint.ProblemId) || 1);
+      dataToSend.append('ComplaintDate', complaintData.complaintDate);
+      dataToSend.append('ComplainantName', complaintData.complainantName);
+      dataToSend.append('ComplainantNumber', complaintData.complainantNumber);
+      dataToSend.append('ComplaintStatusId', parseInt(selectedComplain.id)); // Convert to number
+      dataToSend.append('UpdatedBy', parseInt(UserId));
+      dataToSend.append('ComplaintId', parseInt(complaint.ComplaintId));
+      dataToSend.append('FinalDisposal', isChecked ? 'Yes' : 'No');
+      dataToSend.append('FinalRemark', isChecked ? remark : "इस शिकायत पर कोई टिप्पणी नहीं");
+  
+      console.log('Sending Data:', dataToSend);
+  
       const response = await axios.post(STATUS_API, dataToSend, {
         headers: {
           Authorization: `Bearer ${STATUS_BEARER}`,
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data', // Since using FormData
         },
       });
-      console.log('Response:', response.data.data);
-
-      if (response.data.success === true) {
-        Alert.alert('Complaint updated successfully');
+  
+      console.log('Response:', response.data);
+  
+      if (response.data.success) {
+        // Alert.alert('Complaint updated successfully');
         handleBackPress();
         setUpdateModalVisible(false);
       } else {
-        Alert.alert(`Error: 'Failed to update complaint'}`);
+        Alert.alert('Failed to update complaint');
       }
     } catch (error) {
       console.error('Error uploading complaint data:', error);
       Alert.alert('Failed to update complaint. Please try again later.');
     }
   };
-
+  
+  
   useEffect(() => {
     getComplainStatusList();
   }, []);
@@ -136,7 +146,7 @@ const ComplaintDescription = ({navigation}) => {
         onClose={() => setInfoVisible(false)}
         navigation={navigation}
       />
-      <StatusBar/>
+      <StatusBar />
       <Header
         title="महिला बीट"
         onMenuPress={() => setModalVisible(true)}
@@ -264,11 +274,18 @@ const ComplaintDescription = ({navigation}) => {
             />
             <TextInput
               style={styles.input}
-              value={complaintData.complaintDate}
+              value={
+                complaintData.complaintDate
+                //     ? new Date(
+                //     parseInt(complaintData.complaintDate.match(/\d+/)[0]),
+                //   ).toLocaleDateString()
+                // : 'N/A'
+              }
               onChangeText={text =>
                 setComplaintData({...complaintData, complaintDate: text})
               }
               placeholder="शिकायत का दिनांक व समय"
+              editable={false}
             />
 
             <View style={styles.pickerContainer}>
@@ -292,6 +309,25 @@ const ComplaintDescription = ({navigation}) => {
                 ))}
               </Picker>
             </View>
+            <Divider />
+            <View>
+              <Text style={{fontWeight: 'bold'}}>
+                इस शिकायत को पूर्ण के रूप में चिह्नित करें
+              </Text>
+              <StatusCheck isChecked={isChecked} setIsChecked={setIsChecked} />
+            </View>
+
+          {  isChecked &&
+            <TextInput
+              style={styles.input}
+              placeholder="अपनी टिप्पणी लिखें..."
+              placeholderTextColor="#999"
+              multiline={true}
+              numberOfLines={4}
+              value={complaintData.remark}
+              onChangeText={setRemark}
+            />
+          }
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <TouchableOpacity

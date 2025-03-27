@@ -45,6 +45,8 @@ const ComplaintList = ({navigation}) => {
       },
     );
     if (response?.data?.success === true) {
+      console.log(response.data.data);
+      
       setComplaints(response.data.data);
       setFilteredComplaints(response.data.data);
     } else {
@@ -166,7 +168,7 @@ const ComplaintList = ({navigation}) => {
           keyExtractor={item => item.ComplaintId.toString()}
           renderItem={({item}) => (
             <View style={{flex: 1, paddingHorizontal: '3%'}}>
-              {item.ComplaintStatusName ? (
+              {item ? (
                 <ComplaintCard
                   id={item.ComplaintId.toString()}
                   name={item.ComplainantName || 'N/A'}
@@ -183,9 +185,9 @@ const ComplaintList = ({navigation}) => {
                   onPress={() => handleComplaintPress(item)}
                   color="#D44624"
                 />
-              ) : (
+               ) : (
                 <></>
-              )}
+              )} 
             </View>
           )}
         />
