@@ -50,6 +50,7 @@ const ComplaintScreen = ({navigation}) => {
   const [imageUri, setImageUri] = useState(null);
   const [videoUri, setVideoUri] = useState(null);
   const [errors, setErrors] = useState({});
+  const [remark, setRemark] = useState('');
 
   const [modalVisible, setModalVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
@@ -139,6 +140,8 @@ const ComplaintScreen = ({navigation}) => {
       formData.append('ComplainantNumber', mobileNumber);
       formData.append('Status', selectedComplain?.name);
       formData.append('AddedBy', Number(UserId));
+      formData.append('FinalDisposal', (isChecked? 'Yes':'No'));
+      formData.append('FinalRemark', (remark));
 
       console.log(formData);
 
@@ -311,9 +314,20 @@ const ComplaintScreen = ({navigation}) => {
             </View>
           </View>
           <View>
-          <Text>इस शिकायत को पूर्ण के रूप में चिह्नित करें</Text>
-          <StatusCheck isChecked={isChecked} setIsChecked={setIsChecked}/>
+            <Text>इस शिकायत को पूर्ण के रूप में चिह्नित करें</Text>
+            <StatusCheck isChecked={isChecked} setIsChecked={setIsChecked} />
           </View>
+          {isChecked && (
+            <TextInput
+              style={styles.input}
+              placeholder="अपनी टिप्पणी लिखें..."
+              placeholderTextColor="#999"
+              multiline={true}
+              numberOfLines={4}
+              value={complaintData.remark}
+              onChangeText={setRemark}
+            />
+          )}
 
           {/* Image Upload Section */}
           <View style={styles.inputSection}>
