@@ -55,8 +55,8 @@ const ComplaintDescription = ({navigation}) => {
     complaintStatus: complaint?.ComplaintStatusName || 'Pending',
     policeName: complaint?.PoliceName || '',
     policeId: complaint?.PoliceId || '',
-    FinalDisposal: isChecked? 'Yes' : 'No',
-    FinalRemark:remark? remark : "इस शिकायत पर कोई टिप्पणी नहीं"
+    FinalDisposal: isChecked ? 'Yes' : 'No',
+    FinalRemark: remark ? remark : 'इस शिकायत पर कोई टिप्पणी नहीं',
   });
 
   const [selectedComplain, setSelectedComplain] = useState({
@@ -92,47 +92,61 @@ const ComplaintDescription = ({navigation}) => {
 
   const handleSave = async () => {
     try {
+      const formattedDate = dateString => {
+        const [day, month, year] = dateString.split('/');
+        return `${year}-${month}-${day}`; // Converts to YYYY-MM-DD
+      };
+
+      const formattedComplaintDate = formattedDate(complaintData.complaintDate);
       const dataToSend = new FormData();
-      
-      dataToSend.append('ActivityId', parseInt(complaint.ActivityId)); // Convert to number
+
+      dataToSend.append('ActivityId', parseInt(complaint.ActivityId));
       dataToSend.append('ProblemId', parseInt(complaint.ProblemId) || 1);
-      dataToSend.append('ComplaintDate', complaintData.complaintDate);
+      dataToSend.append('ComplaintDate', formattedComplaintDate);
       dataToSend.append('ComplainantName', complaintData.complainantName);
       dataToSend.append('ComplainantNumber', complaintData.complainantNumber);
-      dataToSend.append('ComplaintStatusId', parseInt(selectedComplain.id)); // Convert to number
+      dataToSend.append('ComplaintStatusId', parseInt(selectedComplain.id));
       dataToSend.append('UpdatedBy', parseInt(UserId));
       dataToSend.append('ComplaintId', parseInt(complaint.ComplaintId));
+
+      // Ensure correct value is sent
+      console.log('Final Disposal before sending:', isChecked ? 'Yes' : 'No');
+
       dataToSend.append('FinalDisposal', isChecked ? 'Yes' : 'No');
-      dataToSend.append('FinalRemark', isChecked ? remark : "इस शिकायत पर कोई टिप्पणी नहीं");
-  
+      dataToSend.append(
+        'FinalRemark',
+        isChecked && remark ? remark : 'इस शिकायत पर कोई टिप्पणी नहीं',
+      );
+
       console.log('Sending Data:', dataToSend);
-  
+
       const response = await axios.post(STATUS_API, dataToSend, {
         headers: {
           Authorization: `Bearer ${STATUS_BEARER}`,
-          'Content-Type': 'multipart/form-data', // Since using FormData
+          'Content-Type': 'multipart/form-data',
         },
       });
-  
+
       console.log('Response:', response.data);
-  
+
       if (response.data.success) {
-        // Alert.alert('Complaint updated successfully');
-        handleBackPress();
+        Alert.alert('शिकायत सफलतापूर्वक अपडेट की गई');
         setUpdateModalVisible(false);
+        navigation.goBack();
       } else {
-        Alert.alert('Failed to update complaint');
+        Alert.alert('शिकायत अपडेट करने में असफल रहा');
       }
     } catch (error) {
-      console.error('Error uploading complaint data:', error);
-      Alert.alert('Failed to update complaint. Please try again later.');
+      console.error('Error updating complaint:', error);
+      Alert.alert('शिकायत अपडेट करने में असफल। कृपया पुन: प्रयास करें।');
     }
   };
-  
-  
+
   useEffect(() => {
-    getComplainStatusList();
-  }, []);
+    if (!updateModalVisible) {
+      getComplainStatusList(); // Refresh status list after update
+    }
+  }, [updateModalVisible]);
 
   return (
     <>
@@ -215,7 +229,7 @@ const ComplaintDescription = ({navigation}) => {
 
           <Text style={styles.label}>शिकायत का स्टेटस</Text>
           <Text style={styles.highlight}>
-            {selectedComplain.ComplaintStatusName || 'Not Available'}
+            {selectedComplain.name || 'Not Available'}
           </Text>
 
           <Text style={styles.label}>शिकायत पर कार्यवाही</Text>
@@ -314,20 +328,26 @@ const ComplaintDescription = ({navigation}) => {
               <Text style={{fontWeight: 'bold'}}>
                 इस शिकायत को पूर्ण के रूप में चिह्नित करें
               </Text>
-              <StatusCheck isChecked={isChecked} setIsChecked={setIsChecked} />
+              <StatusCheck
+                isChecked={isChecked}
+                setIsChecked={value => {
+                  console.log('Checkbox Toggled:', value);
+                  setIsChecked(value);
+                }}
+              />
             </View>
 
-          {  isChecked &&
-            <TextInput
-              style={styles.input}
-              placeholder="अपनी टिप्पणी लिखें..."
-              placeholderTextColor="#999"
-              multiline={true}
-              numberOfLines={4}
-              value={complaintData.remark}
-              onChangeText={setRemark}
-            />
-          }
+            {isChecked && (
+              <TextInput
+                style={styles.input}
+                placeholder="अपनी टिप्पणी लिखें..."
+                placeholderTextColor="#999"
+                multiline={true}
+                numberOfLines={4}
+                value={complaintData.remark}
+                onChangeText={setRemark}
+              />
+            )}
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <TouchableOpacity
