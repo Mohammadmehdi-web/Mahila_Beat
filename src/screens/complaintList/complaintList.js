@@ -1,5 +1,12 @@
 import React, {use, useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity, FlatList, StyleSheet, StatusBar} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  StatusBar,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../../components/header/header';
 import ComplaintCard from '../../components/complainCard/complaintCard';
@@ -46,7 +53,7 @@ const ComplaintList = ({navigation}) => {
     );
     if (response?.data?.success === true) {
       console.log(response.data.data);
-      
+
       setComplaints(response.data.data);
       setFilteredComplaints(response.data.data);
     } else {
@@ -152,7 +159,7 @@ const ComplaintList = ({navigation}) => {
               name="refresh"
               size={24}
               color="green"
-              onPress={getComplaintList}
+              onPress={() => getComplaintList()}
             />
           </View>
           <View style={styles.row}>
@@ -185,9 +192,9 @@ const ComplaintList = ({navigation}) => {
                   onPress={() => handleComplaintPress(item)}
                   color="#D44624"
                 />
-               ) : (
+              ) : (
                 <></>
-              )} 
+              )}
             </View>
           )}
         />
@@ -201,7 +208,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5F5F5',
     gap: 5,
-    paddingBottom:"1%"
+    paddingBottom: '1%',
   },
   searchBar: {
     flexDirection: 'row',
