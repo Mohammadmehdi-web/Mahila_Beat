@@ -16,8 +16,10 @@ import VisitCard from '../../components/visitCard/visitCard'; // Import the card
 import SideModal from '../../components/sideModal/sideModal';
 import Search from '../../components/search/search';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
+import {BASE_URL} from '@env'
 
-const API_URL = 'http://re.auctech.in/MobileAppApi/GetTotalVisitDetails';
+
+const API_URL = `${BASE_URL}/MobileAppApi/GetTotalVisitDetails`;
 const BEARER_TOKEN =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxTotalVisitDetailsdssdteds';
 

@@ -17,8 +17,10 @@ import {validatePasswords} from '../../utils/validation';
 import axios from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import { logout } from '../../redux/slice/authSlice';
+import {BASE_URL} from '@env'
 
-const API = 'http://re.auctech.in/MobileAppApi/UpdatePassword';
+
+const API = `${BASE_URL}/MobileAppApi/UpdatePassword`;
 const BEARER_TOKEN =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxUpdatepassword';
 

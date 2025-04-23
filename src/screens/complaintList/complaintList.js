@@ -15,8 +15,10 @@ import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import axios from 'axios';
 import {useSelector} from 'react-redux';
 import Search from '../../components/search/search';
+import {BASE_URL} from '@env'
 
-const API_URL = 'http://re.auctech.in/MobileAppApi/getTotalComplaintMaster';
+
+const API_URL = `${BASE_URL}/MobileAppApi/getTotalComplaintMaster`;
 const BEARER_TOKEN =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxtotalComplaint';
 

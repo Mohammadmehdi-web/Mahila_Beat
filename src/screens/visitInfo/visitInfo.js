@@ -17,8 +17,10 @@ import {useNavigationState, useRoute} from '@react-navigation/native';
 import axios from 'axios';
 import ComplaintVideo from '../../components/complaintVideo/complaintVideo';
 import Divider from '../../components/divider/divider';
+import {BASE_URL} from '@env'
 
-const API_URL = 'http://re.auctech.in/MobileAppApi/getTotalComplaintMaster';
+
+const API_URL = `${BASE_URL}/MobileAppApi/getTotalComplaintMaster`;
 const API_BEARER =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxtotalComplaint';
 

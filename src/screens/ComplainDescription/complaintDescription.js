@@ -26,8 +26,11 @@ import ComplaintVideo from '../../components/complaintVideo/complaintVideo';
 import DummyImg from '../../assets/dummyimg.jpg';
 import StatusCheck from '../../components/statusCheck/statusCheck';
 import Divider from '../../components/divider/divider';
+import {BASE_URL} from '@env'
 
-const STATUS_API = 'http://re.auctech.in/MobileAppApi/UpdateComplaintMaster';
+const COMPLAINT_STATUS_API =`${BASE_URL}/MobileAppApi/GetComplaintStatusDetails`
+const COMPLAINT_STATUS_TOKEN = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxProblemtdssdted'
+const STATUS_API = `${BASE_URL}/MobileAppApi/UpdateComplaintMaster`;
 const STATUS_BEARER =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+updatecomlaintssdd';
 
@@ -74,11 +77,11 @@ const ComplaintDescription = ({navigation}) => {
 
   const getComplainStatusList = async () => {
     const response = await axios.post(
-      'http://re.auctech.in/MobileAppApi/GetComplaintStatusDetails',
+      COMPLAINT_STATUS_API,
       {},
       {
         headers: {
-          Authorization: `Bearer ${'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxProblemtdssdted'}`,
+          Authorization: `Bearer ${COMPLAINT_STATUS_TOKEN}`,
         },
       },
     );
@@ -441,6 +444,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     padding: 10,
     borderRadius: 5,
+    color:'#000'
   },
   pickerContainer: {
     borderWidth: 1,
