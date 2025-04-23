@@ -24,17 +24,18 @@ import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import {addSamvadDetails} from '../../redux/slice/activitySlice';
 import InputModal from '../../components/inputModal/inputModal';
 import {validateWomanDetails} from '../../utils/validation';
+import {BASE_URL} from '@env'
 
-const API_URL = 'http://re.auctech.in/MobileAppApi/AddConversationMaster';
+
+const API_URL = `${BASE_URL}/MobileAppApi/AddConversationMaster`;
 const BEARER_TOKEN =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla';
 const GOV_SCH_API =
-  'http://re.auctech.in/MobileAppApi/GetGovernmentschemeMasterDetails';
+  `${BASE_URL}/MobileAppApi/GetGovernmentschemeMasterDetails`;
 const GOV_SCH_BEARER =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxlagov';
-const UPLOAD_API = 'http://re.auctech.in/Uploade/CommunicationImage';
 const ADD_SCH_API =
-  'http://re.auctech.in/MobileAppApi/AddGovernmentschemeMaster';
+  `${BASE_URL}/MobileAppApi/AddGovernmentschemeMaster`;
 const ADD_SCH_BEARER =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxComplainthnfhdd';
 
@@ -164,7 +165,8 @@ const SamvadDetails = ({navigation}) => {
           name: 'photo.jpg', // File name
         });
       }
-
+        console.log("Form data", formData);
+        
       const response = await axios.post(API_URL, formData, {
         headers: {
           Authorization: `Bearer ${BEARER_TOKEN}`,

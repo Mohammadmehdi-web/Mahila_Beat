@@ -6,12 +6,13 @@ import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import axios from 'axios';
 import {useSelector} from 'react-redux';
+import {BASE_URL} from '@env'
 
-const SUM_API = 'http://re.auctech.in/MobileAppApi/getTotalDashboardMaster';
+const SUM_API = `${BASE_URL}/MobileAppApi/getTotalDashboardMaster`;
 const SUM_BEARER =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxtotalDashboard';
 const AREA_API =
-  'http://re.auctech.in/MobileAppApi/GetAreaWiseActivityCountDetails';
+  `${BASE_URL}/MobileAppApi/GetAreaWiseActivityCountDetails`;
 const AREA_BEARER =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxGetAreaWiseActivityCountDetailsddd';
 

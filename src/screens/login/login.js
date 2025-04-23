@@ -14,8 +14,9 @@ import Logo from '../../assets/policeLogo.png';
 import {useDispatch} from 'react-redux';
 import {loginSuccess} from '../../redux/slice/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {BASE_URL} from '@env'
 
-const API_URL = 'http://re.auctech.in/MobileAppApi/Login';
+const API_URL = `${BASE_URL}/MobileAppApi/Login`;
 const BEARER_TOKEN =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla';
 

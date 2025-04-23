@@ -17,8 +17,10 @@ import ComplaintCard from '../../components/complainCard/complaintCard';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import { formatDate } from '../../utils/commonMethods';
+import {BASE_URL} from '@env'
 
-const API_URL = 'http://re.auctech.in/MobileAppApi/getTotalComplaintMaster';
+
+const API_URL = `${BASE_URL}/MobileAppApi/getTotalComplaintMaster`;
 const BEARER_TOKEN =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxtotalComplaint';
 

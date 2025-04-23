@@ -23,11 +23,14 @@ import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import {addComplaintDetails} from '../../redux/slice/activitySlice';
 import {validateComplainantDetails} from '../../utils/validation';
 import StatusCheck from '../../components/statusCheck/statusCheck';
+import {BASE_URL} from '@env'
 
-const PROBLEM_API = 'http://re.auctech.in/MobileAppApi/GetProblemMasterDetails';
+const COMPLAINT_STATUS_API =  `${BASE_URL}/MobileAppApi/GetComplaintStatusDetails`
+const COMPLAINT_STATUS_TOKEN = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxProblemtdssdted'
+const PROBLEM_API = `${BASE_URL}/MobileAppApi/GetProblemMasterDetails`;
 const PROBLEM_BEARER =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxProblem';
-const API_URL = 'http://re.auctech.in/MobileAppApi/AddComplaintMaster';
+const API_URL = `${BASE_URL}/MobileAppApi/AddComplaintMaster`;
 const BEARER_TOKEN =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxComplaint';
 
@@ -112,11 +115,11 @@ const ComplaintScreen = ({navigation}) => {
 
   const getComplainStatusList = async () => {
     const response = await axios.post(
-      'http://re.auctech.in/MobileAppApi/GetComplaintStatusDetails',
+      COMPLAINT_STATUS_API,
       {},
       {
         headers: {
-          Authorization: `Bearer ${'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxProblemtdssdted'}`,
+          Authorization: `Bearer ${COMPLAINT_STATUS_TOKEN}`,
         },
       },
     );

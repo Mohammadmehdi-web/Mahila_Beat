@@ -19,18 +19,20 @@ import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import {createActivity} from '../../redux/slice/activitySlice';
 import {formatDate} from '../../utils/commonMethods';
 import InputModal from '../../components/inputModal/inputModal';
+import {BASE_URL} from '@env'
 
-const ADD_BEAT_API = 'http://re.auctech.in/MobileAppApi/AddBeatAreaMaster';
+
+const ADD_BEAT_API = `${BASE_URL}/MobileAppApi/AddBeatAreaMaster`;
 const ADD_BEAT_BEARER =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxComplainthnfh';
-const API_URL_BEAT = 'http://re.auctech.in/MobileAppApi/GetBeatAreaDetails';
+const API_URL_BEAT = `${BASE_URL}/MobileAppApi/GetBeatAreaDetails`;
 const BEARER_TOKEN_BEAT =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla';
 const API_URL_SAHKARMI =
-  'http://re.auctech.in/MobileAppApi/GetSahkarmiMasterDetails';
+  `${BASE_URL}/MobileAppApi/GetSahkarmiMasterDetails`;
 const BEARER_TOKEN_SAH =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla';
-const API_URL = 'http://re.auctech.in/MobileAppApi/AddActivityMaster';
+const API_URL = `${BASE_URL}/MobileAppApi/AddActivityMaster`;
 const BEARER_TOKEN =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxla';
 

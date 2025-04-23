@@ -9,8 +9,10 @@ import ComplaintCard from '../../components/complainCard/complaintCard';
 import SideModal from '../../components/sideModal/sideModal';
 import UserInfoCard from '../../components/userInfoCard/userInfoCard';
 import Search from '../../components/search/search';
+import {BASE_URL} from '@env'
 
-const API_URL = 'http://re.auctech.in/MobileAppApi/GetTotalComplaintDetails';
+
+const API_URL = `${BASE_URL}/MobileAppApi/GetTotalComplaintDetails`;
 const BEARER_TOKEN =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxTotalComplaintdssdtedss';
 

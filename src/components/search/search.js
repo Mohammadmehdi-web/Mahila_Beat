@@ -30,19 +30,6 @@ const Search = ({handleChange}) => {
       {/* Collapsible Content */}
       {isExpanded && (
         <View style={styles.container}>
-          {/* Area Dropdown */}
-          {/* <Text style={styles.label}>क्षेत्र को चुनें</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={selectedArea}
-              onValueChange={(itemValue) => setSelectedArea(itemValue)}
-              style={styles.picker}
-            >
-              <Picker.Item label="गली जस्सा" value="" />
-              <Picker.Item label="क्षेत्र 2" value="क्षेत्र 2" />
-              <Picker.Item label="क्षेत्र 3" value="क्षेत्र 3" />
-            </Picker>
-          </View> */}
 
           {/* Date Pickers */}
           <View style={styles.dateContainer}>
