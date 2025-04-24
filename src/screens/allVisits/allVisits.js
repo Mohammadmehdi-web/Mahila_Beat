@@ -132,12 +132,14 @@ const AllVisits = ({navigation}) => {
                 key={index}
                 location={`${item.StateName}/ ${
                   item.DistrictName
-                }/ ${item.ThanaName.trim()}`}
+                }/ ${item.ThanaName}`}
                 officer={`${item.PoliceName} - ${item.MobileNumber}`}
                 distance={item.DistanceActivity}
                 date={item.ActivityDate}
-                onPress={() =>
-                  navigation.navigate('VisitInfo', {visitInfo: item})
+                onPress={() =>{
+                  console.log(item);
+                  
+                  navigation.navigate('VisitInfo', {visitInfo: item})}
                 }
               />
             ))
