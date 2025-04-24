@@ -8,3 +8,14 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+# Keep Axios + network-related calls safe
+
+-keep class com.facebook.react.** { *; }
+-keep class com.facebook.** { *; }
+-dontwarn com.facebook.react.**
+-dontwarn okhttp3.**
+-dontwarn okio.**
+
+# Hermes support
+-keep class com.facebook.hermes.** { *; }
+-dontwarn com.facebook.hermes.**

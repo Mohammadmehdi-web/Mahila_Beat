@@ -65,12 +65,6 @@ const SideModal = ({isVisible, onClose, navigation}) => {
                     onPress={() => {
                       if (item.screen === 'Login') {
                         dispatch(logout());
-                        navigation.dispatch(
-                          CommonActions.reset({
-                            index: 0,
-                            routes: [{name: 'Login'}],
-                          }),
-                        );
                       } else {
                         navigation.dispatch(
                           CommonActions.reset({

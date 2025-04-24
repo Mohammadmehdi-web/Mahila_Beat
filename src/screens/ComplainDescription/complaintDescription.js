@@ -26,10 +26,11 @@ import ComplaintVideo from '../../components/complaintVideo/complaintVideo';
 import DummyImg from '../../assets/dummyimg.jpg';
 import StatusCheck from '../../components/statusCheck/statusCheck';
 import Divider from '../../components/divider/divider';
-import {BASE_URL} from '@env'
+import {BASE_URL} from '@env';
 
-const COMPLAINT_STATUS_API =`${BASE_URL}/MobileAppApi/GetComplaintStatusDetails`
-const COMPLAINT_STATUS_TOKEN = 'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxProblemtdssdted'
+const COMPLAINT_STATUS_API = `${BASE_URL}/MobileAppApi/GetComplaintStatusDetails`;
+const COMPLAINT_STATUS_TOKEN =
+  'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+hxProblemtdssdted';
 const STATUS_API = `${BASE_URL}/MobileAppApi/UpdateComplaintMaster`;
 const STATUS_BEARER =
   'zhlbnjuNwxXJdasdge454zz+9J6LZiBYNnetrbGUHTPJGco6G7SZiJzQMVsumrp/y6g==:ZlpToWj3Oau537ggbcvsfsL1X6HhgvFp3XsadIX2O+updatecomlaintssdd';
@@ -248,7 +249,7 @@ const ComplaintDescription = ({navigation}) => {
             )}
           </Text>
         </View>
-        {complaint.ComplaintStatusName !== 'Complete' && (
+        {complaint.FinalDisposal !== 'Yes' && (
           <TouchableOpacity
             style={styles.button}
             onPress={() => setUpdateModalVisible(true)}>
@@ -444,7 +445,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     padding: 10,
     borderRadius: 5,
-    color:'#000'
+    color: '#000',
   },
   pickerContainer: {
     borderWidth: 1,

@@ -327,7 +327,7 @@ const ComplaintScreen = ({navigation}) => {
               placeholderTextColor="#999"
               multiline={true}
               numberOfLines={4}
-              value={complaintData.remark}
+              value={remark}
               onChangeText={setRemark}
             />
           )}
